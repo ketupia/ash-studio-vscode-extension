@@ -102,7 +102,7 @@ function parseInnerMacros(lines, startLine, endLine) {
         // Skip empty lines, comments, and end tokens
         if (!trimmed || trimmed.startsWith("#") || trimmed === "end")
             continue;
-        // Pattern for inner macros with first argument extraction
+        // Pattern for top-level macros with first argument extraction
         // Handle various forms:
         //   attribute :name, :string do
         //   create :create do
@@ -113,9 +113,22 @@ function parseInnerMacros(lines, startLine, endLine) {
         if (macroMatch) {
             const macroName = macroMatch[1];
             const firstArg = macroMatch[2];
-            // Skip if this looks like a nested do/end block start
-            if (trimmed.endsWith(" do") && !firstArg)
-                continue;
+            // If this line has a 'do' at the end, it starts a nested block
+            // We should capture this macro but then skip its content
+            if (trimmed.endsWith(' do')) {
+                // Find the matching 'end' for this nested block and skip to it
+                let nestedDepth = 1;
+                let j = i + 1;
+                while (j < endLine && nestedDepth > 0) {
+                    const nestedLine = lines[j].trim();
+                    const doCount = (nestedLine.match(/\bdo\b/g) || []).length;
+                    const endCount = (nestedLine.match(/\bend\b/g) || []).length;
+                    nestedDepth += doCount - endCount;
+                    j++;
+                }
+                // Skip to after the nested block
+                i = j - 1;
+            }
             // Extract a clean first argument (remove : prefix from atoms, quotes from strings)
             let displayName = macroName;
             if (firstArg) {
