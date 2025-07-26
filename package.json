@@ -1,0 +1,71 @@
+{
+  "name": "ash-studio",
+  "displayName": "ash-studio",
+  "description": "Ash Framweork VSCode Extension",
+  "publisher": "ketupia",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.100.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "main": "./dist/src/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "ash-studio.gotoSection",
+        "title": "Go to Ash Section..."
+      },
+      {
+        "command": "ash-studio.revealSectionOrSubBlock",
+        "title": "Reveal Ash Section"
+      }
+    ],
+    "languages": [
+      {
+        "id": "elixir",
+        "aliases": [
+          "Elixir",
+          "elixir"
+        ],
+        "extensions": [
+          ".ex",
+          ".exs"
+        ],
+        "filenames": [],
+        "configuration": "./elixir.language-configuration.json"
+      }
+    ],
+    "views": {
+      "explorer": [
+        {
+          "id": "ashSidebar",
+          "name": "Ash Studio"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "build": "tsc && cp -r src/nearley dist/src/",
+    "pretest": "npm run build",
+    "test": "node ./dist/test/runTest.js",
+    "test:parser": "mocha test/parser.test.js"
+  },
+  "devDependencies": {
+    "@types/glob": "^8.1.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^20.19.9",
+    "@types/vscode": "^1.102.0",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.5.2",
+    "eslint": "^9.25.1",
+    "glob": "^11.0.3",
+    "mocha": "^11.7.1",
+    "moo": "^0.5.2",
+    "nearley": "^2.20.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}
