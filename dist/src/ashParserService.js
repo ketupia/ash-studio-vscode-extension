@@ -37,8 +37,8 @@ exports.AshParserService = void 0;
 const vscode = __importStar(require("vscode"));
 const ashParser_1 = require("./ashParser");
 const simpleParser_1 = require("./simpleParser");
-// Temporary: use simple parser for testing
-const USE_SIMPLE_PARSER = true;
+// Strategy: Try detailed parser first, fallback to simple parser on errors
+const USE_GRACEFUL_FALLBACK = true;
 /**
  * Centralized parser service that caches parse results and manages updates
  */
@@ -64,10 +64,32 @@ class AshParserService {
         if (cached && cached.version === version) {
             return cached.result;
         }
-        // Parse the document
-        const result = USE_SIMPLE_PARSER
-            ? (0, simpleParser_1.parseAshDocumentSimple)(document)
-            : (0, ashParser_1.parseAshDocument)(document);
+        // Parse the document with graceful fallback strategy
+        let result;
+        if (USE_GRACEFUL_FALLBACK) {
+            try {
+                // First attempt: try the detailed grammar parser
+                console.log('[Ash Studio] Attempting detailed parser...');
+                result = (0, ashParser_1.parseAshDocument)(document);
+                // Check if parser succeeded but has errors
+                if (result.errors && result.errors.length > 0) {
+                    console.log('[Ash Studio] Detailed parser had errors, falling back to simple parser');
+                    result = (0, simpleParser_1.parseAshDocumentSimple)(document);
+                }
+                else {
+                    console.log('[Ash Studio] Detailed parser succeeded');
+                }
+            }
+            catch (error) {
+                // Fallback: use simple parser if detailed parser throws
+                console.log('[Ash Studio] Detailed parser failed, using simple parser fallback:', error);
+                result = (0, simpleParser_1.parseAshDocumentSimple)(document);
+            }
+        }
+        else {
+            // Direct simple parser (for testing)
+            result = (0, simpleParser_1.parseAshDocumentSimple)(document);
+        }
         // Cache the result
         this.parseCache.set(uri, { result, version });
         // Notify listeners

@@ -2,8 +2,8 @@ import * as vscode from "vscode";
 import { parseAshDocument, AshParseResult } from "./ashParser";
 import { parseAshDocumentSimple, SimpleParseResult } from "./simpleParser";
 
-// Temporary: use simple parser for testing
-const USE_SIMPLE_PARSER = true;
+// Strategy: Try detailed parser first, fallback to simple parser on errors
+const USE_GRACEFUL_FALLBACK = true;
 
 /**
  * Centralized parser service that caches parse results and manages updates
@@ -38,10 +38,36 @@ export class AshParserService {
       return cached.result;
     }
 
-    // Parse the document
-    const result = USE_SIMPLE_PARSER
-      ? (parseAshDocumentSimple(document) as AshParseResult)
-      : parseAshDocument(document);
+    // Parse the document with graceful fallback strategy
+    let result: AshParseResult;
+
+    if (USE_GRACEFUL_FALLBACK) {
+      try {
+        // First attempt: try the detailed grammar parser
+        console.log("[Ash Studio] Attempting detailed parser...");
+        result = parseAshDocument(document);
+
+        // Check if parser succeeded but has errors
+        if (result.errors && result.errors.length > 0) {
+          console.log(
+            "[Ash Studio] Detailed parser had errors, falling back to simple parser"
+          );
+          result = parseAshDocumentSimple(document) as AshParseResult;
+        } else {
+          console.log("[Ash Studio] Detailed parser succeeded");
+        }
+      } catch (error) {
+        // Fallback: use simple parser if detailed parser throws
+        console.log(
+          "[Ash Studio] Detailed parser failed, using simple parser fallback:",
+          error
+        );
+        result = parseAshDocumentSimple(document) as AshParseResult;
+      }
+    } else {
+      // Direct simple parser (for testing)
+      result = parseAshDocumentSimple(document) as AshParseResult;
+    }
 
     // Cache the result
     this.parseCache.set(uri, { result, version });

@@ -23,7 +23,7 @@ export function registerAshQuickPick(
 
       if (!parseResult.isAshFile) {
         vscode.window.showInformationMessage(
-          "Not an Ash Resource or Domain file"
+          "Not an Ash file (Resource, Domain, or Type)"
         );
         return;
       }
@@ -38,7 +38,6 @@ export function registerAshQuickPick(
       const items = parseResult.sections.map((section) => ({
         label: section.name,
         description: `Line ${section.line + 1}`, // Convert to 1-based for display
-        detail: section.type, // Show section type as additional info
         section: section, // Keep reference to full section data
       }));
 

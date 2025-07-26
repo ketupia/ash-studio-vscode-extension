@@ -32,8 +32,10 @@ export function parseAshDocumentSimple(
   const text = document.getText();
   const lines = text.split("\n");
 
-  // Check if this is an Ash file
-  const isAshFile = /use\s+Ash\.(Resource|Domain)/.test(text);
+  // Check if this is an Ash file (Resource, Domain, or Type)
+  const isAshResource = /use\s+Ash\.(Resource|Domain)/.test(text);
+  const isAshType = /use\s+Ash\.Type\.(Enum|Union|NewType)/.test(text);
+  const isAshFile = isAshResource || isAshType;
 
   if (!isAshFile) {
     return {
@@ -45,6 +47,34 @@ export function parseAshDocumentSimple(
 
   const sections: SimpleParseResult["sections"] = [];
   const errors: SimpleParseResult["errors"] = [];
+
+  // Handle Ash.Type.Enum files (simple, no DSL blocks)
+  if (isAshType && !isAshResource) {
+    // For Ash types, we can extract the type definition as a "section"
+    const typeMatch = text.match(/use\s+Ash\.Type\.(\w+),?\s*(.+)/);
+    if (typeMatch) {
+      const typeName = typeMatch[1]; // "Enum", "Union", etc.
+      const typeConfig = typeMatch[2]; // "values: [:admin, :editor, :user]"
+
+      sections.push({
+        type: "type_definition",
+        name: `${typeName.toLowerCase()}_definition`,
+        line: lines.findIndex((line) => line.includes("use Ash.Type")),
+        column: 0,
+        endLine: lines.length - 1,
+        endColumn: lines[lines.length - 1].length,
+        children: [], // TODO: Could parse individual enum values
+        rawContent: typeConfig,
+      });
+    }
+
+    return {
+      isAshFile: true,
+      sections,
+      errors,
+      moduleName: extractModuleName(text),
+    };
+  }
 
   // Simple regex patterns for common Ash DSL blocks
   const blockPatterns = [

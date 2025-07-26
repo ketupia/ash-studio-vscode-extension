@@ -48,7 +48,7 @@ function registerAshQuickPick(context, parserService) {
         // Use the centralized parser service
         const parseResult = parser.getParseResult(document);
         if (!parseResult.isAshFile) {
-            vscode.window.showInformationMessage("Not an Ash Resource or Domain file");
+            vscode.window.showInformationMessage("Not an Ash file (Resource, Domain, or Type)");
             return;
         }
         if (parseResult.errors.length > 0) {
@@ -60,7 +60,6 @@ function registerAshQuickPick(context, parserService) {
         const items = parseResult.sections.map((section) => ({
             label: section.name,
             description: `Line ${section.line + 1}`, // Convert to 1-based for display
-            detail: section.type, // Show section type as additional info
             section: section, // Keep reference to full section data
         }));
         if (items.length === 0) {
