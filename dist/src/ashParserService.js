@@ -69,20 +69,20 @@ class AshParserService {
         if (USE_GRACEFUL_FALLBACK) {
             try {
                 // First attempt: try the detailed grammar parser
-                console.log('[Ash Studio] Attempting detailed parser...');
+                console.log("[Ash Studio] Attempting detailed parser...");
                 result = (0, ashParser_1.parseAshDocument)(document);
                 // Check if parser succeeded but has errors
                 if (result.errors && result.errors.length > 0) {
-                    console.log('[Ash Studio] Detailed parser had errors, falling back to simple parser');
+                    console.log("[Ash Studio] Detailed parser had errors, falling back to simple parser");
                     result = (0, simpleParser_1.parseAshDocumentSimple)(document);
                 }
                 else {
-                    console.log('[Ash Studio] Detailed parser succeeded');
+                    console.log("[Ash Studio] Detailed parser succeeded");
                 }
             }
             catch (error) {
                 // Fallback: use simple parser if detailed parser throws
-                console.log('[Ash Studio] Detailed parser failed, using simple parser fallback:', error);
+                console.log("[Ash Studio] Detailed parser failed, using simple parser fallback:", error);
                 result = (0, simpleParser_1.parseAshDocumentSimple)(document);
             }
         }

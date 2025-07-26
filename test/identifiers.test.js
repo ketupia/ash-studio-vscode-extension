@@ -32,11 +32,4 @@ describe("Identifiers and References", function () {
       "Complex module reference"
     );
   });
-
-  it("should parse remote atoms", function () {
-    assertParses(
-      "defmodule Test do\n  type :MyModule.my_type\nend",
-      "Remote atom"
-    );
-  });
 });

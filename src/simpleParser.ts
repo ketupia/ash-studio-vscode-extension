@@ -118,7 +118,7 @@ export function parseAshDocumentSimple(
           column: startColumn,
           endLine: endLine,
           endColumn: endColumn,
-          children: [], // TODO: Parse section details
+          children: parseInnerMacros(lines, startLine, endLine), // Parse inner macros for first arguments
           rawContent: lines.slice(startLine, endLine + 1).join("\n"),
         });
       }
@@ -136,4 +136,77 @@ export function parseAshDocumentSimple(
 function extractModuleName(text: string): string | undefined {
   const match = text.match(/defmodule\s+([A-Za-z_][A-Za-z0-9_.]*)/);
   return match ? match[1] : undefined;
+}
+
+function parseInnerMacros(
+  lines: string[],
+  startLine: number,
+  endLine: number
+): any[] {
+  const children: any[] = [];
+
+  for (let i = startLine + 1; i < endLine; i++) {
+    const line = lines[i];
+    const trimmed = line.trim();
+
+    // Skip empty lines, comments, and end tokens
+    if (!trimmed || trimmed.startsWith("#") || trimmed === "end") continue;
+
+    // Pattern for inner macros with first argument extraction
+    // Handle various forms:
+    //   attribute :name, :string do
+    //   create :create do
+    //   reference(:album, index?: true, on_delete: :delete)
+    //   primary?(true)
+    //   uuid_primary_key(:id)
+    const macroMatch = trimmed.match(/^(\w+[?!]?)\s*(?:\(?\s*([^,\s)]+))/);
+
+    if (macroMatch) {
+      const macroName = macroMatch[1];
+      const firstArg = macroMatch[2];
+
+      // Skip if this looks like a nested do/end block start
+      if (trimmed.endsWith(" do") && !firstArg) continue;
+
+      // Extract a clean first argument (remove : prefix from atoms, quotes from strings)
+      let displayName = macroName;
+      if (firstArg) {
+        let cleanArg = firstArg.trim();
+
+        // Handle atoms (:name -> name)
+        if (cleanArg.startsWith(":")) {
+          cleanArg = cleanArg.substring(1);
+        }
+        // Handle strings ("name" -> name)
+        else if (cleanArg.match(/^["'].*["']$/)) {
+          cleanArg = cleanArg.slice(1, -1);
+        }
+        // Handle lists ([:read -> read, etc.)
+        else if (cleanArg.startsWith("[")) {
+          const listMatch = cleanArg.match(/^\[([^,\]]+)/);
+          if (listMatch) {
+            cleanArg = listMatch[1];
+            if (cleanArg.startsWith(":")) {
+              cleanArg = cleanArg.substring(1);
+            }
+          }
+        }
+
+        displayName = cleanArg;
+      }
+
+      children.push({
+        type: "macro",
+        name: displayName,
+        macroName: macroName,
+        line: i,
+        column: line.indexOf(trimmed),
+        endLine: i,
+        endColumn: line.length,
+        rawContent: line,
+      });
+    }
+  }
+
+  return children;
 }
