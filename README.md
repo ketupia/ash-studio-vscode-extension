@@ -1,7 +1,7 @@
 # Ash Studio VS Code Extension
 
 A VS Code extension that enhances development experience for the Ash Framework (Elixir) with
-intelligent navigation, parsing, and development tools.
+navigation tools.
 
 ## 🚀 Features
 
@@ -9,18 +9,19 @@ intelligent navigation, parsing, and development tools.
   structure in Outline
 - **⚡ Quick Pick Navigation** - Fast searchable navigation to Ash sections in current file
 - **📊 Custom Sidebar** - Dedicated Ash navigation panel showing all sections and hierarchy
+
+## 📋 Development
+
 - **🔧 Hybrid Parser Architecture** - Robust parsing with grammar-based primary parser and
   regex-based fallback
 - **📝 Professional Logging** - Centralized structured logging with VS Code output channel
   integration
 
-## 📋 Development
-
 ### **Getting Started**
 
 ```bash
 # Clone the repository
-git clone <repository-url>
+git clone https://github.com/ketupia/ash-studio-vscode-extension.git
 cd ash-studio-vscode-extension
 
 # Install dependencies
@@ -116,5 +117,3 @@ This project maintains enterprise-grade quality:
 5. Update documentation for architectural changes
 
 ---
-
-_Built with ❤️ for the Ash Framework community_

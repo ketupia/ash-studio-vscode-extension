@@ -12,12 +12,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/ketupia/ash-vscode-extension.git"
+    "url": "https://github.com/ketupia/ash-studio-vscode-extension.git"
   },
   "bugs": {
-    "url": "https://github.com/ketupia/ash-vscode-extension/issues"
+    "url": "https://github.com/ketupia/ash-studio-vscode-extension/issues"
   },
-  "homepage": "https://github.com/ketupia/ash-vscode-extension#readme",
+  "homepage": "https://github.com/ketupia/ash-studio-vscode-extension#readme",
   "main": "./dist/src/extension.js",
   "contributes": {
     "commands": [
