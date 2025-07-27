@@ -71,7 +71,7 @@ export class ConfigurationManager {
   onDidChange(
     listener: (e: vscode.ConfigurationChangeEvent) => void
   ): vscode.Disposable {
-    return vscode.workspace.onDidChangeConfiguration((e) => {
+    return vscode.workspace.onDidChangeConfiguration(e => {
       if (e.affectsConfiguration(this.configSection)) {
         listener(e);
       }

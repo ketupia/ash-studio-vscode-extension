@@ -2,7 +2,9 @@
 
 ## Overview
 
-Ash Studio is a VS Code extension designed to enhance development experience for the Ash Framework (Elixir). This document outlines the architectural decisions, patterns, and best practices used throughout the codebase.
+Ash Studio is a VS Code extension designed to enhance development experience for the Ash Framework
+(Elixir). This document outlines the architectural decisions, patterns, and best practices used
+throughout the codebase.
 
 ## Core Architecture Principles
 
@@ -309,4 +311,5 @@ npm run lint     # Code quality checks
 4. **Phase 4**: Enable PerformanceMonitor for optimization
 5. **Phase 5**: Implement CodeLens and Hover providers
 
-This architecture provides a solid foundation for current functionality while enabling future features and maintaining high code quality standards.
+This architecture provides a solid foundation for current functionality while enabling future
+features and maintaining high code quality standards.

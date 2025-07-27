@@ -62,7 +62,7 @@ class AshSidebarProvider {
         }
         if (!element) {
             // Top-level: show main DSL sections
-            return parseResult.sections.map((section) => new AshSidebarItem(section.name, // Just the section name (e.g., "attributes", "actions")
+            return parseResult.sections.map(section => new AshSidebarItem(section.name, // Just the section name (e.g., "attributes", "actions")
             section.children && section.children.length > 0
                 ? vscode.TreeItemCollapsibleState.Collapsed
                 : vscode.TreeItemCollapsibleState.None, section.line, undefined, {
@@ -73,10 +73,10 @@ class AshSidebarProvider {
         }
         else if (element.sectionLine !== undefined) {
             // Children: show section details within a section
-            const section = parseResult.sections.find((s) => s.line === element.sectionLine);
+            const section = parseResult.sections.find(s => s.line === element.sectionLine);
             if (!section || !section.children || section.children.length === 0)
                 return [];
-            return section.children.map((detail) => new AshSidebarItem(`${detail.name}`, // Just the detail name (e.g., "email", "create")
+            return section.children.map(detail => new AshSidebarItem(`${detail.name}`, // Just the detail name (e.g., "email", "create")
             vscode.TreeItemCollapsibleState.None, detail.line, section.name, {
                 command: "ash-studio.revealSectionOrSubBlock",
                 title: "Go to Detail",

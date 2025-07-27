@@ -1,0 +1,6 @@
+# Prettier ignore patterns
+node_modules/
+dist/
+.vscode-test/
+*.min.js
+src/nearley/ashGrammar.js

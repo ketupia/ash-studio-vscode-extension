@@ -43,7 +43,7 @@ export class AshSidebarProvider
     if (!element) {
       // Top-level: show main DSL sections
       return parseResult.sections.map(
-        (section) =>
+        section =>
           new AshSidebarItem(
             section.name, // Just the section name (e.g., "attributes", "actions")
             section.children && section.children.length > 0
@@ -61,13 +61,13 @@ export class AshSidebarProvider
     } else if (element.sectionLine !== undefined) {
       // Children: show section details within a section
       const section = parseResult.sections.find(
-        (s) => s.line === element.sectionLine
+        s => s.line === element.sectionLine
       );
       if (!section || !section.children || section.children.length === 0)
         return [];
 
       return section.children.map(
-        (detail) =>
+        detail =>
           new AshSidebarItem(
             `${detail.name}`, // Just the detail name (e.g., "email", "create")
             vscode.TreeItemCollapsibleState.None,

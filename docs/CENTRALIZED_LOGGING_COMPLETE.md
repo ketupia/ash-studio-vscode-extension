@@ -2,7 +2,8 @@
 
 ## 🎯 Mission Accomplished
 
-All logging in the Ash Studio extension now flows through the centralized logging system. Here's what we've achieved:
+All logging in the Ash Studio extension now flows through the centralized logging system. Here's
+what we've achieved:
 
 ## 📊 Migration Summary
 
@@ -160,4 +161,5 @@ Your Ash Studio extension now has **enterprise-grade logging** that provides:
 - Performance monitoring foundation
 - Scalable architecture for future features
 
-The logging system is production-ready and follows VS Code extension best practices. Users will appreciate the transparency and control, while developers benefit from rich debugging capabilities!
+The logging system is production-ready and follows VS Code extension best practices. Users will
+appreciate the transparency and control, while developers benefit from rich debugging capabilities!

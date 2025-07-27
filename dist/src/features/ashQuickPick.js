@@ -57,7 +57,7 @@ function registerAshQuickPick(context, parserService) {
             vscode.window.showWarningMessage(`Parse error: ${errorMsg}`);
         }
         // Create QuickPick items from parsed sections
-        const items = parseResult.sections.map((section) => ({
+        const items = parseResult.sections.map(section => ({
             label: section.name,
             description: `Line ${section.line + 1}`, // Convert to 1-based for display
             section: section, // Keep reference to full section data

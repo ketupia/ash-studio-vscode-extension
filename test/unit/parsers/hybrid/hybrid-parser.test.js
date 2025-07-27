@@ -119,10 +119,10 @@ end`;
 
       // Simple parser should extract basic structure even if complex
       const attributesSection = simpleResult.sections.find(
-        (s) => s.name === "attributes"
+        s => s.name === "attributes"
       );
       const actionsSection = simpleResult.sections.find(
-        (s) => s.name === "actions"
+        s => s.name === "actions"
       );
 
       if (attributesSection) {

@@ -181,7 +181,7 @@ export class AshParser {
 
     // Handle different node types
     if (Array.isArray(node)) {
-      node.forEach((child) =>
+      node.forEach(child =>
         this.walkASTForSections(child, sections, originalText)
       );
       return;
@@ -214,7 +214,7 @@ export class AshParser {
       }
 
       // Recursively traverse object properties
-      Object.values(node).forEach((value) => {
+      Object.values(node).forEach(value => {
         this.walkASTForSections(value, sections, originalText);
       });
     }

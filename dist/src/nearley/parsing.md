@@ -132,14 +132,14 @@ This document tracks the parsing capabilities of our Nearley grammar for Elixir/
 ### ✅ Critical Fixes Completed
 
 1. **Domain Keyword Parsing Issue** - RESOLVED
-
    - **Problem**: `domain` was being tokenized as `do` + `main` instead of a single keyword
    - **Solution**: Added word boundaries (`\b`) to all keyword patterns in lexer
-   - **Impact**: Fixed domain parsing across all variations, improved test success from 33 to 41 passing tests
-   - **Files**: Updated lexer rules in `ashGrammar.ne` for all keywords (`/do\b/`, `/domain\b/`, etc.)
+   - **Impact**: Fixed domain parsing across all variations, improved test success from 33 to 41
+     passing tests
+   - **Files**: Updated lexer rules in `ashGrammar.ne` for all keywords (`/do\b/`, `/domain\b/`,
+     etc.)
 
 2. **List Parsing with Whitespace** - RESOLVED
-
    - **Problem**: Lists failed to parse when there was whitespace after commas
    - **Solution**: Modified `list_of_arguments_optional_content` rule to handle `(%comma _ value):*`
    - **Impact**: All list parsing with spaces now works correctly
@@ -147,7 +147,8 @@ This document tracks the parsing capabilities of our Nearley grammar for Elixir/
 
 3. **Function Calls Without Parentheses** - IMPLEMENTED
    - **Problem**: `table "pets"` style function calls weren't supported
-   - **Solution**: Added `function_call_no_parens` rule: `(%elixir_identifier | %atom) __ call_argument (_ call_argument):*`
+   - **Solution**: Added `function_call_no_parens` rule:
+     `(%elixir_identifier | %atom) __ call_argument (_ call_argument):*`
    - **Impact**: Supports Elixir's common pattern of function calls without parentheses
    - **Example**: `table "pets"`, `attribute :name, :string` style calls now recognized
 
@@ -171,7 +172,6 @@ This document tracks the parsing capabilities of our Nearley grammar for Elixir/
 ### Next Session Priorities
 
 1. **Integration Work** - Wire parser output to extension features
-
    - Connect to QuickPick functionality
    - Connect to Sidebar provider
    - Implement actual AST consumption in extension
@@ -183,9 +183,11 @@ This document tracks the parsing capabilities of our Nearley grammar for Elixir/
 
 ### Grammar Architecture Notes
 
-- **Lexer Rule Ordering**: Critical for proper tokenization - specific tokens first, general tokens last
+- **Lexer Rule Ordering**: Critical for proper tokenization - specific tokens first, general tokens
+  last
 - **Word Boundaries**: Essential for keywords to prevent partial matches (`domain` vs `do` + `main`)
-- **Whitespace Handling**: Two patterns used - `_` (optional) and `__` (mandatory) for different contexts
+- **Whitespace Handling**: Two patterns used - `_` (optional) and `__` (mandatory) for different
+  contexts
 - **Function Call Patterns**: Supports both `func(args)` and `func args` styles common in Elixir
 - **DSL Block Structure**: Uses generic `do_block` pattern that can contain various expression types
 
@@ -223,13 +225,16 @@ Based on recent test failures, these are the immediate issues to fix:
 
 ## Current Parsing Status
 
-✅ **Working (20+ constructs)**: Module structure, attributes, require/alias, strings (including triple-quoted), module references as values, lists with module references, basic DSL blocks
-🔄 **Partially Working (3 issues)**: Empty collections, complex multi-line use statements, nested DSL blocks
-❌ **Not Implemented (15+ advanced features)**: Function calls, advanced Elixir constructs, specific Ash DSL content
+✅ **Working (20+ constructs)**: Module structure, attributes, require/alias, strings (including
+triple-quoted), module references as values, lists with module references, basic DSL blocks 🔄
+**Partially Working (3 issues)**: Empty collections, complex multi-line use statements, nested DSL
+blocks ❌ **Not Implemented (15+ advanced features)**: Function calls, advanced Elixir constructs,
+specific Ash DSL content
 
 ## Known Issues
 
-1. ~~**Module references as values**: `AshPostgres.DataLayer` not recognized as valid value in key-value pairs~~ ✅ FIXED
+1. ~~**Module references as values**: `AshPostgres.DataLayer` not recognized as valid value in
+   key-value pairs~~ ✅ FIXED
 2. ~~**Lists with module references**: `[Ash.Notifier.PubSub]` not parsing correctly~~ ✅ FIXED
 3. ~~**Complex use statement options**: Multi-line use statements with nested structures~~ ✅ FIXED
 4. **Empty collections**: Empty lists `[]` and maps `{}` not handled
@@ -241,19 +246,16 @@ Based on recent test failures, these are the immediate issues to fix:
 ### Immediate Fixes (Session Continuation Priorities)
 
 1. **Fix comments support** - Grammar has comments in lexer but whitespace rules need updating
-
    - Current: `_ -> %ws:*`
    - Needed: `_ -> (%ws | %comment):*`
    - Impact: Enables `# comment` lines in all Elixir code
 
 2. **Fix complex use statements** - Multi-line use statements with trailing commas failing
-
    - Issue: Parser expects more map pairs after domain: Module pattern
    - Test case: `use Ash.Resource, data_layer: AshPostgres.DataLayer, domain: MyApp.Pets`
    - Solution: Review comma_separated_map_pairs rule
 
 3. **Add empty collection support** - `[]` and `{}` not handled
-
    - Impact: Common in real Elixir code
    - Implementation: Add optional content rules to list/map patterns
 
@@ -304,7 +306,6 @@ The parser now has a comprehensive Mocha-based test suite located in the `/test`
 #### Test Structure
 
 - **`test/parser-helpers.js`** - Testing utilities and helper functions
-
   - `assertParses(code, description)` - Asserts that code parses successfully
   - `assertDoesNotParse(code, description)` - Asserts that code fails to parse
   - `testParsing(code, description)` - Returns boolean success/failure

@@ -107,7 +107,7 @@ export function parseAshDocumentSimple(
         sections.push({
           type: "type_definition",
           name: `${typeName.toLowerCase()}_definition`,
-          line: lines.findIndex((line) => line.includes("use Ash.Type")),
+          line: lines.findIndex(line => line.includes("use Ash.Type")),
           column: 0,
           endLine: lines.length - 1,
           endColumn: lines[lines.length - 1].length,

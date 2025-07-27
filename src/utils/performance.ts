@@ -106,11 +106,11 @@ export class PerformanceMonitor {
    */
   getMetrics(operationName: string, timeWindowMs?: number): AggregatedMetrics {
     const now = Date.now();
-    let filteredMetrics = this.metrics.filter((m) => m.name === operationName);
+    let filteredMetrics = this.metrics.filter(m => m.name === operationName);
 
     if (timeWindowMs) {
       filteredMetrics = filteredMetrics.filter(
-        (m) => now - m.timestamp <= timeWindowMs
+        m => now - m.timestamp <= timeWindowMs
       );
     }
 
@@ -125,9 +125,9 @@ export class PerformanceMonitor {
     }
 
     const durations = filteredMetrics
-      .map((m) => m.duration)
+      .map(m => m.duration)
       .sort((a, b) => a - b);
-    const successCount = filteredMetrics.filter((m) => m.success).length;
+    const successCount = filteredMetrics.filter(m => m.success).length;
 
     return {
       totalOperations: filteredMetrics.length,
@@ -143,7 +143,7 @@ export class PerformanceMonitor {
    * Get performance summary for all operations
    */
   getPerformanceSummary(): Record<string, AggregatedMetrics> {
-    const operationNames = [...new Set(this.metrics.map((m) => m.name))];
+    const operationNames = [...new Set(this.metrics.map(m => m.name))];
     const summary: Record<string, AggregatedMetrics> = {};
 
     for (const name of operationNames) {

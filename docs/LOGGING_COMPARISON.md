@@ -1,17 +1,14 @@
 /\*\*
 
 - Demonstration of Centralized Logging vs Scattered Console.log
-- This shows the benefits of our new logging approach
-  \*/
+- This shows the benefits of our new logging approach \*/
 
 ## ❌ BEFORE: Scattered Console Logging (What you had)
 
 ```typescript
 // In extension.ts
 console.log("[Ash Studio] Extension activated, parsing current document...");
-console.log(
-  `[Ash Studio] Parsing document: ${fileName}, language: ${languageId}`
-);
+console.log(`[Ash Studio] Parsing document: ${fileName}, language: ${languageId}`);
 console.log(
   `[Ash Studio] Parse result - isAshFile: ${result.isAshFile}, sections: ${result.sections.length}`
 );
@@ -27,10 +24,7 @@ console.warn("Failed to create section from node:", error);
 // In ashParserService.ts
 console.log("[Ash Studio] Attempting detailed parser...");
 console.log("[Ash Studio] Detailed parser succeeded");
-console.log(
-  "[Ash Studio] Detailed parser failed, using simple parser fallback:",
-  error
-);
+console.log("[Ash Studio] Detailed parser failed, using simple parser fallback:", error);
 ```
 
 ### Problems:
@@ -77,11 +71,9 @@ logger.error("AshParser", "Failed to create section from node", {
 // In ashParserService.ts
 logger.debug("AshParserService", "Attempting detailed parser...");
 logger.info("AshParserService", "Detailed parser succeeded");
-logger.warn(
-  "AshParserService",
-  "Detailed parser failed, using simple parser fallback",
-  { error: error.message }
-);
+logger.warn("AshParserService", "Detailed parser failed, using simple parser fallback", {
+  error: error.message,
+});
 ```
 
 ### Benefits:
@@ -147,4 +139,5 @@ Your users can now control the extension behavior:
 }
 ```
 
-This professional logging system makes debugging easier for both you as a developer and your users who want to understand what the extension is doing!
+This professional logging system makes debugging easier for both you as a developer and your users
+who want to understand what the extension is doing!

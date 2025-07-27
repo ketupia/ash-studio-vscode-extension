@@ -84,7 +84,7 @@ function activate(context) {
             }
             if (result.sections.length > 0) {
                 logger.debug("Extension", "Found sections", {
-                    sections: result.sections.map((s) => `${s.type}:${s.name}`),
+                    sections: result.sections.map(s => `${s.type}:${s.name}`),
                 });
             }
             sidebarProvider.refresh();
@@ -99,7 +99,7 @@ function activate(context) {
         parseCurrentDocument();
     }));
     // Parse document when it's opened
-    context.subscriptions.push(vscode.workspace.onDidOpenTextDocument((document) => {
+    context.subscriptions.push(vscode.workspace.onDidOpenTextDocument(document => {
         if (document.languageId === "elixir") {
             parserService.parseElixirDocument(document);
             // Only refresh sidebar if this is the active document
@@ -120,7 +120,7 @@ function activate(context) {
             sidebarProvider.refresh();
         }
     }, 300);
-    context.subscriptions.push(vscode.workspace.onDidChangeTextDocument((e) => {
+    context.subscriptions.push(vscode.workspace.onDidChangeTextDocument(e => {
         if (e.document === vscode.window.activeTextEditor?.document &&
             e.document.languageId === "elixir") {
             debouncedRefresh();

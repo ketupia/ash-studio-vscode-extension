@@ -80,7 +80,7 @@ class ConfigurationManager {
         await config.update(key, value, target);
     }
     onDidChange(listener) {
-        return vscode.workspace.onDidChangeConfiguration((e) => {
+        return vscode.workspace.onDidChangeConfiguration(e => {
             if (e.affectsConfiguration(this.configSection)) {
                 listener(e);
             }

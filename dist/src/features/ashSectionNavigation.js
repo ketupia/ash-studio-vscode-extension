@@ -53,7 +53,7 @@ function registerAshSectionNavigation(context, parserService) {
                 return [];
             }
             // Return only main DSL sections for breadcrumbs - no nested details
-            return parseResult.sections.map((section) => {
+            return parseResult.sections.map(section => {
                 const startPos = new vscode.Position(section.line, section.column);
                 const endPos = new vscode.Position(section.endLine, section.endColumn);
                 return new vscode.DocumentSymbol(section.name, section.type, vscode.SymbolKind.Class, new vscode.Range(startPos, endPos), new vscode.Range(startPos, startPos));

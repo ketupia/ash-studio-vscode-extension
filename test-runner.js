@@ -18,7 +18,7 @@ const buildProcess = spawn("npm", ["run", "build"], {
   cwd: __dirname,
 });
 
-buildProcess.on("close", (buildCode) => {
+buildProcess.on("close", buildCode => {
   if (buildCode !== 0) {
     console.error("❌ Build failed");
     process.exit(1);
@@ -39,7 +39,7 @@ buildProcess.on("close", (buildCode) => {
     }
   );
 
-  testProcess.on("close", (testCode) => {
+  testProcess.on("close", testCode => {
     console.log("\n" + "─".repeat(30));
 
     if (testCode === 0) {

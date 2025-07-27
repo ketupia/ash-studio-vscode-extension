@@ -3,7 +3,8 @@
 ## Project Overview
 
 - This is a VS Code extension to enhance development for the Ash Framework (Elixir).
-- Main features: Ash section navigation, Quick Pick, custom sidebar with section details, and (planned) CodeLens, hover, diagnostics, and code actions.
+- Main features: Ash section navigation, Quick Pick, custom sidebar with section details, and
+  (planned) CodeLens, hover, diagnostics, and code actions.
 - All TypeScript source files are in `src/`. Build output is in `dist/`.
 - Key files:
   - `src/extension.ts` (activation, registration, wiring)
@@ -20,15 +21,19 @@
 - **Section Navigation:**
   - Top-level Ash blocks are detected using `getTopLevelAshBlocks` (`ashSectionUtils.ts`).
   - Section details are parsed with `findAshSectionDetails` (`ashSectionDetailUtils.ts`).
-    - Note: The parser identifies Elixir function definitions, so the pattern is more accurately `<function> <arg1>, <optional args> do ...` rather than `<type> <name> ...`.
-  - Sidebar (`AshSidebarProvider`) shows both sections and section details, grouped by type and name.
+    - Note: The parser identifies Elixir function definitions, so the pattern is more accurately
+      `<function> <arg1>, <optional args> do ...` rather than `<type> <name> ...`.
+  - Sidebar (`AshSidebarProvider`) shows both sections and section details, grouped by type and
+    name.
 - **Commands:**
   - `ash-studio.gotoSection`: Quick Pick navigation to top-level Ash blocks.
   - `ash-studio.revealSectionOrDetail`: Sidebar navigation to any block or section detail.
 - **Language Support:**
-  - Custom Elixir language configuration in `elixir.language-configuration.json` ensures `.ex` files are recognized for symbol providers.
+  - Custom Elixir language configuration in `elixir.language-configuration.json` ensures `.ex` files
+    are recognized for symbol providers.
 - **Feature Tracking:**
-  - `feature-plan.md` documents completed and planned features. Check here for project priorities and conventions.
+  - `feature-plan.md` documents completed and planned features. Check here for project priorities
+    and conventions.
 
 ## Developer Workflows
 
@@ -36,12 +41,14 @@
 - **Test:** No formal test suite yet; manual testing via VS Code Extension Development Host.
 - **Debug:** Use VS Code's extension debugging tools. Reload window after build changes.
 - **Sidebar Registration:**
-  - Sidebar view is registered in `package.json` under `contributes.views.explorer` with id `ashSidebar`.
+  - Sidebar view is registered in `package.json` under `contributes.views.explorer` with id
+    `ashSidebar`.
   - The extension registers the TreeDataProvider with the same id in `extension.ts`.
 
 ## Project Conventions
 
-- All new features should be implemented as separate modules in `src/` and imported in `extension.ts`.
+- All new features should be implemented as separate modules in `src/` and imported in
+  `extension.ts`.
 - Only `dist/extension.js` should be referenced as the extension entry point.
 - Keep `feature-plan.md` and this file up to date as features and patterns evolve.
 
@@ -53,9 +60,11 @@
 ## Examples
 
 - See `src/ashSidebarProvider.ts` for sidebar logic and section detail display.
-- See `src/ashSectionUtils.ts` and `src/ashSectionDetailUtils.ts` for block and section detail parsing.
+- See `src/ashSectionUtils.ts` and `src/ashSectionDetailUtils.ts` for block and section detail
+  parsing.
 - See `feature-plan.md` for current and planned features.
 
 ---
 
-If you add new features or patterns, update this file and `feature-plan.md` to keep AI agents productive.
+If you add new features or patterns, update this file and `feature-plan.md` to keep AI agents
+productive.

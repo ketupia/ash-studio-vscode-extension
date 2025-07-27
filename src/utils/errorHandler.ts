@@ -257,7 +257,7 @@ export class ErrorHandler {
   getRecentErrors(timeWindowMs: number = 300000): AshStudioError[] {
     // Default: 5 minutes
     const now = Date.now();
-    return this.errors.filter((e) => now - e.timestamp <= timeWindowMs);
+    return this.errors.filter(e => now - e.timestamp <= timeWindowMs);
   }
 
   /**

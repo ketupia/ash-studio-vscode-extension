@@ -179,7 +179,7 @@ class ErrorHandler {
     getRecentErrors(timeWindowMs = 300000) {
         // Default: 5 minutes
         const now = Date.now();
-        return this.errors.filter((e) => now - e.timestamp <= timeWindowMs);
+        return this.errors.filter(e => now - e.timestamp <= timeWindowMs);
     }
     /**
      * Get error statistics

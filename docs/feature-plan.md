@@ -14,7 +14,8 @@
 
 ### 3. CodeLens for Sections
 
-- [ ] Show clickable links above each Ash section for quick actions (e.g., "Go to section", "Copy section name") - maybe to docs
+- [ ] Show clickable links above each Ash section for quick actions (e.g., "Go to section", "Copy
+      section name") - maybe to docs
 
 ### 4. Hover Information
 
@@ -22,7 +23,7 @@
 
 ### 5. Custom Sidebar View
 
-- [ ] Dedicated Ash navigation panel in the sidebar, showing all sections and their hierarchy
+- [x] Dedicated Ash navigation panel in the sidebar, showing all sections and their hierarchy
 
 ### 6. Diagnostics or Linting
 

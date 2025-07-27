@@ -55,8 +55,8 @@ export class Logger {
         level === LogLevel.ERROR
           ? "error"
           : level === LogLevel.WARN
-          ? "warn"
-          : "log";
+            ? "warn"
+            : "log";
       console[consoleMethod](
         `[Ash Studio] [${component}]`,
         message,

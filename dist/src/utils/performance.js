@@ -67,9 +67,9 @@ class PerformanceMonitor {
      */
     getMetrics(operationName, timeWindowMs) {
         const now = Date.now();
-        let filteredMetrics = this.metrics.filter((m) => m.name === operationName);
+        let filteredMetrics = this.metrics.filter(m => m.name === operationName);
         if (timeWindowMs) {
-            filteredMetrics = filteredMetrics.filter((m) => now - m.timestamp <= timeWindowMs);
+            filteredMetrics = filteredMetrics.filter(m => now - m.timestamp <= timeWindowMs);
         }
         if (filteredMetrics.length === 0) {
             return {
@@ -81,9 +81,9 @@ class PerformanceMonitor {
             };
         }
         const durations = filteredMetrics
-            .map((m) => m.duration)
+            .map(m => m.duration)
             .sort((a, b) => a - b);
-        const successCount = filteredMetrics.filter((m) => m.success).length;
+        const successCount = filteredMetrics.filter(m => m.success).length;
         return {
             totalOperations: filteredMetrics.length,
             averageDuration: durations.reduce((sum, d) => sum + d, 0) / durations.length,
@@ -96,7 +96,7 @@ class PerformanceMonitor {
      * Get performance summary for all operations
      */
     getPerformanceSummary() {
-        const operationNames = [...new Set(this.metrics.map((m) => m.name))];
+        const operationNames = [...new Set(this.metrics.map(m => m.name))];
         const summary = {};
         for (const name of operationNames) {
             summary[name] = this.getMetrics(name);
