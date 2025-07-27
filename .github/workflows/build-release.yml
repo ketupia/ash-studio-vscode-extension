@@ -1,0 +1,49 @@
+name: Build and Release Extension
+
+on:
+  push:
+    tags:
+      - 'v*'  # Triggers on version tags like v0.0.1, v1.0.0, etc.
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run quality checks
+      run: npm run quality
+      
+    - name: Build extension
+      run: npm run build
+      
+    - name: Package extension
+      run: npx @vscode/vsce package
+      
+    - name: Upload VSIX as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ash-studio-extension
+        path: '*.vsix'
+        retention-days: 30
+        
+    - name: Create Release (if tagged)
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v1
+      with:
+        files: '*.vsix'
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
