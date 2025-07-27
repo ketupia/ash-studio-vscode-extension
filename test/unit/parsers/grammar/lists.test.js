@@ -1,4 +1,4 @@
-const { assertParses } = require("./parser-helpers");
+const { assertParses } = require("../shared/parser-helpers");
 
 describe("Lists and Collections", function () {
   it("should parse basic lists", function () {

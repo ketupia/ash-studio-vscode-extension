@@ -1,4 +1,4 @@
-const { assertParses } = require("./parser-helpers");
+const { assertParses } = require("../shared/parser-helpers");
 
 describe("Import/Require/Alias Statements", function () {
   it("should parse require statements", function () {

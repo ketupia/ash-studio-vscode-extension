@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { Logger } from "./utils/logger";
 // Import the compiled Nearley grammar
 const nearley = require("nearley");
 const grammar = require("./nearley/ashGrammar.js");
@@ -152,6 +153,7 @@ export class AshParser {
    */
   private extractSections(ast: any, originalText: string): AshSection[] {
     const sections: AshSection[] = [];
+    const logger = Logger.getInstance();
 
     // AST structure exploration and section extraction
     try {
@@ -159,7 +161,9 @@ export class AshParser {
       this.walkASTForSections(ast, sections, originalText);
     } catch (error) {
       // If AST walking fails, gracefully return empty sections
-      console.warn("AST traversal failed:", error);
+      logger.warn("AshParser", "AST traversal failed", {
+        error: error instanceof Error ? error.message : String(error),
+      });
     }
 
     return sections;
@@ -286,7 +290,10 @@ export class AshParser {
         rawContent: lines.slice(line, endLine + 1).join("\n"),
       };
     } catch (error) {
-      console.warn("Failed to create section from node:", error);
+      const logger = Logger.getInstance();
+      logger.warn("AshParser", "Failed to create section from node", {
+        error: error instanceof Error ? error.message : String(error),
+      });
       return null;
     }
   }

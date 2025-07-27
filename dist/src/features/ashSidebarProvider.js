@@ -33,15 +33,17 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AshSidebarItem = exports.AshSidebarProvider = exports.ashStudioOutput = void 0;
+exports.AshSidebarItem = exports.AshSidebarProvider = void 0;
 const vscode = __importStar(require("vscode"));
-exports.ashStudioOutput = vscode.window.createOutputChannel("Ash Studio");
+const logger_1 = require("../utils/logger");
 class AshSidebarProvider {
     parserService;
     _onDidChangeTreeData = new vscode.EventEmitter();
     onDidChangeTreeData = this._onDidChangeTreeData.event;
+    logger = logger_1.Logger.getInstance();
     constructor(parserService) {
         this.parserService = parserService;
+        this.logger.info("AshSidebarProvider", "Sidebar provider initialized");
     }
     getTreeItem(element) {
         return element;
@@ -49,6 +51,7 @@ class AshSidebarProvider {
     async getChildren(element) {
         const editor = vscode.window.activeTextEditor;
         if (!editor) {
+            this.logger.debug("AshSidebarProvider", "No active editor, returning empty sidebar");
             return [];
         }
         const document = editor.document;

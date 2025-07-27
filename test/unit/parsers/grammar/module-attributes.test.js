@@ -1,4 +1,4 @@
-const { assertParses } = require("./parser-helpers");
+const { assertParses } = require("../shared/parser-helpers");
 
 describe("Module Attributes", function () {
   it("should parse simple module attributes", function () {

@@ -44,14 +44,89 @@
           "name": "Ash Studio"
         }
       ]
+    },
+    "configuration": {
+      "title": "Ash Studio",
+      "properties": {
+        "ashStudio.logLevel": {
+          "type": "number",
+          "default": 2,
+          "enum": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "enumDescriptions": [
+            "Error only",
+            "Error + Warning",
+            "Error + Warning + Info",
+            "All logs (including Debug)"
+          ],
+          "description": "Set the logging level for Ash Studio output"
+        },
+        "ashStudio.parserStrategy": {
+          "type": "string",
+          "default": "hybrid",
+          "enum": [
+            "hybrid",
+            "grammar-only",
+            "simple-only"
+          ],
+          "enumDescriptions": [
+            "Use grammar parser with simple parser fallback",
+            "Use only the grammar parser (Nearley)",
+            "Use only the simple regex-based parser"
+          ],
+          "description": "Choose the parsing strategy for Ash files"
+        },
+        "ashStudio.enablePerformanceMetrics": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable performance monitoring and metrics collection"
+        },
+        "ashStudio.sidebarAutoRefresh": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically refresh sidebar when file changes"
+        },
+        "ashStudio.parseDebounceMs": {
+          "type": "number",
+          "default": 300,
+          "minimum": 100,
+          "maximum": 2000,
+          "description": "Debounce delay in milliseconds for parsing file changes"
+        },
+        "ashStudio.maxCacheSize": {
+          "type": "number",
+          "default": 100,
+          "minimum": 10,
+          "maximum": 1000,
+          "description": "Maximum number of parsed files to keep in cache"
+        },
+        "ashStudio.enableCodeLens": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable CodeLens for Ash sections (experimental)"
+        },
+        "ashStudio.enableHoverInfo": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable hover information for Ash constructs (experimental)"
+        }
+      }
     }
   },
   "scripts": {
     "lint": "eslint .",
     "build": "tsc && cp -r src/nearley dist/src/",
     "pretest": "npm run build",
-    "test": "node ./dist/test/runTest.js",
-    "test:parser": "mocha test/parser.test.js"
+    "test": "mocha test/organized-parser.test.js",
+    "test:parsers": "mocha 'test/unit/parsers/**/*.test.js'",
+    "test:grammar": "mocha 'test/unit/parsers/grammar/*.test.js'",
+    "test:simple": "mocha 'test/unit/parsers/simple/*.test.js'",
+    "test:hybrid": "mocha 'test/unit/parsers/hybrid/*.test.js'",
+    "test:vscode": "node ./dist/test/runTest.js"
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",

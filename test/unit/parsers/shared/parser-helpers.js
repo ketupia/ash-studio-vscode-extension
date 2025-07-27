@@ -1,6 +1,6 @@
 const assert = require("assert");
 const nearley = require("nearley");
-const grammar = require("../src/nearley/ashGrammar.js");
+const grammar = require("../../../../src/nearley/ashGrammar.js");
 
 /**
  * Helper function to test if a piece of Elixir/Ash code parses successfully

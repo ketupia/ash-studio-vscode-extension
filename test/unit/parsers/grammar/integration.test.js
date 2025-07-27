@@ -1,4 +1,4 @@
-const { assertParses } = require("./parser-helpers");
+const { assertParses } = require("../shared/parser-helpers");
 
 describe("Comprehensive Integration Tests", function () {
   it("should parse a complete basic Ash resource", function () {

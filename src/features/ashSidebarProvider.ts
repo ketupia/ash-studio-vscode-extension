@@ -1,7 +1,6 @@
 import * as vscode from "vscode";
 import { AshParserService } from "../ashParserService";
-
-export const ashStudioOutput = vscode.window.createOutputChannel("Ash Studio");
+import { Logger } from "../utils/logger";
 
 export class AshSidebarProvider
   implements vscode.TreeDataProvider<AshSidebarItem>
@@ -13,7 +12,11 @@ export class AshSidebarProvider
     AshSidebarItem | undefined | void
   > = this._onDidChangeTreeData.event;
 
-  constructor(private parserService: AshParserService) {}
+  private logger = Logger.getInstance();
+
+  constructor(private parserService: AshParserService) {
+    this.logger.info("AshSidebarProvider", "Sidebar provider initialized");
+  }
 
   getTreeItem(element: AshSidebarItem): vscode.TreeItem {
     return element;
@@ -22,6 +25,10 @@ export class AshSidebarProvider
   async getChildren(element?: AshSidebarItem): Promise<AshSidebarItem[]> {
     const editor = vscode.window.activeTextEditor;
     if (!editor) {
+      this.logger.debug(
+        "AshSidebarProvider",
+        "No active editor, returning empty sidebar"
+      );
       return [];
     }
     const document = editor.document;

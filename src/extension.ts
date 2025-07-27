@@ -3,8 +3,8 @@ import { AshSidebarProvider } from "./features/ashSidebarProvider";
 import { registerAshQuickPick } from "./features/ashQuickPick";
 import { registerAshSectionNavigation } from "./features/ashSectionNavigation";
 import { AshParserService } from "./ashParserService";
-
-// TODO: Replace Chevrotain references with LSP-based logic if needed
+import { Logger } from "./utils/logger";
+import { ConfigurationManager } from "./utils/config";
 
 // Add debounce helper
 function debounce<T extends (...args: any[]) => void>(
@@ -19,8 +19,12 @@ function debounce<T extends (...args: any[]) => void>(
 }
 
 export function activate(context: vscode.ExtensionContext) {
-  // Initialize the centralized parser service
+  // Initialize services
+  const logger = Logger.getInstance();
+  const config = ConfigurationManager.getInstance();
   const parserService = AshParserService.getInstance();
+
+  logger.info("Extension", "Ash Studio extension activating...");
 
   // Register the Ash Studio sidebar as a tree view
   const sidebarProvider = new AshSidebarProvider(parserService);
@@ -32,42 +36,56 @@ export function activate(context: vscode.ExtensionContext) {
   const parseCurrentDocument = () => {
     const editor = vscode.window.activeTextEditor;
     if (editor) {
-      console.log(
-        `[Ash Studio] Parsing document: ${editor.document.fileName}, language: ${editor.document.languageId}`
+      logger.debug(
+        "Extension",
+        `Parsing document: ${editor.document.fileName}`,
+        { language: editor.document.languageId }
       );
+
       // This will parse and cache the document (only if it's Elixir)
       const result = parserService.parseElixirDocument(editor.document);
-      console.log(
-        `[Ash Studio] Parse result - isAshFile: ${result.isAshFile}, sections: ${result.sections.length}, errors: ${result.errors.length}`
+
+      logger.info(
+        "Extension",
+        `Parse completed - isAshFile: ${result.isAshFile}`,
+        {
+          sectionsCount: result.sections.length,
+          errorsCount: result.errors.length,
+          fileName: editor.document.fileName,
+        }
       );
+
       if (result.errors.length > 0) {
         result.errors.forEach((error, index) => {
-          console.log(`[Ash Studio] Error ${index + 1}:`, {
-            message: error.message,
-            line: error.line,
-            column: error.column,
-            offset: error.offset,
-          });
+          logger.warn(
+            "Extension",
+            `Parse error ${index + 1}: ${error.message}`,
+            {
+              line: error.line,
+              column: error.column,
+              offset: error.offset,
+            }
+          );
         });
       }
+
       if (result.sections.length > 0) {
-        console.log(
-          `[Ash Studio] Found sections:`,
-          result.sections.map((s) => `${s.type}:${s.name}`)
-        );
+        logger.debug("Extension", "Found sections", {
+          sections: result.sections.map((s) => `${s.type}:${s.name}`),
+        });
       }
       sidebarProvider.refresh();
     }
   };
 
   // Parse document when extension activates (if there's an active editor)
-  console.log("[Ash Studio] Extension activated, parsing current document...");
+  logger.info("Extension", "Extension activated, parsing current document...");
   parseCurrentDocument();
 
   // Parse document when active editor changes
   context.subscriptions.push(
     vscode.window.onDidChangeActiveTextEditor(() => {
-      console.log("[Ash Studio] Active editor changed, parsing...");
+      logger.debug("Extension", "Active editor changed, parsing...");
       parseCurrentDocument();
     })
   );

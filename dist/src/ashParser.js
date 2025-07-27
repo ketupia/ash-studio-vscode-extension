@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AshParser = void 0;
 exports.parseAshDocument = parseAshDocument;
 exports.parseAshText = parseAshText;
+const logger_1 = require("./utils/logger");
 // Import the compiled Nearley grammar
 const nearley = require("nearley");
 const grammar = require("./nearley/ashGrammar.js");
@@ -90,6 +91,7 @@ class AshParser {
      */
     extractSections(ast, originalText) {
         const sections = [];
+        const logger = logger_1.Logger.getInstance();
         // AST structure exploration and section extraction
         try {
             // The AST should represent a module_definition with a do_block containing expressions
@@ -97,7 +99,9 @@ class AshParser {
         }
         catch (error) {
             // If AST walking fails, gracefully return empty sections
-            console.warn("AST traversal failed:", error);
+            logger.warn("AshParser", "AST traversal failed", {
+                error: error instanceof Error ? error.message : String(error),
+            });
         }
         return sections;
     }
@@ -201,7 +205,10 @@ class AshParser {
             };
         }
         catch (error) {
-            console.warn("Failed to create section from node:", error);
+            const logger = logger_1.Logger.getInstance();
+            logger.warn("AshParser", "Failed to create section from node", {
+                error: error instanceof Error ? error.message : String(error),
+            });
             return null;
         }
     }

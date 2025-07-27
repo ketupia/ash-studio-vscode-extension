@@ -1,4 +1,4 @@
-const { assertParses } = require("./parser-helpers");
+const { assertParses } = require("../shared/parser-helpers");
 
 describe("Ash DSL Blocks", function () {
   it("should parse postgres blocks", function () {

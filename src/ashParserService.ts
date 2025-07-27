@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { parseAshDocument, AshParseResult } from "./ashParser";
 import { parseAshDocumentSimple, SimpleParseResult } from "./simpleParser";
+import { Logger } from "./utils/logger";
 
 // Strategy: Try detailed parser first, fallback to simple parser on errors
 const USE_GRACEFUL_FALLBACK = true;
@@ -40,27 +41,31 @@ export class AshParserService {
 
     // Parse the document with graceful fallback strategy
     let result: AshParseResult;
+    const logger = Logger.getInstance();
 
     if (USE_GRACEFUL_FALLBACK) {
       try {
         // First attempt: try the detailed grammar parser
-        console.log("[Ash Studio] Attempting detailed parser...");
+        logger.debug("AshParserService", "Attempting detailed parser...");
         result = parseAshDocument(document);
 
         // Check if parser succeeded but has errors
         if (result.errors && result.errors.length > 0) {
-          console.log(
-            "[Ash Studio] Detailed parser had errors, falling back to simple parser"
+          logger.info(
+            "AshParserService",
+            "Detailed parser had errors, falling back to simple parser",
+            { errorsCount: result.errors.length }
           );
           result = parseAshDocumentSimple(document) as AshParseResult;
         } else {
-          console.log("[Ash Studio] Detailed parser succeeded");
+          logger.debug("AshParserService", "Detailed parser succeeded");
         }
       } catch (error) {
         // Fallback: use simple parser if detailed parser throws
-        console.log(
-          "[Ash Studio] Detailed parser failed, using simple parser fallback:",
-          error
+        logger.warn(
+          "AshParserService",
+          "Detailed parser failed, using simple parser fallback",
+          { error: error instanceof Error ? error.message : String(error) }
         );
         result = parseAshDocumentSimple(document) as AshParseResult;
       }
