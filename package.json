@@ -1,11 +1,11 @@
 {
   "name": "ash-studio",
-  "displayName": "ash-studio",
-  "description": "Ash Framweork VSCode Extension",
+  "displayName": "Ash Studio",
+  "description": "Ash Framework VSCode Extension",
   "publisher": "ketupia",
   "version": "0.0.1",
   "engines": {
-    "vscode": "^1.102.0"
+    "vscode": "^1.75.0"
   },
   "categories": [
     "Other"
@@ -18,7 +18,10 @@
     "url": "https://github.com/ketupia/ash-studio-vscode-extension/issues"
   },
   "homepage": "https://github.com/ketupia/ash-studio-vscode-extension#readme",
+  "license": "MIT",
+  "icon": "ash-studio-logo.png",
   "main": "./dist/src/extension.js",
+  "activationEvents": [],
   "contributes": {
     "commands": [
       {
@@ -30,21 +33,7 @@
         "title": "Reveal Ash Section"
       }
     ],
-    "languages": [
-      {
-        "id": "elixir",
-        "aliases": [
-          "Elixir",
-          "elixir"
-        ],
-        "extensions": [
-          ".ex",
-          ".exs"
-        ],
-        "filenames": [],
-        "configuration": "./elixir.language-configuration.json"
-      }
-    ],
+    "languages": [],
     "views": {
       "explorer": [
         {
@@ -131,9 +120,9 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "type-check": "tsc --noEmit",
-    "quality": "npm run type-check && npm run lint && npm run format:check",
-    "quality:fix": "npm run type-check && npm run lint:fix && npm run format",
+    "quality": "npm run type-check && npm run lint && npm run format:check && npm test",
     "build": "tsc && cp -r src/nearley dist/src/",
+    "package": "npm run quality && npm run build && vsce package",
     "pretest": "npm run build",
     "test": "mocha test/organized-parser.test.js",
     "test:parsers": "mocha 'test/unit/parsers/**/*.test.js'",
@@ -142,11 +131,16 @@
     "test:hybrid": "mocha 'test/unit/parsers/hybrid/*.test.js'",
     "test:vscode": "node ./dist/test/runTest.js"
   },
+  "dependencies": {
+    "moo": "^0.5.2",
+    "nearley": "^2.20.1"
+  },
   "devDependencies": {
     "@types/glob": "^8.1.0",
     "@types/mocha": "^10.0.10",
+    "@types/nearley": "^2.11.5",
     "@types/node": "^20.19.9",
-    "@types/vscode": "^1.102.0",
+    "@types/vscode": "^1.75.0",
     "@typescript-eslint/eslint-plugin": "^8.38.0",
     "@typescript-eslint/parser": "^8.38.0",
     "@vscode/test-cli": "^0.0.10",
@@ -154,8 +148,6 @@
     "eslint": "^9.25.1",
     "glob": "^11.0.3",
     "mocha": "^11.7.1",
-    "moo": "^0.5.2",
-    "nearley": "^2.20.1",
     "prettier": "^3.6.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"

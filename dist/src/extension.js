@@ -41,7 +41,6 @@ const ashQuickPick_1 = require("./features/ashQuickPick");
 const ashSectionNavigation_1 = require("./features/ashSectionNavigation");
 const ashParserService_1 = require("./ashParserService");
 const logger_1 = require("./utils/logger");
-const config_1 = require("./utils/config");
 // Add debounce helper
 function debounce(fn, delay) {
     let timer;
@@ -51,96 +50,129 @@ function debounce(fn, delay) {
     };
 }
 function activate(context) {
-    // Initialize services
-    const logger = logger_1.Logger.getInstance();
-    const config = config_1.ConfigurationManager.getInstance();
-    const parserService = ashParserService_1.AshParserService.getInstance();
-    logger.info("Extension", "Ash Studio extension activating...");
-    // Register the Ash Studio sidebar as a tree view
-    const sidebarProvider = new ashSidebarProvider_1.AshSidebarProvider(parserService);
-    vscode.window.createTreeView("ashSidebar", {
-        treeDataProvider: sidebarProvider,
-    });
-    // Helper function to parse the current document if it's an Elixir file
-    const parseCurrentDocument = () => {
-        const editor = vscode.window.activeTextEditor;
-        if (editor) {
-            logger.debug("Extension", `Parsing document: ${editor.document.fileName}`, { language: editor.document.languageId });
-            // This will parse and cache the document (only if it's Elixir)
-            const result = parserService.parseElixirDocument(editor.document);
-            logger.info("Extension", `Parse completed - isAshFile: ${result.isAshFile}`, {
-                sectionsCount: result.sections.length,
-                errorsCount: result.errors.length,
-                fileName: editor.document.fileName,
-            });
-            if (result.errors.length > 0) {
-                result.errors.forEach((error, index) => {
-                    logger.warn("Extension", `Parse error ${index + 1}: ${error.message}`, {
-                        line: error.line,
-                        column: error.column,
-                        offset: error.offset,
-                    });
-                });
-            }
-            if (result.sections.length > 0) {
-                logger.debug("Extension", "Found sections", {
-                    sections: result.sections.map(s => `${s.type}:${s.name}`),
-                });
-            }
-            sidebarProvider.refresh();
+    try {
+        console.log("🚀 Ash Studio extension is activating...");
+        // Initialize logger first
+        const logger = logger_1.Logger.getInstance();
+        logger.info("Extension", "Ash Studio extension activating...");
+        logger.show();
+        logger.info("Extension", "FULL FUNCTIONALITY MODE - Initializing parser service and features");
+        // Initialize the parser service with error handling
+        let parserService;
+        try {
+            logger.info("Extension", "Attempting to initialize parser service...");
+            // Re-enable real parser service
+            parserService = ashParserService_1.AshParserService.getInstance();
+            logger.info("Extension", "Parser service initialized successfully (REAL MODE)");
         }
-    };
-    // Parse document when extension activates (if there's an active editor)
-    logger.info("Extension", "Extension activated, parsing current document...");
-    parseCurrentDocument();
-    // Parse document when active editor changes
-    context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(() => {
-        logger.debug("Extension", "Active editor changed, parsing...");
-        parseCurrentDocument();
-    }));
-    // Parse document when it's opened
-    context.subscriptions.push(vscode.workspace.onDidOpenTextDocument(document => {
-        if (document.languageId === "elixir") {
-            parserService.parseElixirDocument(document);
-            // Only refresh sidebar if this is the active document
+        catch (parserError) {
+            logger.error("Extension", "Failed to initialize parser service", parserError);
+            vscode.window.showErrorMessage(`Ash Studio parser initialization failed: ${parserError instanceof Error ? parserError.message : String(parserError)}`);
+            // Continue without parser functionality
+            parserService = null;
+        }
+        // Initialize sidebar with error handling
+        try {
+            if (parserService) {
+                const sidebarProvider = new ashSidebarProvider_1.AshSidebarProvider(parserService);
+                vscode.window.createTreeView("ashSidebar", {
+                    treeDataProvider: sidebarProvider,
+                });
+                // Set up document change listener with debouncing and crash protection
+                let isRefreshing = false;
+                const debouncedRefresh = debounce(() => {
+                    try {
+                        if (isRefreshing) {
+                            logger.debug("Extension", "Refresh already in progress, skipping");
+                            return;
+                        }
+                        isRefreshing = true;
+                        logger.debug("Extension", "Debounced refresh triggered");
+                        sidebarProvider.refresh();
+                    }
+                    catch (refreshError) {
+                        logger.error("Extension", "Error refreshing sidebar", refreshError);
+                    }
+                    finally {
+                        isRefreshing = false;
+                    }
+                }, 300);
+                const onActiveEditorChanged = (editor) => {
+                    try {
+                        logger.debug("Extension", "Active editor changed", {
+                            hasEditor: !!editor,
+                            fileName: editor?.document?.fileName,
+                        });
+                        // Clear cache for the new document to avoid conflicts
+                        if (parserService &&
+                            editor &&
+                            "clearCache" in parserService &&
+                            typeof parserService.clearCache === "function") {
+                            parserService.clearCache(editor.document);
+                        }
+                        debouncedRefresh();
+                    }
+                    catch (error) {
+                        logger.error("Extension", "Error in onActiveEditorChanged", error);
+                    }
+                };
+                const onDocumentChanged = (e) => {
+                    try {
+                        if (e.document === vscode.window.activeTextEditor?.document) {
+                            logger.debug("Extension", "Document changed, triggering refresh");
+                            debouncedRefresh();
+                        }
+                    }
+                    catch (error) {
+                        logger.error("Extension", "Error in onDocumentChanged", error);
+                    }
+                };
+                context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(onActiveEditorChanged), vscode.workspace.onDidChangeTextDocument(onDocumentChanged));
+                logger.info("Extension", "Sidebar provider initialized successfully");
+            }
+            else {
+                // Fallback minimal sidebar if parser failed
+                const fallbackSidebar = {
+                    getTreeItem: (element) => new vscode.TreeItem("Parser Error", vscode.TreeItemCollapsibleState.None),
+                    getChildren: () => [{ label: "Parser service unavailable" }],
+                    refresh: () => { },
+                    onDidChangeTreeData: new vscode.EventEmitter().event,
+                };
+                vscode.window.createTreeView("ashSidebar", {
+                    treeDataProvider: fallbackSidebar,
+                });
+            }
+        }
+        catch (sidebarError) {
+            logger.error("Extension", "Failed to initialize sidebar", sidebarError);
+            vscode.window.showWarningMessage(`Ash Studio sidebar initialization failed: ${sidebarError instanceof Error ? sidebarError.message : String(sidebarError)}`);
+        }
+        // Register commands with error handling
+        try {
+            if (parserService) {
+                (0, ashQuickPick_1.registerAshQuickPick)(context, parserService);
+                (0, ashSectionNavigation_1.registerAshSectionNavigation)(context, parserService);
+                logger.info("Extension", "Navigation features registered successfully");
+            }
+        }
+        catch (navigationError) {
+            logger.error("Extension", "Failed to register navigation features", navigationError);
+            vscode.window.showWarningMessage(`Ash Studio navigation features failed to initialize: ${navigationError instanceof Error ? navigationError.message : String(navigationError)}`);
+        }
+        // Register the reveal command that the sidebar uses
+        context.subscriptions.push(vscode.commands.registerCommand("ash-studio.revealSectionOrSubBlock", (line) => {
             const editor = vscode.window.activeTextEditor;
-            if (editor && editor.document === document) {
-                sidebarProvider.refresh();
+            if (editor && typeof line === "number") {
+                const position = new vscode.Position(line, 0);
+                editor.selection = new vscode.Selection(position, position);
+                editor.revealRange(new vscode.Range(position, position));
+                vscode.window.showTextDocument(editor.document);
             }
-        }
-    }));
-    // Debounced refresh on document changes
-    const debouncedRefresh = debounce(() => {
-        const editor = vscode.window.activeTextEditor;
-        if (editor && editor.document.languageId === "elixir") {
-            // Clear cache for the document to force re-parsing
-            parserService.clearCache(editor.document);
-            // Re-parse and refresh
-            parserService.parseElixirDocument(editor.document);
-            sidebarProvider.refresh();
-        }
-    }, 300);
-    context.subscriptions.push(vscode.workspace.onDidChangeTextDocument(e => {
-        if (e.document === vscode.window.activeTextEditor?.document &&
-            e.document.languageId === "elixir") {
-            debouncedRefresh();
-        }
-    }));
-    // Register commands
-    context.subscriptions.push(vscode.commands.registerCommand("ash-studio.helloWorld", () => {
-        vscode.window.showInformationMessage("Hello from Ash Studio!");
-    }));
-    (0, ashQuickPick_1.registerAshQuickPick)(context, parserService);
-    (0, ashSectionNavigation_1.registerAshSectionNavigation)(context, parserService);
-    // Register revealSectionOrSubBlock command for sidebar navigation
-    context.subscriptions.push(vscode.commands.registerCommand("ash-studio.revealSectionOrSubBlock", (line) => {
-        const editor = vscode.window.activeTextEditor;
-        if (!editor) {
-            return;
-        }
-        const position = new vscode.Position(line, 0);
-        editor.selection = new vscode.Selection(position, position);
-        editor.revealRange(new vscode.Range(position, position), vscode.TextEditorRevealType.InCenter);
-    }));
+        }));
+    }
+    catch (error) {
+        console.error("Critical error during Ash Studio extension activation:", error);
+        vscode.window.showErrorMessage(`Ash Studio extension failed to activate: ${error instanceof Error ? error.message : String(error)}`);
+    }
 }
 function deactivate() { }

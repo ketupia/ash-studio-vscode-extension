@@ -4,20 +4,33 @@ This folder contains comprehensive documentation for the Ash Studio VS Code Exte
 
 ## 📋 Documentation Index
 
-### **Project Planning & Features**
+### **For Users**
 
-- [`feature-plan.md`](./feature-plan.md) - User-facing feature roadmap and completion status
+- [`../README.md`](../README.md) - Installation, usage, and troubleshooting guide
+
+### **For Developers**
+
+- [`DEVELOPMENT_GUIDE.md`](./DEVELOPMENT_GUIDE.md) - Complete development setup, quality standards,
+  and contribution guidelines
 
 ### **Architecture & Design**
 
 - [`ARCHITECTURE.md`](./ARCHITECTURE.md) - Core architecture guide and design principles
-- [`SENIOR_DEV_ARCHITECTURE_REVIEW.md`](./SENIOR_DEV_ARCHITECTURE_REVIEW.md) - Enterprise-grade
-  architecture improvements and infrastructure roadmap
+- [`feature-plan.md`](./feature-plan.md) - User-facing feature roadmap and completion status
 
-### **Development Process**
+## 🚀 Quick Navigation
 
-- [`CENTRALIZED_LOGGING_COMPLETE.md`](./CENTRALIZED_LOGGING_COMPLETE.md) - Centralized logging
-  implementation guide
+**New to the project?** Start with:
+
+1. [`../README.md`](../README.md) - User guide and installation
+2. [`DEVELOPMENT_GUIDE.md`](./DEVELOPMENT_GUIDE.md) - Developer setup
+
+**Contributing?** Review:
+
+1. [`DEVELOPMENT_GUIDE.md`](./DEVELOPMENT_GUIDE.md) - Quality standards and workflow
+2. [`ARCHITECTURE.md`](./ARCHITECTURE.md) - Technical architecture
+3. [`feature-plan.md`](./feature-plan.md) - Available work and priorities
+
 - [`LOGGING_COMPARISON.md`](./LOGGING_COMPARISON.md) - Before/after comparison of logging approaches
 - [`TEST_ORGANIZATION_PLAN.md`](./TEST_ORGANIZATION_PLAN.md) - Test structure organization and best
   practices

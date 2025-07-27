@@ -1,119 +1,128 @@
 # Ash Studio VS Code Extension
 
 A VS Code extension that enhances development experience for the Ash Framework (Elixir) with
-navigation tools.
+intelligent navigation and code insight tools.
 
-## 🚀 Features
+## ✨ Features
 
-- **🧭 Section Navigation** - Document symbol provider for Ash Resource/Domain files with tree
-  structure in Outline
-- **⚡ Quick Pick Navigation** - Fast searchable navigation to Ash sections in current file
-- **📊 Custom Sidebar** - Dedicated Ash navigation panel showing all sections and hierarchy
+- **🧭 Smart Navigation** - Jump between Ash sections with document outline integration
+- **⚡ Quick Section Search** - Instantly find and navigate to any Ash section via Command Palette
+- **📊 Sidebar Overview** - Dedicated panel showing all Ash sections and their hierarchy
+- **�️ Robust Parsing** - Works reliably with complex Ash files using intelligent fallback
+  strategies
 
-## 📋 Development
+## 📦 Installation
 
-- **🔧 Hybrid Parser Architecture** - Robust parsing with grammar-based primary parser and
-  regex-based fallback
-- **📝 Professional Logging** - Centralized structured logging with VS Code output channel
-  integration
+### From VSIX File
 
-### **Getting Started**
+1. Download the latest `ash-studio-x.x.x.vsix` file
+2. Open VS Code
+3. Go to Extensions panel (Ctrl+Shift+X / Cmd+Shift+X)
+4. Click the "..." menu → "Install from VSIX..."
+5. Select the downloaded `.vsix` file
+6. Reload VS Code when prompted
 
-```bash
-# Clone the repository
-git clone https://github.com/ketupia/ash-studio-vscode-extension.git
-cd ash-studio-vscode-extension
+### Requirements
 
-# Install dependencies
-npm install
+- VS Code 1.75.0 or higher
+- Ash Framework project with `.ex` files using `Ash.Resource` or `Ash.Domain`
 
-# Build the extension
-npm run build
+## 🚀 Getting Started
 
-# Run tests
-npm test
-```
+1. **Open an Ash Project**: Open any folder containing Ash Framework `.ex` files
+2. **Open Ash Files**: The extension activates when you open files with `use Ash.Resource` or
+   `use Ash.Domain`
+3. **Explore Features**:
+   - **Sidebar Panel**: Look for "Ash Studio" in the Explorer sidebar
+   - **Document Outline**: View Ash sections in VS Code's Outline panel
+   - **Quick Navigation**: Use `Cmd+Shift+P` → "Go to Ash Section..."
 
-### **Quality Pipeline**
+## 🎯 Usage
 
-```bash
-# Run full quality check
-npm run quality
+### Navigation Features
 
-# Auto-fix code quality issues
-npm run quality:fix
+**Sidebar Navigation**
 
-# Individual quality checks
-npm run type-check    # TypeScript validation
-npm run lint         # ESLint code quality
-npm run format:check # Prettier formatting
-```
+- View all Ash sections organized by type (attributes, actions, relationships, etc.)
+- Click any section to jump directly to it in the code
+- Hierarchical view shows section details and nested elements
 
-### **Testing**
+**Quick Pick Navigation**
 
-```bash
-# Run all tests
-npm test
+- Press `Cmd+Shift+P` (Ctrl+Shift+P on Windows/Linux)
+- Type "Go to Ash Section" or just "ash"
+- Select any section for instant navigation
 
-# Run specific test categories
-npm run test:parsers  # All parser tests
-npm run test:grammar  # Grammar parser only
-npm run test:simple   # Simple parser only
-npm run test:hybrid   # Hybrid architecture only
-```
+**Document Outline**
 
-## 📚 Documentation
+- Use VS Code's built-in Outline panel
+- See all Ash sections as navigable tree structure
+- Click to jump to any section
 
-Comprehensive documentation is available in the [`docs/`](./docs/) folder:
+### Supported Ash Constructs
 
-- **[Architecture Guide](./docs/ARCHITECTURE.md)** - Core architecture and design principles
-- **[Feature Plan](./docs/feature-plan.md)** - User-facing feature roadmap
-- **[Senior Dev Review](./docs/SENIOR_DEV_ARCHITECTURE_REVIEW.md)** - Enterprise architecture
-  improvements
-- **[Complete Documentation Index](./docs/README.md)** - Full documentation overview
+The extension recognizes and navigates:
 
-## 🏗️ Architecture
+- **Resources & Domains**: Main Ash modules
+- **Attributes**: Field definitions and types
+- **Actions**: Create, read, update, delete operations
+- **Relationships**: Associations between resources
+- **Calculations**: Computed fields
+- **Aggregates**: Data aggregations
+- **Policies**: Authorization rules
+- **Code Interface**: API definitions
 
-The extension uses a **hybrid parser strategy**:
+## 🐛 Troubleshooting
 
-- **Primary Parser**: Nearley grammar-based parser for comprehensive AST analysis
-- **Fallback Parser**: Simple regex-based parser for reliability and performance
-- **Strategy**: Always attempt grammar parser first, fallback to simple parser on errors
-- **Benefit**: Ensures extension never completely breaks on malformed code
+**Extension not activating?**
 
-## 🎯 Quality Standards
+- Ensure your `.ex` files contain `use Ash.Resource` or `use Ash.Domain`
+- Check that file extensions are `.ex` (not `.exs`)
 
-This project maintains enterprise-grade quality:
+**Sidebar showing as empty?**
 
-- ✅ **TypeScript Strict Mode** - Type safety and compile-time error detection
-- ✅ **ESLint + Prettier** - Code quality and consistent formatting
-- ✅ **68 Comprehensive Tests** - Grammar, simple, and hybrid parser coverage
-- ✅ **Centralized Logging** - Structured logging with configurable levels
-- ✅ **Performance Monitoring** - Built-in metrics and performance tracking
+- Open an Ash file (Resource or Domain)
+- Check VS Code's Output panel → "Ash Studio" for parsing logs
+- Verify the file has recognizable Ash DSL sections
 
-## 🛠️ Technology Stack
+**Performance with large files?**
 
-- **Language**: TypeScript with strict mode
-- **Parser**: Nearley grammar parser + regex fallback
-- **Testing**: Mocha with organized test structure
-- **Quality**: ESLint, Prettier, TypeScript compiler
-- **Build**: TypeScript compiler with asset copying
-- **VS Code API**: Full extension API integration
+- The extension automatically uses optimized parsing for complex files
+- Large files (>5000 lines) use fast simple parser mode
+- No action needed - this is automatic and transparent
 
-## 📈 Project Status
+**Missing sections in navigation?**
 
-- **Parser Architecture**: ✅ Complete (Hybrid strategy implemented)
-- **Quality Pipeline**: ✅ Complete (ESLint, Prettier, TypeScript)
-- **Test Organization**: ✅ Complete (68 tests in organized structure)
-- **Logging System**: ✅ Complete (Centralized with VS Code integration)
-- **Documentation**: ✅ Complete (Comprehensive docs in `/docs` folder)
+- Complex or malformed DSL blocks may not be recognized
+- Check VS Code Output → "Ash Studio" for parsing details
+- File an issue with example code if needed
 
-## 🤝 Contributing
+## 🔧 Configuration
 
-1. Review the [Architecture Guide](./docs/ARCHITECTURE.md)
-2. Check the [Feature Plan](./docs/feature-plan.md) for available work
-3. Follow the quality pipeline: `npm run quality` before committing
-4. Maintain test coverage: add tests for new features
-5. Update documentation for architectural changes
+Access settings via VS Code Preferences → Extensions → Ash Studio:
+
+- **Log Level**: Control debug output (Error/Warning/Info/Debug)
+- **Parser Strategy**: Choose parsing approach (Hybrid/Grammar-only/Simple-only)
+- **Auto Refresh**: Automatically update sidebar when files change
+- **Performance**: Enable metrics collection and tune parsing delays
+
+## 💬 Support & Feedback
+
+- **Issues**: [GitHub Issues](https://github.com/ketupia/ash-studio-vscode-extension/issues)
+- **Feature Requests**: Use GitHub Issues with "enhancement" label
+- **Questions**: Start a
+  [GitHub Discussion](https://github.com/ketupia/ash-studio-vscode-extension/discussions)
+
+## 🏗️ For Developers
+
+Interested in contributing or understanding the architecture? See our comprehensive developer
+documentation:
+
+- **[Development Guide](docs/DEVELOPMENT_GUIDE.md)** - Setup, quality standards, and contribution
+  guidelines
+- **[Architecture Overview](docs/ARCHITECTURE.md)** - Technical design and implementation details
+- **[Feature Roadmap](docs/feature-plan.md)** - Planned features and development priorities
 
 ---
+
+**Made with ❤️ for the Ash Framework community**

@@ -1,8 +1,23 @@
 import * as vscode from "vscode";
 import { Logger } from "./utils/logger";
 // Import the compiled Nearley grammar
-const nearley = require("nearley");
-const grammar = require("./nearley/ashGrammar.js");
+import * as nearley from "nearley";
+import grammar from "./nearley/ashGrammar.js";
+
+/**
+ * Helper type for AST nodes
+ */
+interface ASTNode {
+  type: string;
+  [key: string]: unknown;
+}
+
+/**
+ * Type guard to check if a value is an AST node
+ */
+function isASTNode(value: unknown): value is ASTNode {
+  return typeof value === "object" && value !== null && "type" in value;
+}
 
 /**
  * Core interfaces for Ash DSL parsing integration
@@ -21,7 +36,7 @@ export interface AshSectionDetail {
   line: number; // 0-based line number
   column: number; // 0-based column number
   endLine: number; // 0-based end line
-  properties: Map<string, any>; // parsed properties like type: :string, allow_nil?: true
+  properties: Map<string, unknown>; // parsed properties like type: :string, allow_nil?: true
   rawContent: string; // original text content
 }
 
@@ -94,12 +109,25 @@ export class AshParser {
       };
     }
 
+    const logger = Logger.getInstance();
+
     try {
+      logger.debug("AshParser", "Starting nearley grammar parse", {
+        textLength: text.length,
+      });
+
       // Create new parser instance with our grammar
       const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
+
+      logger.debug("AshParser", "Parser created, feeding text...");
       parser.feed(text);
 
+      logger.debug("AshParser", "Text fed to parser", {
+        resultsCount: parser.results.length,
+      });
+
       if (parser.results.length === 0) {
+        logger.warn("AshParser", "No valid parse found");
         return {
           sections: [],
           errors: [
@@ -116,10 +144,15 @@ export class AshParser {
 
       // Take the first successful parse result
       const ast = parser.results[0];
+      logger.debug("AshParser", "AST extracted, processing sections...");
 
       // Convert AST to our interface format
       const sections = this.extractSections(ast, text);
       const moduleName = this.extractModuleName(ast);
+
+      logger.debug("AshParser", "Parse completed successfully", {
+        sectionsCount: sections.length,
+      });
 
       return {
         sections,
@@ -127,7 +160,14 @@ export class AshParser {
         isAshFile: true,
         moduleName,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
+      // More detailed error logging to identify crash location
+      logger.error("AshParser", "Grammar parser crashed", {
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+        textPreview: text.substring(0, 200) + (text.length > 200 ? "..." : ""),
+      });
+
       // Parse error - extract position information if available
       const parseError = this.createParseError(error, text);
 
@@ -151,7 +191,7 @@ export class AshParser {
   /**
    * Extract sections from the parsed AST
    */
-  private extractSections(ast: any, originalText: string): AshSection[] {
+  private extractSections(ast: unknown, originalText: string): AshSection[] {
     const sections: AshSection[] = [];
     const logger = Logger.getInstance();
 
@@ -173,7 +213,7 @@ export class AshParser {
    * Recursively walk the AST to find Ash DSL sections
    */
   private walkASTForSections(
-    node: any,
+    node: unknown,
     sections: AshSection[],
     originalText: string
   ): void {
@@ -187,7 +227,7 @@ export class AshParser {
       return;
     }
 
-    if (typeof node === "object") {
+    if (typeof node === "object" && node !== null) {
       // Look for section-like patterns in the AST
       // These are common Ash DSL section names
       const sectionKeywords = [
@@ -223,10 +263,14 @@ export class AshParser {
   /**
    * Check if a node represents an Ash DSL section
    */
-  private isAshSection(node: any, sectionKeywords: string[]): boolean {
+  private isAshSection(node: unknown, sectionKeywords: string[]): boolean {
     // Look for patterns that indicate this is a section:
     // - A function/identifier followed by a do block
     // - The identifier matches known section keywords
+
+    if (!isASTNode(node)) {
+      return false;
+    }
 
     if (
       node.type === "simple_keyword_block" ||
@@ -248,9 +292,13 @@ export class AshParser {
    * Create an AshSection from an AST node
    */
   private createSectionFromNode(
-    node: any,
+    node: unknown,
     originalText: string
   ): AshSection | null {
+    if (!isASTNode(node)) {
+      return null;
+    }
+
     try {
       const identifier = this.extractIdentifier(node);
       if (!identifier) return null;
@@ -301,12 +349,18 @@ export class AshParser {
   /**
    * Extract identifier from AST node
    */
-  private extractIdentifier(node: any): string | null {
+  private extractIdentifier(node: unknown): string | null {
     // This depends on our AST structure - we'll need to adjust based on actual output
     if (typeof node === "string") return node;
+
+    if (!isASTNode(node)) {
+      return null;
+    }
+
     if (node.value && typeof node.value === "string") return node.value;
-    if (node.identifier) return node.identifier;
-    if (node.name) return node.name;
+    if (node.identifier && typeof node.identifier === "string")
+      return node.identifier;
+    if (node.name && typeof node.name === "string") return node.name;
 
     // Look in common AST properties
     if (node.children && Array.isArray(node.children)) {
@@ -343,8 +397,9 @@ export class AshParser {
 
   /**
    * Extract module name from AST
+   * @param _ast - AST node (currently unused, for future implementation)
    */
-  private extractModuleName(ast: any): string | undefined {
+  private extractModuleName(_ast: unknown): string | undefined {
     // TODO: Implement module name extraction from AST
     return undefined;
   }
@@ -352,9 +407,24 @@ export class AshParser {
   /**
    * Convert parsing errors to our error format
    */
-  private createParseError(error: any, text: string): ParseError {
+  private createParseError(error: unknown, text: string): ParseError {
+    // Type guard for error with token property
+    const hasToken = (
+      err: unknown
+    ): err is {
+      token: { offset: number; value: string };
+      message?: string;
+    } => {
+      return typeof err === "object" && err !== null && "token" in err;
+    };
+
+    // Type guard for error with message property
+    const hasMessage = (err: unknown): err is { message: string } => {
+      return typeof err === "object" && err !== null && "message" in err;
+    };
+
     // Nearley provides error information in error.token
-    if (error.token) {
+    if (hasToken(error)) {
       const lines = text.substring(0, error.token.offset).split("\n");
       const line = lines.length - 1;
       const column = lines[lines.length - 1].length;
@@ -368,8 +438,9 @@ export class AshParser {
     }
 
     // Fallback for other error types
+    const message = hasMessage(error) ? error.message : "Parse error";
     return {
-      message: error.message || "Parse error",
+      message,
       line: 0,
       column: 0,
       offset: 0,

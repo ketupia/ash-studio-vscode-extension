@@ -45,27 +45,79 @@ export class AshParserService {
 
     if (USE_GRACEFUL_FALLBACK) {
       try {
-        // First attempt: try the detailed grammar parser
-        logger.debug("AshParserService", "Attempting detailed parser...");
-        result = parseAshDocument(document);
+        // Pre-check for ANY complex patterns that might crash nearley
+        const text = document.getText();
 
-        // Check if parser succeeded but has errors
-        if (result.errors && result.errors.length > 0) {
+        // Skip grammar parser for files with any potentially problematic patterns
+        const hasComplexExpr = text.includes("expr(");
+        const hasStringInterpolation = text.includes("#{");
+        const hasMultiLineStructures =
+          text.includes("\n") && text.includes("do\n");
+        const hasConditionalLogic =
+          text.includes("if ") && text.includes("do:");
+        const isLargeFile = text.length > 5000; // Skip large files entirely
+
+        if (
+          hasComplexExpr ||
+          hasStringInterpolation ||
+          hasMultiLineStructures ||
+          hasConditionalLogic ||
+          isLargeFile
+        ) {
           logger.info(
             "AshParserService",
-            "Detailed parser had errors, falling back to simple parser",
-            { errorsCount: result.errors.length }
+            "Detected potentially problematic patterns, using simple parser only",
+            {
+              hasComplexExpr,
+              hasStringInterpolation,
+              hasMultiLineStructures,
+              hasConditionalLogic,
+              isLargeFile,
+              fileSize: text.length,
+            }
           );
           result = parseAshDocumentSimple(document) as AshParseResult;
         } else {
-          logger.debug("AshParserService", "Detailed parser succeeded");
+          // Only try grammar parser on very simple, small files
+          logger.debug(
+            "AshParserService",
+            "File appears safe for grammar parser"
+          );
+
+          try {
+            result = parseAshDocument(document);
+
+            if (result.errors && result.errors.length > 0) {
+              logger.info(
+                "AshParserService",
+                "Grammar parser had errors, falling back to simple parser"
+              );
+              result = parseAshDocumentSimple(document) as AshParseResult;
+            } else {
+              logger.debug("AshParserService", "Grammar parser succeeded");
+            }
+          } catch (grammarError) {
+            logger.warn(
+              "AshParserService",
+              "Grammar parser crashed, using simple parser",
+              {
+                error:
+                  grammarError instanceof Error
+                    ? grammarError.message
+                    : String(grammarError),
+              }
+            );
+            result = parseAshDocumentSimple(document) as AshParseResult;
+          }
         }
       } catch (error) {
-        // Fallback: use simple parser if detailed parser throws
-        logger.warn(
+        // Ultimate fallback if anything goes wrong
+        logger.error(
           "AshParserService",
-          "Detailed parser failed, using simple parser fallback",
-          { error: error instanceof Error ? error.message : String(error) }
+          "Parser service error, using emergency fallback",
+          {
+            error: error instanceof Error ? error.message : String(error),
+          }
         );
         result = parseAshDocumentSimple(document) as AshParseResult;
       }

@@ -1,12 +1,54 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AshParser = void 0;
 exports.parseAshDocument = parseAshDocument;
 exports.parseAshText = parseAshText;
 const logger_1 = require("./utils/logger");
 // Import the compiled Nearley grammar
-const nearley = require("nearley");
-const grammar = require("./nearley/ashGrammar.js");
+const nearley = __importStar(require("nearley"));
+const ashGrammar_js_1 = __importDefault(require("./nearley/ashGrammar.js"));
+/**
+ * Type guard to check if a value is an AST node
+ */
+function isASTNode(value) {
+    return typeof value === "object" && value !== null && "type" in value;
+}
 /**
  * Main parser integration class
  */
@@ -38,11 +80,20 @@ class AshParser {
                 isAshFile: false,
             };
         }
+        const logger = logger_1.Logger.getInstance();
         try {
+            logger.debug("AshParser", "Starting nearley grammar parse", {
+                textLength: text.length,
+            });
             // Create new parser instance with our grammar
-            const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
+            const parser = new nearley.Parser(nearley.Grammar.fromCompiled(ashGrammar_js_1.default));
+            logger.debug("AshParser", "Parser created, feeding text...");
             parser.feed(text);
+            logger.debug("AshParser", "Text fed to parser", {
+                resultsCount: parser.results.length,
+            });
             if (parser.results.length === 0) {
+                logger.warn("AshParser", "No valid parse found");
                 return {
                     sections: [],
                     errors: [
@@ -58,9 +109,13 @@ class AshParser {
             }
             // Take the first successful parse result
             const ast = parser.results[0];
+            logger.debug("AshParser", "AST extracted, processing sections...");
             // Convert AST to our interface format
             const sections = this.extractSections(ast, text);
             const moduleName = this.extractModuleName(ast);
+            logger.debug("AshParser", "Parse completed successfully", {
+                sectionsCount: sections.length,
+            });
             return {
                 sections,
                 errors: [],
@@ -69,6 +124,12 @@ class AshParser {
             };
         }
         catch (error) {
+            // More detailed error logging to identify crash location
+            logger.error("AshParser", "Grammar parser crashed", {
+                error: error instanceof Error ? error.message : String(error),
+                stack: error instanceof Error ? error.stack : undefined,
+                textPreview: text.substring(0, 200) + (text.length > 200 ? "..." : ""),
+            });
             // Parse error - extract position information if available
             const parseError = this.createParseError(error, text);
             return {
@@ -116,7 +177,7 @@ class AshParser {
             node.forEach(child => this.walkASTForSections(child, sections, originalText));
             return;
         }
-        if (typeof node === "object") {
+        if (typeof node === "object" && node !== null) {
             // Look for section-like patterns in the AST
             // These are common Ash DSL section names
             const sectionKeywords = [
@@ -153,6 +214,9 @@ class AshParser {
         // Look for patterns that indicate this is a section:
         // - A function/identifier followed by a do block
         // - The identifier matches known section keywords
+        if (!isASTNode(node)) {
+            return false;
+        }
         if (node.type === "simple_keyword_block" ||
             node.type === "generic_do_end_block") {
             const identifier = this.extractIdentifier(node);
@@ -168,6 +232,9 @@ class AshParser {
      * Create an AshSection from an AST node
      */
     createSectionFromNode(node, originalText) {
+        if (!isASTNode(node)) {
+            return null;
+        }
         try {
             const identifier = this.extractIdentifier(node);
             if (!identifier)
@@ -219,11 +286,14 @@ class AshParser {
         // This depends on our AST structure - we'll need to adjust based on actual output
         if (typeof node === "string")
             return node;
+        if (!isASTNode(node)) {
+            return null;
+        }
         if (node.value && typeof node.value === "string")
             return node.value;
-        if (node.identifier)
+        if (node.identifier && typeof node.identifier === "string")
             return node.identifier;
-        if (node.name)
+        if (node.name && typeof node.name === "string")
             return node.name;
         // Look in common AST properties
         if (node.children && Array.isArray(node.children)) {
@@ -257,8 +327,9 @@ class AshParser {
     }
     /**
      * Extract module name from AST
+     * @param _ast - AST node (currently unused, for future implementation)
      */
-    extractModuleName(ast) {
+    extractModuleName(_ast) {
         // TODO: Implement module name extraction from AST
         return undefined;
     }
@@ -266,8 +337,16 @@ class AshParser {
      * Convert parsing errors to our error format
      */
     createParseError(error, text) {
+        // Type guard for error with token property
+        const hasToken = (err) => {
+            return typeof err === "object" && err !== null && "token" in err;
+        };
+        // Type guard for error with message property
+        const hasMessage = (err) => {
+            return typeof err === "object" && err !== null && "message" in err;
+        };
         // Nearley provides error information in error.token
-        if (error.token) {
+        if (hasToken(error)) {
             const lines = text.substring(0, error.token.offset).split("\n");
             const line = lines.length - 1;
             const column = lines[lines.length - 1].length;
@@ -279,8 +358,9 @@ class AshParser {
             };
         }
         // Fallback for other error types
+        const message = hasMessage(error) ? error.message : "Parse error";
         return {
-            message: error.message || "Parse error",
+            message,
             line: 0,
             column: 0,
             offset: 0,
