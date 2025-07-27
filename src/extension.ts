@@ -18,32 +18,65 @@ function debounce<T extends (...args: unknown[]) => void>(
 }
 
 export function activate(context: vscode.ExtensionContext) {
-  try {
-    console.log("🚀 Ash Studio extension is activating...");
+  // CRITICAL: Multiple debugging outputs to track activation issues
+  console.log("🚀 Ash Studio extension is activating...");
+  console.log("📍 Extension activation context:", {
+    extensionPath: context.extensionPath,
+    globalState: !!context.globalState,
+    subscriptions: context.subscriptions.length,
+  });
 
-    // Initialize logger first
+  try {
+    // Initialize logger first with EXTENSIVE debugging
+    console.log("📝 Initializing logger...");
     const logger = Logger.getInstance();
+    console.log("📝 Logger instance created");
+
     logger.info("Extension", "Ash Studio extension activating...");
+    console.log("📝 Logger.info called");
+
     logger.show();
+    console.log("📝 Logger.show() called");
 
     logger.info(
       "Extension",
       "FULL FUNCTIONALITY MODE - Initializing parser service and features"
     );
 
+    // Test if nearley dependencies are available
+    console.log("🔍 Testing nearley dependency availability...");
+    try {
+      const nearley = require("nearley");
+      console.log("✅ Nearley is available:", !!nearley);
+    } catch (nearleyError) {
+      console.error("❌ Nearley not available:", nearleyError);
+      logger.error("Extension", "Nearley dependency missing", nearleyError);
+    }
+
+    try {
+      const moo = require("moo");
+      console.log("✅ Moo is available:", !!moo);
+    } catch (mooError) {
+      console.error("❌ Moo not available:", mooError);
+      logger.error("Extension", "Moo dependency missing", mooError);
+    }
+
     // Initialize the parser service with error handling
     let parserService: AshParserService;
     try {
+      console.log("🔧 Attempting to initialize parser service...");
       logger.info("Extension", "Attempting to initialize parser service...");
 
       // Re-enable real parser service
       parserService = AshParserService.getInstance();
+      console.log("✅ Parser service initialized successfully");
 
       logger.info(
         "Extension",
         "Parser service initialized successfully (REAL MODE)"
       );
     } catch (parserError) {
+      console.error("❌ Parser service initialization failed:", parserError);
       logger.error(
         "Extension",
         "Failed to initialize parser service",
@@ -59,10 +92,19 @@ export function activate(context: vscode.ExtensionContext) {
     // Initialize sidebar with error handling
     try {
       if (parserService) {
+        console.log("🎛️ Creating sidebar provider...");
         const sidebarProvider = new AshSidebarProvider(parserService);
-        vscode.window.createTreeView("ashSidebar", {
+        console.log("🎛️ Sidebar provider created");
+
+        console.log("🎛️ Registering tree view with ID: ashSidebar");
+        const treeView = vscode.window.createTreeView("ashSidebar", {
           treeDataProvider: sidebarProvider,
+          showCollapseAll: true,
         });
+        console.log("✅ Tree view registered successfully");
+
+        context.subscriptions.push(treeView);
+        console.log("✅ Tree view added to subscriptions");
 
         // Set up document change listener with debouncing and crash protection
         let isRefreshing = false;
@@ -126,6 +168,12 @@ export function activate(context: vscode.ExtensionContext) {
 
         logger.info("Extension", "Sidebar provider initialized successfully");
       } else {
+        console.log("⚠️ Parser service unavailable, creating fallback sidebar");
+        logger.warn(
+          "Extension",
+          "Parser service unavailable, creating fallback sidebar"
+        );
+
         // Fallback minimal sidebar if parser failed
         const fallbackSidebar = {
           getTreeItem: (element: any) =>
@@ -133,15 +181,28 @@ export function activate(context: vscode.ExtensionContext) {
               "Parser Error",
               vscode.TreeItemCollapsibleState.None
             ),
-          getChildren: () => [{ label: "Parser service unavailable" }],
-          refresh: () => {},
+          getChildren: () => {
+            console.log("🔄 Fallback sidebar getChildren called");
+            return [{ label: "Parser service unavailable" }];
+          },
+          refresh: () => {
+            console.log("🔄 Fallback sidebar refresh called");
+          },
           onDidChangeTreeData: new vscode.EventEmitter().event,
         };
-        vscode.window.createTreeView("ashSidebar", {
+
+        console.log("🎛️ Creating fallback tree view...");
+        const fallbackTreeView = vscode.window.createTreeView("ashSidebar", {
           treeDataProvider: fallbackSidebar as any,
+          showCollapseAll: false,
         });
+
+        context.subscriptions.push(fallbackTreeView);
+        console.log("✅ Fallback sidebar created and registered");
+        logger.info("Extension", "Fallback sidebar created");
       }
     } catch (sidebarError) {
+      console.error("❌ Sidebar initialization failed:", sidebarError);
       logger.error("Extension", "Failed to initialize sidebar", sidebarError);
       vscode.window.showWarningMessage(
         `Ash Studio sidebar initialization failed: ${sidebarError instanceof Error ? sidebarError.message : String(sidebarError)}`

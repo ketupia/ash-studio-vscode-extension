@@ -123,6 +123,7 @@
     "quality": "npm run type-check && npm run lint && npm run format:check && npm test",
     "build": "tsc && cp -r src/nearley dist/src/",
     "package": "npm run quality && npm run build && vsce package",
+    "pre-commit": "rm -f test-*.js crash-*.js *.tmp *.temp && npm run quality",
     "pretest": "npm run build",
     "test": "mocha test/organized-parser.test.js",
     "test:parsers": "mocha 'test/unit/parsers/**/*.test.js'",

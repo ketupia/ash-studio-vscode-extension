@@ -8,3 +8,12 @@ vsc-extension-quickstart.md
 **/*.map
 **/eslint.config.mjs
 **/.vscode-test.*
+# Exclude src but keep dist
+src/**
+# Exclude most of node_modules but keep runtime dependencies
+node_modules/**
+!node_modules/nearley/**
+!node_modules/moo/**
+# Exclude dev/build files
+docs/**
+examples/**
