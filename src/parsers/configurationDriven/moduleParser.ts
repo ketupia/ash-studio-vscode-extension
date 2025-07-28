@@ -1,9 +1,10 @@
 import { Parser, ParseResult, ParsedSection, ParsedDetail, ParseError, CodeLensEntry } from "../parser";
 import { ModuleInterface, DslBlock } from "./moduleInterface";
-import AshResourceConfig from "./configurations/AshResource.config";
-import AshPostgresConfig from "./configurations/AshPostgres.config";
-import AshPaperTrailConfig from "./configurations/AshPaperTrail.config";
 import AshAuthenticationConfig from "./configurations/AshAuthentication.config";
+import AshPaperTrailConfig from "./configurations/AshPaperTrail.config";
+import AshPostgresConfig from "./configurations/AshPostgres.config";
+import AshPubSubConfig from "./configurations/AshPubSub.config";
+import AshResourceConfig from "./configurations/AshResource.config";
 
 /**
  * Returns all available ModuleInterface configurations.
@@ -11,10 +12,11 @@ import AshAuthenticationConfig from "./configurations/AshAuthentication.config";
  */
 export function getAllAvailableConfigurations(): ModuleInterface[] {
   return [
-    AshResourceConfig,
-    AshPostgresConfig,
-    AshPaperTrailConfig,
     AshAuthenticationConfig,
+    AshPaperTrailConfig,
+    AshPostgresConfig,
+    AshPubSubConfig,
+    AshResourceConfig,
     // Add new configurations here as they are created
     // AshGraphqlConfig,
     // AshJsonApiConfig,
@@ -129,8 +131,6 @@ function extractCodeLenses(
     
     // Search for each keyword in the entire source code
     for (const [keyword, url] of Object.entries(module.codeLenses)) {
-      console.log(`[CodeLens] Searching for keyword: "${keyword}" -> ${url}`);
-      let keywordMatchCount = 0;
       
       // Search through all lines for this keyword (allow multiple matches)
       for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
@@ -145,13 +145,9 @@ function extractCodeLenses(
             break; // No more occurrences in this line
           }
           
-          console.log(`[CodeLens] Found "${keyword}" at line ${lineIndex + 1}, char ${keywordIndex}: "${line.trim()}"`);
-          
           // Make sure it's a standalone word (not part of another word)
           const beforeChar = keywordIndex > 0 ? line[keywordIndex - 1] : ' ';
           const afterChar = keywordIndex + keyword.length < line.length ? line[keywordIndex + keyword.length] : ' ';
-          
-          console.log(`[CodeLens] Word boundary check: before="${beforeChar}" after="${afterChar}"`);
           
           // Check if it's a word boundary (space, tab, or word boundary characters)
           if (/\s/.test(beforeChar) && (/\s|do/.test(afterChar) || afterChar === ':')) {
@@ -168,25 +164,16 @@ function extractCodeLenses(
             };
             
             codeLenses.push(codeLens);
-            keywordMatchCount++;
-            console.log(`[CodeLens] ✅ Added code lens #${keywordMatchCount} for "${keyword}" at line ${lineIndex + 1}`);
-          } else {
-            console.log(`[CodeLens] ❌ Skipped "${keyword}" at line ${lineIndex + 1} - not a word boundary`);
           }
           
           // Move search index past this occurrence
           searchIndex = keywordIndex + keyword.length;
         }
       }
-      
-      console.log(`[CodeLens] Total matches for "${keyword}": ${keywordMatchCount}`);
+
     }
   }
-  
-  console.log(`[CodeLens] Extraction complete. Total code lenses generated: ${codeLenses.length}`);
-  if (codeLenses.length > 0) {
-    console.log(`[CodeLens] Code lenses summary:`, codeLenses.map(cl => `"${cl.title}" at line ${cl.line}`));
-  }
+
   
   return codeLenses;
 }
@@ -243,12 +230,25 @@ function processBlockDetails(
 
 /**
  * Extract DSL modules and their blocks from source code
- * Each DSL block is associated with its specific parent module to avoid conflicts
+ * Uses a context-driven approach where all imported modules contribute to parsing
  */
 function extractModules(source: string, matchedModules: ModuleInterface[]): ParsedSection[] {
   const lines = source.split('\n');
   const sections: ParsedSection[] = [];
   const processedLines = new Set<number>(); // Track which lines we've already processed
+  
+  // Create a combined configuration from all matched modules
+  // This allows multiple modules to contribute DSL blocks with the same name
+  const combinedDslBlocks = new Map<string, DslBlock[]>();
+  
+  for (const module of matchedModules) {
+    for (const dslBlock of module.dslBlocks) {
+      if (!combinedDslBlocks.has(dslBlock.blockName)) {
+        combinedDslBlocks.set(dslBlock.blockName, []);
+      }
+      combinedDslBlocks.get(dslBlock.blockName)!.push(dslBlock);
+    }
+  }
   
   // Scan through lines looking for DSL block declarations
   for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
@@ -265,16 +265,10 @@ function extractModules(source: string, matchedModules: ModuleInterface[]): Pars
     if (blockMatch) {
       const blockName = blockMatch[1];
       
-      // Find which module(s) define this DSL block
-      const matchingModules = matchedModules.filter(module => 
-        module.dslBlocks.some(block => block.blockName === blockName)
-      );
+      // Check if any of our combined configurations define this DSL block
+      const dslBlockConfigs = combinedDslBlocks.get(blockName);
       
-      if (matchingModules.length > 0) {
-        // Use the first matching module (could be enhanced with priority logic)
-        const owningModule = matchingModules[0];
-        const dslBlock = owningModule.dslBlocks.find(block => block.blockName === blockName)!;
-        
+      if (dslBlockConfigs && dslBlockConfigs.length > 0) {
         // Found a top-level DSL block
         const startLine = lineIndex + 1; // 1-based line numbers
         const startPos = source.indexOf(line) + line.indexOf(blockMatch[0]);
@@ -289,8 +283,8 @@ function extractModules(source: string, matchedModules: ModuleInterface[]): Pars
           processedLines.add(i);
         }
         
-        // Parse child blocks within this section using the specific module context
-        const details = parseChildBlocksForModule(rawContent, dslBlock, owningModule, startLine);
+        // Parse child blocks using all available configurations for this block
+        const details = parseChildBlocksWithCombinedConfigs(rawContent, dslBlockConfigs, matchedModules, startLine);
         
         sections.push({
           section: blockName,
@@ -310,122 +304,119 @@ function extractModules(source: string, matchedModules: ModuleInterface[]): Pars
 }
 
 /**
- * Parse child blocks within a parent DSL block for a specific module
- * This ensures children are properly associated with their parent module
+ * Parse child blocks using combined configurations from all imported modules
+ * This allows multiple modules to contribute child block definitions
  */
-function parseChildBlocksForModule(
-  parentContent: string, 
-  parentBlock: DslBlock, 
-  owningModule: ModuleInterface,
+function parseChildBlocksWithCombinedConfigs(
+  parentContent: string,
+  dslBlockConfigs: DslBlock[],
+  allModules: ModuleInterface[],
+  parentStartLine: number
+): ParsedDetail[] {
+  // Combine all child block definitions from all configurations
+  const combinedChildren = new Map<string, DslBlock>();
+  
+  for (const config of dslBlockConfigs) {
+    if (config.children) {
+      for (const child of config.children) {
+        // Use the most recent definition if there are conflicts
+        combinedChildren.set(child.blockName, child);
+      }
+    }
+  }
+  
+  return parseChildBlocksFromCombinedConfig(
+    parentContent,
+    Array.from(combinedChildren.values()),
+    allModules,
+    parentStartLine
+  );
+}
+
+// The parseChildBlocksForModule function has been removed in favor of
+// parseChildBlocksWithCombinedConfigs which supports multiple modules
+
+/**
+ * Parse child blocks using a combined configuration approach
+ */
+function parseChildBlocksFromCombinedConfig(
+  parentContent: string,
+  childConfigs: DslBlock[],
+  allModules: ModuleInterface[],
   parentStartLine: number
 ): ParsedDetail[] {
   const details: ParsedDetail[] = [];
-  
-  if (!parentBlock.children) {
-    return details;
-  }
-  
   const lines = parentContent.split('\n');
   
   for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
     const line = lines[lineIndex];
     const trimmedLine = line.trim();
     
-    // Look for child block patterns defined in this specific module
-    for (const childBlock of parentBlock.children) {
-      // First check if the line starts with the block name
-      const blockNameRegex = new RegExp(`^${childBlock.blockName}\\s*[\\(\\s:]`);
-      const blockMatch = trimmedLine.match(blockNameRegex);
+    // Skip empty lines and comments
+    if (!trimmedLine || trimmedLine.startsWith('#')) {
+      continue;
+    }
+    
+    // Look for child block patterns
+    for (const childConfig of childConfigs) {
+      const blockName = childConfig.blockName;
       
+      // Check for named blocks (e.g., "attribute :name")
+      if (childConfig.namePattern) {
+        const namedPattern = new RegExp(`^${blockName}\\s+${childConfig.namePattern}`);
+        const namedMatch = trimmedLine.match(namedPattern);
+        if (namedMatch) {
+          const name = namedMatch[1] || namedMatch[0].split(/\s+/)[1];
+          
+          details.push({
+            section: blockName,
+            detail: `${blockName} ${name}`,
+            line: parentStartLine + lineIndex,
+            column: 1,
+            endLine: parentStartLine + lineIndex,
+            childDetails: [],
+          });
+          continue;
+        }
+      }
+      
+      // Check for block-style declarations (e.g., "validate do")
+      const blockPattern = new RegExp(`^${blockName}\\s+do\\b`);
+      const blockMatch = trimmedLine.match(blockPattern);
       if (blockMatch) {
-        const startLine = parentStartLine + lineIndex;
-        let detailName = childBlock.blockName;
-        let endLine = startLine;
-        let rawContent = line;
+        // Find the end of this nested block
+        const blockStartPos = parentContent.indexOf(line) + line.indexOf(blockMatch[0]);
+        const blockEndPos = findEndOfBlock(parentContent, blockStartPos);
+        const blockEndLine = parentContent.substring(0, blockEndPos).split('\n').length;
         
-        // If namePattern exists, extract the name
-        if (childBlock.namePattern) {
-          // For Elixir DSL, we need to look for patterns like ':name' or 'name'
-          // in the portion of the line that comes after the block name
-          const blockPos = line.indexOf(childBlock.blockName);
-          const afterBlockName = line.substring(blockPos + childBlock.blockName.length).trim();
-          
-          // First try to find a match in the content after the block name
-          const nameRegex = new RegExp(childBlock.namePattern);
-          const nameMatch = afterBlockName.match(nameRegex);
-          
-          if (nameMatch && nameMatch[1]) {
-            // We found a capture group, use it as the name
-            detailName = nameMatch[1].trim();
-          } else if (nameMatch) {
-            // No capture group, use the entire match
-            detailName = nameMatch[0].trim();
-          }
-
-          // Keep the leading colon for Elixir symbols as it's part of the syntax
-          // We no longer remove it as we want to display it in the UI
-        }
+        details.push({
+          section: blockName,
+          detail: blockName,
+          line: parentStartLine + lineIndex,
+          column: 1,
+          endLine: parentStartLine + blockEndLine - 1,
+          childDetails: [],
+        });
         
-        // Detect the actual pattern used in the source code
-        if (line.includes(' do:') || line.match(/,\s*do:\s*$/)) {
-          // do: pattern - consume lines until no trailing comma
-          rawContent = consumeDoColonBlock(lines, lineIndex);
-          endLine = startLine + rawContent.split('\n').length - 1;
-          lineIndex += rawContent.split('\n').length - 1;
-          
-        } else if (line.includes(' do\n') || line.trim().endsWith(' do')) {
-          // do/end pattern - find the matching end
-          const blockStartPos = parentContent.indexOf(line);
-          const blockEndPos = findEndOfBlock(parentContent, blockStartPos);
-          endLine = parentStartLine + parentContent.substring(0, blockEndPos).split('\n').length - 1;
-          rawContent = parentContent.substring(blockStartPos, blockEndPos);
-          
-          // Skip lines that are part of this block
-          const blockLineCount = rawContent.split('\n').length;
-          lineIndex += blockLineCount - 1;
-          
-        } else {
-          // Single line or multi-line without do (function call style)
-          const multiLineContent = consumeMultiLineBlock(lines, lineIndex);
-          rawContent = multiLineContent;
-          endLine = startLine + multiLineContent.split('\n').length - 1;
-          lineIndex += multiLineContent.split('\n').length - 1;
-        }
+        // Skip lines within this nested block
+        lineIndex = blockEndLine - 1;
+        continue;
+      }
+      
+      // Check for simple declarations (e.g., "primary_key :id")
+      if (trimmedLine.startsWith(blockName + ' ')) {
+        const parts = trimmedLine.split(/\s+/);
+        const detail = parts.length > 1 ? `${blockName} ${parts.slice(1).join(' ')}` : blockName;
         
-        // Create the detail for this child block
-        const childDetail: ParsedDetail = {
-          section: parentBlock.blockName,
-          detail: childBlock.blockName,
-          name: detailName,
-          line: startLine,
-          column: 1, // Approximate for now
-          endLine: endLine,
-          rawContent: rawContent,
-          properties: new Map<string, unknown>(),
-        };
-        
-        details.push(childDetail);
-        
-        // RECURSIVE: If this child block has its own children, parse them recursively
-        if (childBlock.children && childBlock.children.length > 0) {
-          // Only recurse for do/end blocks that have content to parse
-          if (line.includes(' do\n') || line.trim().endsWith(' do')) {
-            const nestedDetails = parseChildBlocksForModule(
-              rawContent,
-              childBlock,
-              owningModule,
-              startLine
-            );
-            
-            // Store nested details as children of the current detail instead of flattening
-            if (nestedDetails.length > 0) {
-              childDetail.childDetails = nestedDetails;
-            }
-          }
-        }
-        
-        // Break after finding the first match to avoid duplicates
-        break;
+        details.push({
+          section: blockName,
+          detail,
+          line: parentStartLine + lineIndex,
+          column: 1,
+          endLine: parentStartLine + lineIndex,
+          childDetails: [],
+        });
+        continue;
       }
     }
   }

@@ -54,8 +54,6 @@ export class AshCodeLensProvider implements vscode.CodeLensProvider {
       // Convert our CodeLensEntry objects to VS Code CodeLens objects
       const codeLenses: vscode.CodeLens[] = [];
       
-      Logger.getInstance().info("AshCodeLensProvider", `Converting ${parseResult.codeLenses.length} code lens entries to VS Code format`);
-      
       for (const entry of parseResult.codeLenses) {
         // Create a range for the CodeLens
         const line = Math.max(0, entry.line - 1); // Convert to 0-based line number
@@ -90,13 +88,7 @@ export class AshCodeLensProvider implements vscode.CodeLensProvider {
           //   tooltip: `View documentation for ${entry.source}`
           // };
           
-          console.log(`[CodeLens Provider] Created code lens with command:`, {
-            title: entry.title,
-            command: "ash-studio.openDocumentation",
-            arguments: [entry.target],
-            line: entry.line,
-            character: entry.character
-          });
+
         } catch (error) {
           Logger.getInstance().error("AshCodeLensProvider", `Failed to parse URI: ${entry.target}`, error);
           // Fallback: create a command that shows an error message
@@ -110,7 +102,6 @@ export class AshCodeLensProvider implements vscode.CodeLensProvider {
         codeLenses.push(lens);
       }
       
-      Logger.getInstance().info("AshCodeLensProvider", `Returning ${codeLenses.length} VS Code CodeLens objects`);
       return codeLenses;
     } catch (error) {
       Logger.getInstance().error("AshCodeLensProvider", `Error providing code lenses: ${error}`);

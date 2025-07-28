@@ -1,6 +1,6 @@
 import { ModuleInterface } from "../moduleInterface";
 
-const AshPaperTrailConfig: ModuleInterface = {
+const AshAuthenticationConfig: ModuleInterface = {
   displayName: "Ash Authentication",
   declarationPattern: "AshAuthentication",
   dslBlocks: [
@@ -27,4 +27,4 @@ const AshPaperTrailConfig: ModuleInterface = {
   },
 };
 
-export default AshPaperTrailConfig;
+export default AshAuthenticationConfig;
