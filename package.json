@@ -103,7 +103,7 @@
         },
         "ashStudio.enableCodeLens": {
           "type": "boolean",
-          "default": false,
+          "default": true,
           "description": "Enable CodeLens for Ash sections (experimental)"
         },
         "ashStudio.enableHoverInfo": {

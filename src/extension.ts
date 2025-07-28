@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import { AshSidebarProvider } from "./features/ashSidebarProvider";
 import { registerAshQuickPick } from "./features/ashQuickPick";
 import { registerAshSectionNavigation } from "./features/ashSectionNavigation";
+import { registerAshCodeLensProvider } from "./features/ashCodeLensProvider";
 import { AshParserService } from "./ashParserService";
 import { Logger } from "./utils/logger";
 
@@ -214,7 +215,8 @@ export function activate(context: vscode.ExtensionContext) {
       if (parserService) {
         registerAshQuickPick(context, parserService);
         registerAshSectionNavigation(context, parserService);
-        logger.info("Extension", "Navigation features registered successfully");
+        registerAshCodeLensProvider(context, parserService);
+        logger.info("Extension", "Navigation features and code lens provider registered successfully");
       }
     } catch (navigationError) {
       logger.error(

@@ -61,6 +61,7 @@ export class AshParser implements Parser {
         errors: [],
         isAshFile: false,
         parserName: "AshParser",
+        codeLenses: [],
       };
     }
 
@@ -95,6 +96,7 @@ export class AshParser implements Parser {
           ],
           isAshFile: true,
           parserName: "AshParser",
+          codeLenses: [],
         };
       }
 
@@ -116,6 +118,7 @@ export class AshParser implements Parser {
         isAshFile: true,
         moduleName,
         parserName: "AshParser",
+        codeLenses: [],
       };
     } catch (error: unknown) {
       // More detailed error logging to identify crash location
@@ -133,6 +136,7 @@ export class AshParser implements Parser {
         errors: [parseError],
         isAshFile: true,
         parserName: "AshParser",
+        codeLenses: [],
       };
     }
   }

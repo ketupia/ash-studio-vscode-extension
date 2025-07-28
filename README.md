@@ -8,6 +8,7 @@ intelligent navigation and code insight tools.
 - **🧭 Smart Navigation** - Jump between Ash sections with document outline integration
 - **⚡ Quick Section Search** - Instantly find and navigate to any Ash section via Command Palette
 - **📊 Sidebar Overview** - Dedicated panel showing all Ash sections and their hierarchy
+- **📚 Documentation Links** - CodeLens provides direct links to Ash documentation for DSL blocks
 - **�️ Robust Parsing** - Works reliably with complex Ash files using intelligent fallback
   strategies
 
@@ -39,7 +40,7 @@ intelligent navigation and code insight tools.
 
 ## 🎯 Usage
 
-### Navigation Features
+### Navigation and Documentation Features
 
 **Sidebar Navigation**
 
@@ -58,6 +59,12 @@ intelligent navigation and code insight tools.
 - Use VS Code's built-in Outline panel
 - See all Ash sections as navigable tree structure
 - Click to jump to any section
+
+**CodeLens Documentation Links**
+
+- Enable CodeLens in settings (see Configuration section)
+- Hover over DSL blocks like `resource`, `authentication`, etc. to see documentation links
+- Click on CodeLens links to open relevant Ash Framework documentation in your browser
 
 ### Supported Ash Constructs
 
@@ -102,8 +109,8 @@ The extension recognizes and navigates:
 Access settings via VS Code Preferences → Extensions → Ash Studio:
 
 - **Log Level**: Control debug output (Error/Warning/Info/Debug)
-- **Parser Strategy**: Choose parsing approach (Hybrid/Grammar-only/Simple-only)
 - **Auto Refresh**: Automatically update sidebar when files change
+- **CodeLens**: Enable or disable documentation links in Elixir files
 - **Performance**: Enable metrics collection and tune parsing delays
 
 ## 💬 Support & Feedback

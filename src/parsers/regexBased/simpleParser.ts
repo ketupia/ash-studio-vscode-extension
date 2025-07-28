@@ -62,6 +62,7 @@ export class SimpleParser implements Parser {
         errors: [],
         isAshFile: false,
         parserName: "SimpleParser",
+        codeLenses: [],
       };
     }
 
@@ -102,6 +103,7 @@ export class SimpleParser implements Parser {
         isAshFile: true,
         moduleName: extractModuleName(source),
         parserName: "SimpleParser",
+        codeLenses: [],
       };
     }
 
@@ -168,6 +170,7 @@ export class SimpleParser implements Parser {
       isAshFile: true,
       moduleName: extractModuleName(source),
       parserName: "SimpleParser",
+      codeLenses: [],
     };
   }
 }

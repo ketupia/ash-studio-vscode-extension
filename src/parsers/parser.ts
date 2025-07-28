@@ -41,12 +41,31 @@ export interface ParsedSection {
   rawContent?: string;
 }
 
+/**
+ * Represents a code lens entry to be displayed in the editor
+ */
+export interface CodeLensEntry {
+  /** The line number where this code lens should appear (1-based) */
+  line: number;
+  /** The character position where this code lens should appear (0-based) */
+  character: number;
+  /** The title/label to display in the code lens */
+  title: string;
+  /** The URL or command to execute when the code lens is clicked */
+  target: string;
+  /** The source of this code lens (module name, block type, etc.) */
+  source: string;
+  /** The range of text this code lens applies to (start and end lines, 1-based) */
+  range?: { startLine: number; endLine: number };
+}
+
 export interface ParseResult {
   sections: ParsedSection[];
   errors: ParseError[];
   isAshFile: boolean; // whether this appears to be an Ash Resource/Domain file
   moduleName?: string; // extracted module name if available
   parserName: string; // name of the parser that was used
+  codeLenses: CodeLensEntry[]; // code lens entries to display in the editor
 }
 
 /**

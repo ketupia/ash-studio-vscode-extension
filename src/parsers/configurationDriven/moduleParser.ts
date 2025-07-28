@@ -1,9 +1,9 @@
-import { Parser, ParseResult, ParsedSection, ParsedDetail, ParseError } from "../parser";
+import { Parser, ParseResult, ParsedSection, ParsedDetail, ParseError, CodeLensEntry } from "../parser";
 import { ModuleInterface, DslBlock } from "./moduleInterface";
-import AshResourceConfig from "./AshResource.config";
-import AshPostgresConfig from "./AshPostgres.config";
-import AshPaperTrailConfig from "./AshPaperTrail.config";
-import AshAuthenticationConfig from "./AshAuthentication.config";
+import AshResourceConfig from "./configurations/AshResource.config";
+import AshPostgresConfig from "./configurations/AshPostgres.config";
+import AshPaperTrailConfig from "./configurations/AshPaperTrail.config";
+import AshAuthenticationConfig from "./configurations/AshAuthentication.config";
 
 /**
  * Returns all available ModuleInterface configurations.
@@ -56,6 +56,7 @@ export class ModuleParser implements Parser {
         errors: [],
         isAshFile: false,
         parserName: "ModuleParser",
+        codeLenses: [],
       };
     }
 
@@ -71,16 +72,22 @@ export class ModuleParser implements Parser {
         errors: [],
         isAshFile: false,
         parserName: "ModuleParser",
+        codeLenses: [],
       };
     }
 
     // Pass 3: Use line-by-line parsing to find DSL blocks
     const sections: ParsedSection[] = [];
     const errors: ParseError[] = [];
+    const codeLenses: CodeLensEntry[] = [];
     
     try {
       const parsedSections = extractModules(source, matchedModules);
       sections.push(...parsedSections);
+      
+      // Pass 4: Extract code lenses from modules
+      const extractedLenses = extractCodeLenses(source, matchedModules);
+      codeLenses.push(...extractedLenses);
     } catch (error) {
       errors.push({
         message: error instanceof Error ? error.message : String(error),
@@ -95,12 +102,144 @@ export class ModuleParser implements Parser {
       errors,
       isAshFile: true,
       parserName: "ModuleParser",
+      codeLenses,
     };
   }
 }
 
 // Create a singleton instance for easy access
 export const moduleParser = ModuleParser.getInstance();
+
+/**
+ * Extract code lenses from matched modules and parsed sections.
+ * These will be shown in the editor as clickable links to documentation.
+ */
+function extractCodeLenses(
+  source: string,
+  matchedModules: ModuleInterface[]
+): CodeLensEntry[] {
+  const codeLenses: CodeLensEntry[] = [];
+  const lines = source.split('\n');
+  
+  // For each matched module, search for its code lens keywords throughout the entire source
+  for (const module of matchedModules) {
+    if (!module.codeLenses) {
+      continue;
+    }
+    
+    // Search for each keyword in the entire source code
+    for (const [keyword, url] of Object.entries(module.codeLenses)) {
+      console.log(`[CodeLens] Searching for keyword: "${keyword}" -> ${url}`);
+      let keywordMatchCount = 0;
+      
+      // Search through all lines for this keyword (allow multiple matches)
+      for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+        const line = lines[lineIndex];
+        
+        // Find ALL occurrences of the keyword in this line
+        let searchIndex = 0;
+        while (searchIndex < line.length) {
+          const keywordIndex = line.indexOf(keyword, searchIndex);
+          
+          if (keywordIndex === -1) {
+            break; // No more occurrences in this line
+          }
+          
+          console.log(`[CodeLens] Found "${keyword}" at line ${lineIndex + 1}, char ${keywordIndex}: "${line.trim()}"`);
+          
+          // Make sure it's a standalone word (not part of another word)
+          const beforeChar = keywordIndex > 0 ? line[keywordIndex - 1] : ' ';
+          const afterChar = keywordIndex + keyword.length < line.length ? line[keywordIndex + keyword.length] : ' ';
+          
+          console.log(`[CodeLens] Word boundary check: before="${beforeChar}" after="${afterChar}"`);
+          
+          // Check if it's a word boundary (space, tab, or word boundary characters)
+          if (/\s/.test(beforeChar) && (/\s|do/.test(afterChar) || afterChar === ':')) {
+            const codeLens = {
+              line: lineIndex + 1, // Convert to 1-based line number
+              character: keywordIndex,
+              title: `📖 ${keyword} docs`,
+              target: url as string,
+              source: module.displayName,
+              range: {
+                startLine: lineIndex + 1,
+                endLine: lineIndex + 1
+              }
+            };
+            
+            codeLenses.push(codeLens);
+            keywordMatchCount++;
+            console.log(`[CodeLens] ✅ Added code lens #${keywordMatchCount} for "${keyword}" at line ${lineIndex + 1}`);
+          } else {
+            console.log(`[CodeLens] ❌ Skipped "${keyword}" at line ${lineIndex + 1} - not a word boundary`);
+          }
+          
+          // Move search index past this occurrence
+          searchIndex = keywordIndex + keyword.length;
+        }
+      }
+      
+      console.log(`[CodeLens] Total matches for "${keyword}": ${keywordMatchCount}`);
+    }
+  }
+  
+  console.log(`[CodeLens] Extraction complete. Total code lenses generated: ${codeLenses.length}`);
+  if (codeLenses.length > 0) {
+    console.log(`[CodeLens] Code lenses summary:`, codeLenses.map(cl => `"${cl.title}" at line ${cl.line}`));
+  }
+  
+  return codeLenses;
+}
+
+// The processBlockDetails function is not used in the current implementation
+// Keeping this stub to document the approach for potential future use
+/**
+ * Recursively process block details to find code lens opportunities in nested blocks
+ */
+/* Commented out to fix lint warnings
+function processBlockDetails(
+  details: ParsedDetail[],
+  codeLenses: CodeLensEntry[],
+  lines: string[],
+  moduleName: string,
+  availableModules: ModuleInterface[] = []
+): void {
+  for (const detail of details) {
+    // Check if this block has specific code lenses defined
+    // Note: We're currently not storing block configuration in the ParsedDetail
+    // We would need to enhance ParsedDetail to include the block configuration
+    // For now, we'll check if the detail name matches a keyword in the module's codeLenses
+    
+    const moduleDef = availableModules.find((m: ModuleInterface) => m.displayName === moduleName);
+    if (moduleDef?.codeLenses) {
+      const startLine = detail.line - 1; // Use line instead of startLine
+      const line = lines[startLine] || '';
+      
+      for (const [keyword, url] of Object.entries(moduleDef.codeLenses)) {
+        if (line.includes(keyword)) {
+          const keywordIndex = line.indexOf(keyword);
+          
+          codeLenses.push({
+            line: startLine + 1, // Convert to 1-based line number
+            character: keywordIndex,
+            title: `Documentation for ${keyword}`,
+            target: url as string,
+            source: `${moduleName} - ${detail.detail}`,
+            range: {
+              startLine: startLine + 1,
+              endLine: detail.endLine
+            }
+          });
+        }
+      }
+    }
+    
+    // Recursively process child blocks
+    if (detail.childDetails && detail.childDetails.length > 0) {
+      processBlockDetails(detail.childDetails, codeLenses, lines, moduleName, availableModules);
+    }
+  }
+}
 
 /**
  * Extract DSL modules and their blocks from source code

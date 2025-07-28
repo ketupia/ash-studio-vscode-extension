@@ -97,6 +97,7 @@ export class AshParserService {
         errors: [],
         isAshFile: false,
         parserName: "EmptyFallback",
+        codeLenses: [],
       };
     }
 
@@ -151,6 +152,7 @@ export class AshParserService {
         errors: [],
         isAshFile: false,
         parserName: "LanguageFilter",
+        codeLenses: [],
       };
     }
 

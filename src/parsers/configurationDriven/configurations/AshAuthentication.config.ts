@@ -1,4 +1,4 @@
-import { ModuleInterface } from "./moduleInterface";
+import { ModuleInterface } from "../moduleInterface";
 
 const AshPaperTrailConfig: ModuleInterface = {
   displayName: "Ash Authentication",

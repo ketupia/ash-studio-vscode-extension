@@ -25,6 +25,7 @@ export class ConfigurationDrivenParser implements Parser {
         errors: [],
         isAshFile: false,
         parserName: "ConfigurationDrivenParser",
+        codeLenses: [],
       };
     }
 
@@ -49,6 +50,7 @@ export class ConfigurationDrivenParser implements Parser {
         ],
         isAshFile: true,
         parserName: "ConfigurationDrivenParser",
+        codeLenses: [],
       };
     }
   }

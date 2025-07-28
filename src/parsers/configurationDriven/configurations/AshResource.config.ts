@@ -1,4 +1,4 @@
-import { ModuleInterface } from "./moduleInterface";
+import { ModuleInterface } from "../moduleInterface";
 
 const AshResourceConfig: ModuleInterface = {
   displayName: "Ash.Resource",
@@ -40,8 +40,11 @@ const AshResourceConfig: ModuleInterface = {
     },
   ],
   codeLenses: {
+    resource: "https://hexdocs.pm/ash/dsl-ash-resource.html",
+    attributes: "https://hexdocs.pm/ash/dsl-ash-resource.html#attributes",
     calculations: "https://hexdocs.pm/ash/calculations.html",
     validations: "https://hexdocs.pm/ash/validations.html",
+    actions: "https://hexdocs.pm/ash/actions.html",
   },
 };
 

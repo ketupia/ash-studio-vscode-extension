@@ -1,6 +1,6 @@
 const assert = require('assert');
 const { extractModulesForTesting } = require('../../../../dist/src/parsers/configurationDriven/moduleParser');
-const AshResourceConfig = require('../../../../dist/src/parsers/configurationDriven/AshResource.config').default;
+const AshResourceConfig = require('../../../../dist/src/parsers/configurationDriven/configurations/AshResource.config').default;
 
 describe('Recursive DSL Parsing', () => {
   it('should correctly parse resource with actual Ash configuration', () => {
