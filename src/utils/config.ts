@@ -8,7 +8,6 @@ import { LogLevel } from "./logger";
 
 export interface AshStudioConfig {
   logLevel: LogLevel;
-  parserStrategy: "hybrid" | "grammar-only" | "simple-only";
   enablePerformanceMetrics: boolean;
   sidebarAutoRefresh: boolean;
   parseDebounceMs: number;
@@ -37,8 +36,6 @@ export class ConfigurationManager {
     switch (key) {
       case "logLevel":
         return config.get("logLevel", LogLevel.INFO) as AshStudioConfig[T];
-      case "parserStrategy":
-        return config.get("parserStrategy", "hybrid") as AshStudioConfig[T];
       case "enablePerformanceMetrics":
         return config.get(
           "enablePerformanceMetrics",
@@ -82,7 +79,6 @@ export class ConfigurationManager {
   getAll(): AshStudioConfig {
     return {
       logLevel: this.get("logLevel"),
-      parserStrategy: this.get("parserStrategy"),
       enablePerformanceMetrics: this.get("enablePerformanceMetrics"),
       sidebarAutoRefresh: this.get("sidebarAutoRefresh"),
       parseDebounceMs: this.get("parseDebounceMs"),

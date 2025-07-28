@@ -1,7 +1,5 @@
 import * as vscode from "vscode";
 import { Parser, ParseResult } from "./parsers/parser";
-import { AshParser } from "./parsers/grammarBased/ashParser";
-import { SimpleParser } from "./parsers/regexBased/simpleParser";
 import { ConfigurationDrivenParser } from "./parsers/configurationDriven/configurationDrivenParser";
 import { Logger } from "./utils/logger";
 
@@ -16,11 +14,9 @@ export class AshParserService {
   >();
   private _onDidParse = new vscode.EventEmitter<ParseResult>();
 
-  // List of parsers to try in order - first one that succeeds wins
+  // Parser implementation
   private parsers: Parser[] = [
     ConfigurationDrivenParser.getInstance(),
-    // AshParser.getInstance(),
-    // new SimpleParser(),
   ];
 
   public readonly onDidParse = this._onDidParse.event;
