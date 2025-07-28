@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { AshParserService } from "../ashParserService";
+import { ParsedSection } from "../parsers/parser";
 
 export function registerAshQuickPick(
   context: vscode.ExtensionContext,
@@ -36,8 +37,8 @@ export function registerAshQuickPick(
 
       // Create QuickPick items from parsed sections
       const items = parseResult.sections.map(section => ({
-        label: section.name,
-        description: `Line ${section.line + 1}`, // Convert to 1-based for display
+        label: section.section,
+        description: `Line ${section.startLine}`, // Use 1-based line number directly
         section: section, // Keep reference to full section data
       }));
 
@@ -52,8 +53,8 @@ export function registerAshQuickPick(
 
       if (pick && pick.section) {
         const position = new vscode.Position(
-          pick.section.line,
-          pick.section.column
+          pick.section.startLine - 1, // Convert to 0-based for VS Code
+          0 // Start at beginning of line
         );
         vscode.window.activeTextEditor!.revealRange(
           new vscode.Range(position, position),

@@ -35,11 +35,10 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AshParserService = void 0;
 const vscode = __importStar(require("vscode"));
-const ashParser_1 = require("./ashParser");
-const simpleParser_1 = require("./simpleParser");
+const ashParser_1 = require("./parsers/grammarBased/ashParser");
+const simpleParser_1 = require("./parsers/regexBased/simpleParser");
+const configurationDrivenParser_1 = require("./parsers/configurationDriven/configurationDrivenParser");
 const logger_1 = require("./utils/logger");
-// Strategy: Try detailed parser first, fallback to simple parser on errors
-const USE_GRACEFUL_FALLBACK = true;
 /**
  * Centralized parser service that caches parse results and manages updates
  */
@@ -47,6 +46,12 @@ class AshParserService {
     static instance;
     parseCache = new Map();
     _onDidParse = new vscode.EventEmitter();
+    // List of parsers to try in order - first one that succeeds wins
+    parsers = [
+        configurationDrivenParser_1.ConfigurationDrivenParser.getInstance(),
+        ashParser_1.AshParser.getInstance(),
+        new simpleParser_1.SimpleParser(),
+    ];
     onDidParse = this._onDidParse.event;
     static getInstance() {
         if (!AshParserService.instance) {
@@ -65,68 +70,47 @@ class AshParserService {
         if (cached && cached.version === version) {
             return cached.result;
         }
-        // Parse the document with graceful fallback strategy
-        let result;
+        // Try parsers in order until one succeeds
+        const source = document.getText();
         const logger = logger_1.Logger.getInstance();
-        if (USE_GRACEFUL_FALLBACK) {
+        let result = null;
+        for (const parser of this.parsers) {
             try {
-                // Pre-check for ANY complex patterns that might crash nearley
-                const text = document.getText();
-                // Skip grammar parser for files with any potentially problematic patterns
-                const hasComplexExpr = text.includes("expr(");
-                const hasStringInterpolation = text.includes("#{");
-                const hasMultiLineStructures = text.includes("\n") && text.includes("do\n");
-                const hasConditionalLogic = text.includes("if ") && text.includes("do:");
-                const isLargeFile = text.length > 5000; // Skip large files entirely
-                if (hasComplexExpr ||
-                    hasStringInterpolation ||
-                    hasMultiLineStructures ||
-                    hasConditionalLogic ||
-                    isLargeFile) {
-                    logger.info("AshParserService", "Detected potentially problematic patterns, using simple parser only", {
-                        hasComplexExpr,
-                        hasStringInterpolation,
-                        hasMultiLineStructures,
-                        hasConditionalLogic,
-                        isLargeFile,
-                        fileSize: text.length,
+                const parseResult = parser.parse(source);
+                // Consider a parser successful if:
+                // 1. It identifies the file as an Ash file, OR
+                // 2. It's the last parser (fallback)
+                const isLastParser = parser === this.parsers[this.parsers.length - 1];
+                if (parseResult.isAshFile || isLastParser) {
+                    logger.debug("AshParserService", `Parser ${parseResult.parserName} succeeded`, {
+                        isAshFile: parseResult.isAshFile,
+                        sectionsFound: parseResult.sections.length,
+                        errorsFound: parseResult.errors.length,
+                        isLastParser,
                     });
-                    result = (0, simpleParser_1.parseAshDocumentSimple)(document);
+                    result = parseResult;
+                    break;
                 }
                 else {
-                    // Only try grammar parser on very simple, small files
-                    logger.debug("AshParserService", "File appears safe for grammar parser");
-                    try {
-                        result = (0, ashParser_1.parseAshDocument)(document);
-                        if (result.errors && result.errors.length > 0) {
-                            logger.info("AshParserService", "Grammar parser had errors, falling back to simple parser");
-                            result = (0, simpleParser_1.parseAshDocumentSimple)(document);
-                        }
-                        else {
-                            logger.debug("AshParserService", "Grammar parser succeeded");
-                        }
-                    }
-                    catch (grammarError) {
-                        logger.warn("AshParserService", "Grammar parser crashed, using simple parser", {
-                            error: grammarError instanceof Error
-                                ? grammarError.message
-                                : String(grammarError),
-                        });
-                        result = (0, simpleParser_1.parseAshDocumentSimple)(document);
-                    }
+                    logger.debug("AshParserService", `Parser ${parseResult.parserName} did not identify file as Ash file, trying next parser`);
                 }
             }
             catch (error) {
-                // Ultimate fallback if anything goes wrong
-                logger.error("AshParserService", "Parser service error, using emergency fallback", {
+                logger.warn("AshParserService", `Parser failed with error, trying next parser`, {
                     error: error instanceof Error ? error.message : String(error),
                 });
-                result = (0, simpleParser_1.parseAshDocumentSimple)(document);
+                // Continue to next parser
             }
         }
-        else {
-            // Direct simple parser (for testing)
-            result = (0, simpleParser_1.parseAshDocumentSimple)(document);
+        // Fallback if no parser succeeded (shouldn't happen with SimpleParser as fallback)
+        if (!result) {
+            logger.error("AshParserService", "All parsers failed, using empty result");
+            result = {
+                sections: [],
+                errors: [],
+                isAshFile: false,
+                parserName: "EmptyFallback",
+            };
         }
         // Cache the result
         this.parseCache.set(uri, { result, version });
@@ -169,6 +153,7 @@ class AshParserService {
                 sections: [],
                 errors: [],
                 isAshFile: false,
+                parserName: "LanguageFilter",
             };
         }
         return this.getParseResult(document);

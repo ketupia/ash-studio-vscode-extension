@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
-import { Logger } from "./utils/logger";
+import { Logger } from "../../utils/logger";
+import { Parser, ParseResult, ParsedSection, ParseError } from "../parser";
 // Import the compiled Nearley grammar
 import * as nearley from "nearley";
 import grammar from "./nearley/ashGrammar.js";
@@ -20,63 +21,9 @@ function isASTNode(value: unknown): value is ASTNode {
 }
 
 /**
- * Core interfaces for Ash DSL parsing integration
+ * Grammar-based parser implementation using Nearley
  */
-
-export interface ParseError {
-  message: string;
-  line: number;
-  column: number;
-  offset: number;
-}
-
-export interface AshSectionDetail {
-  type: string; // e.g., "attribute", "action", "relationship"
-  name: string; // e.g., "email", "create", "posts"
-  line: number; // 0-based line number
-  column: number; // 0-based column number
-  endLine: number; // 0-based end line
-  properties: Map<string, unknown>; // parsed properties like type: :string, allow_nil?: true
-  rawContent: string; // original text content
-}
-
-export interface AshSection {
-  type:
-    | "resource"
-    | "domain"
-    | "attributes"
-    | "actions"
-    | "relationships"
-    | "calculations"
-    | "aggregates"
-    | "identities"
-    | "code_interface"
-    | "postgres"
-    | "policies"
-    | "preparations"
-    | "changes"
-    | "validations"
-    | "generic";
-  name: string; // section name, e.g., "attributes", "actions"
-  line: number; // 0-based line number where section starts
-  column: number; // 0-based column number
-  endLine: number; // 0-based line number where section ends
-  endColumn: number; // 0-based end column
-  children: AshSectionDetail[]; // parsed details within this section
-  rawContent: string; // original text content of entire section
-}
-
-export interface AshParseResult {
-  sections: AshSection[];
-  errors: ParseError[];
-  isAshFile: boolean; // whether this appears to be an Ash Resource/Domain file
-  moduleName?: string; // extracted module name if available
-}
-
-/**
- * Main parser integration class
- */
-export class AshParser {
+export class AshParser implements Parser {
   private static instance: AshParser;
 
   public static getInstance(): AshParser {
@@ -87,9 +34,16 @@ export class AshParser {
   }
 
   /**
+   * Parse Ash DSL content from raw text (required by Parser interface)
+   */
+  public parse(source: string): ParseResult {
+    return this.parseText(source);
+  }
+
+  /**
    * Parse Ash DSL content from a VS Code document
    */
-  public parseDocument(document: vscode.TextDocument): AshParseResult {
+  public parseDocument(document: vscode.TextDocument): ParseResult {
     const text = document.getText();
     return this.parseText(text);
   }
@@ -97,7 +51,7 @@ export class AshParser {
   /**
    * Parse Ash DSL content from raw text
    */
-  public parseText(text: string): AshParseResult {
+  public parseText(text: string): ParseResult {
     // Quick check if this looks like an Ash file
     const isAshFile = this.detectAshFile(text);
 
@@ -106,6 +60,7 @@ export class AshParser {
         sections: [],
         errors: [],
         isAshFile: false,
+        parserName: "AshParser",
       };
     }
 
@@ -139,6 +94,7 @@ export class AshParser {
             },
           ],
           isAshFile: true,
+          parserName: "AshParser",
         };
       }
 
@@ -159,6 +115,7 @@ export class AshParser {
         errors: [],
         isAshFile: true,
         moduleName,
+        parserName: "AshParser",
       };
     } catch (error: unknown) {
       // More detailed error logging to identify crash location
@@ -175,6 +132,7 @@ export class AshParser {
         sections: [],
         errors: [parseError],
         isAshFile: true,
+        parserName: "AshParser",
       };
     }
   }
@@ -191,8 +149,8 @@ export class AshParser {
   /**
    * Extract sections from the parsed AST
    */
-  private extractSections(ast: unknown, originalText: string): AshSection[] {
-    const sections: AshSection[] = [];
+  private extractSections(ast: unknown, originalText: string): ParsedSection[] {
+    const sections: ParsedSection[] = [];
     const logger = Logger.getInstance();
 
     // AST structure exploration and section extraction
@@ -214,7 +172,7 @@ export class AshParser {
    */
   private walkASTForSections(
     node: unknown,
-    sections: AshSection[],
+    sections: ParsedSection[],
     originalText: string
   ): void {
     if (!node) return;
@@ -294,7 +252,7 @@ export class AshParser {
   private createSectionFromNode(
     node: unknown,
     originalText: string
-  ): AshSection | null {
+  ): ParsedSection | null {
     if (!isASTNode(node)) {
       return null;
     }
@@ -307,13 +265,11 @@ export class AshParser {
       // This is simplified - in a real implementation we'd track positions through the parser
       const lines = originalText.split("\n");
       let line = 0;
-      let column = 0;
 
       // Find the section in the original text
       for (let i = 0; i < lines.length; i++) {
         if (lines[i].includes(identifier) && lines[i].includes("do")) {
           line = i;
-          column = lines[i].indexOf(identifier);
           break;
         }
       }
@@ -328,13 +284,10 @@ export class AshParser {
       }
 
       return {
-        type: this.mapSectionType(identifier),
-        name: identifier,
-        line,
-        column,
-        endLine,
-        endColumn: 3, // "end".length
-        children: [], // TODO: Extract section details in future iteration
+        section: identifier,
+        details: [], // TODO: Extract section details in future iteration
+        startLine: line + 1, // Convert to 1-based
+        endLine: endLine + 1, // Convert to 1-based
         rawContent: lines.slice(line, endLine + 1).join("\n"),
       };
     } catch (error) {
@@ -374,33 +327,12 @@ export class AshParser {
   }
 
   /**
-   * Map section name to our section type
-   */
-  private mapSectionType(sectionName: string): AshSection["type"] {
-    const typeMap: Record<string, AshSection["type"]> = {
-      attributes: "attributes",
-      actions: "actions",
-      relationships: "relationships",
-      calculations: "calculations",
-      aggregates: "aggregates",
-      identities: "identities",
-      policies: "policies",
-      preparations: "preparations",
-      changes: "changes",
-      validations: "validations",
-      code_interface: "code_interface",
-      postgres: "postgres",
-    };
-
-    return typeMap[sectionName] || "generic";
-  }
-
-  /**
    * Extract module name from AST
-   * @param _ast - AST node (currently unused, for future implementation)
    */
-  private extractModuleName(_ast: unknown): string | undefined {
+  private extractModuleName(ast: unknown): string | undefined {
     // TODO: Implement module name extraction from AST
+    // For now, just return undefined since AST structure needs to be analyzed
+    console.log("AST for module name extraction:", ast);
     return undefined;
   }
 
@@ -451,15 +383,13 @@ export class AshParser {
 /**
  * Convenience function to get parser instance and parse a document
  */
-export function parseAshDocument(
-  document: vscode.TextDocument
-): AshParseResult {
+export function parseAshDocument(document: vscode.TextDocument): ParseResult {
   return AshParser.getInstance().parseDocument(document);
 }
 
 /**
  * Convenience function to parse text directly
  */
-export function parseAshText(text: string): AshParseResult {
+export function parseAshText(text: string): ParseResult {
   return AshParser.getInstance().parseText(text);
 }

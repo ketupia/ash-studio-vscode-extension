@@ -62,22 +62,24 @@ class AshSidebarProvider {
         }
         if (!element) {
             // Top-level: show main DSL sections
-            return parseResult.sections.map(section => new AshSidebarItem(section.name, // Just the section name (e.g., "attributes", "actions")
-            section.children && section.children.length > 0
+            return parseResult.sections.map(section => new AshSidebarItem(section.section, // Use section.section instead of section.name
+            section.details && section.details.length > 0
                 ? vscode.TreeItemCollapsibleState.Collapsed
-                : vscode.TreeItemCollapsibleState.None, section.line, undefined, {
+                : vscode.TreeItemCollapsibleState.None, section.startLine, // Use startLine instead of line
+            undefined, {
                 command: "ash-studio.revealSectionOrSubBlock",
                 title: "Go to Section",
-                arguments: [section.line],
+                arguments: [section.startLine],
             }));
         }
         else if (element.sectionLine !== undefined) {
             // Children: show section details within a section
-            const section = parseResult.sections.find(s => s.line === element.sectionLine);
-            if (!section || !section.children || section.children.length === 0)
+            const section = parseResult.sections.find(s => s.startLine === element.sectionLine);
+            if (!section || !section.details || section.details.length === 0)
                 return [];
-            return section.children.map(detail => new AshSidebarItem(`${detail.name}`, // Just the detail name (e.g., "email", "create")
-            vscode.TreeItemCollapsibleState.None, detail.line, section.name, {
+            return section.details.map((detail) => new AshSidebarItem(`${detail.name || detail.detail}`, // Use detail.name or fallback to detail.detail
+            vscode.TreeItemCollapsibleState.None, detail.line, section.section, // Use section.section instead of section.name
+            {
                 command: "ash-studio.revealSectionOrSubBlock",
                 title: "Go to Detail",
                 arguments: [detail.line],

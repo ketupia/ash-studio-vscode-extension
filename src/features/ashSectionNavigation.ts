@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { AshParserService } from "../ashParserService";
+import { ParsedSection } from "../parsers/parser";
 
 export function registerAshSectionNavigation(
   context: vscode.ExtensionContext,
@@ -26,12 +27,12 @@ export function registerAshSectionNavigation(
 
       // Return only main DSL sections for breadcrumbs - no nested details
       return parseResult.sections.map(section => {
-        const startPos = new vscode.Position(section.line, section.column);
-        const endPos = new vscode.Position(section.endLine, section.endColumn);
+        const startPos = new vscode.Position(section.startLine - 1, 0); // Convert to 0-based
+        const endPos = new vscode.Position(section.endLine - 1, 0); // Convert to 0-based
 
         return new vscode.DocumentSymbol(
-          section.name,
-          section.type,
+          section.section,
+          "Section", // Generic type since ParsedSection doesn't have a type field
           vscode.SymbolKind.Class,
           new vscode.Range(startPos, endPos),
           new vscode.Range(startPos, startPos)

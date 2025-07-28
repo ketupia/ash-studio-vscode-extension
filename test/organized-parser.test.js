@@ -3,32 +3,38 @@
  *
  * This test suite validates all parser components in an organized structure:
  * - Grammar Parser Tests (Nearley-based)
- * - Simple Parser Tests (Production fallback)
- * - Hybrid Architecture Tests (Integration between parsers)
+ * - Configuration-Driven Parser Tests
+ * - Regex-Based Parser Tests (Production fallback)
+ * - Integration Tests (Parser Service coordination)
  */
 
-console.log("🧪 Loading Ash Studio Parser Tests (Organized Structure)...\n");
+console.log("🧪 Loading Ash Studio Parser Tests (Reorganized Structure)...\n");
 
 // Grammar Parser Tests (Nearley-based)
 console.log("📝 Grammar Parser Tests:");
-require("./unit/parsers/grammar/basic-module.test");
-require("./unit/parsers/grammar/module-attributes.test");
-require("./unit/parsers/grammar/imports.test");
-require("./unit/parsers/grammar/strings.test");
-require("./unit/parsers/grammar/use-statements.test");
-require("./unit/parsers/grammar/identifiers.test");
-require("./unit/parsers/grammar/lists.test");
-require("./unit/parsers/grammar/literals.test");
-require("./unit/parsers/grammar/ash-blocks.test");
-require("./unit/parsers/grammar/integration.test");
+require("./unit/parsers/grammarBased/basic-module.test");
+require("./unit/parsers/grammarBased/module-attributes.test");
+require("./unit/parsers/grammarBased/imports.test");
+require("./unit/parsers/grammarBased/strings.test");
+require("./unit/parsers/grammarBased/use-statements.test");
+require("./unit/parsers/grammarBased/identifiers.test");
+require("./unit/parsers/grammarBased/lists.test");
+require("./unit/parsers/grammarBased/literals.test");
+require("./unit/parsers/grammarBased/ash-blocks.test");
+require("./unit/parsers/grammarBased/integration.test");
 
-// Simple Parser Tests (Production fallback)
-console.log("\n🛡️  Simple Parser Tests:");
-require("./unit/parsers/simple/simple-parser.test");
+// Configuration-Driven Parser Tests
+console.log("\n⚙️  Configuration-Driven Parser Tests:");
+require("./unit/parsers/configurationDriven/findUseDeclarations.test");
+require("./unit/parsers/configurationDriven/identifyConfiguredModules.test");
 
-// Hybrid Architecture Tests
-console.log("\n🔄 Hybrid Parser Tests:");
-require("./unit/parsers/hybrid/hybrid-parser.test");
+// Regex-Based Parser Tests (Production fallback)
+console.log("\n🛡️  Regex-Based Parser Tests:");
+require("./unit/parsers/regexBased/simple-parser.test");
+
+// Integration Tests
+console.log("\n🔄 Parser Service Integration Tests:");
+require("./integration/parser-service.test");
 
 console.log("\n✅ All organized parser tests loaded successfully!");
 console.log(

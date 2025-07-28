@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { AshParserService } from "../ashParserService";
+import { ParsedSection, ParsedDetail } from "../parsers/parser";
 import { Logger } from "../utils/logger";
 
 export class AshSidebarProvider
@@ -45,34 +46,34 @@ export class AshSidebarProvider
       return parseResult.sections.map(
         section =>
           new AshSidebarItem(
-            section.name, // Just the section name (e.g., "attributes", "actions")
-            section.children && section.children.length > 0
+            section.section, // Use section.section instead of section.name
+            section.details && section.details.length > 0
               ? vscode.TreeItemCollapsibleState.Collapsed
               : vscode.TreeItemCollapsibleState.None,
-            section.line,
+            section.startLine, // Use startLine instead of line
             undefined,
             {
               command: "ash-studio.revealSectionOrSubBlock",
               title: "Go to Section",
-              arguments: [section.line],
+              arguments: [section.startLine],
             }
           )
       );
     } else if (element.sectionLine !== undefined) {
       // Children: show section details within a section
       const section = parseResult.sections.find(
-        s => s.line === element.sectionLine
+        s => s.startLine === element.sectionLine
       );
-      if (!section || !section.children || section.children.length === 0)
+      if (!section || !section.details || section.details.length === 0)
         return [];
 
-      return section.children.map(
-        detail =>
+      return section.details.map(
+        (detail: ParsedDetail) =>
           new AshSidebarItem(
-            `${detail.name}`, // Just the detail name (e.g., "email", "create")
+            `${detail.name || detail.detail}`, // Use detail.name or fallback to detail.detail
             vscode.TreeItemCollapsibleState.None,
             detail.line,
-            section.name,
+            section.section, // Use section.section instead of section.name
             {
               command: "ash-studio.revealSectionOrSubBlock",
               title: "Go to Detail",

@@ -58,8 +58,8 @@ function registerAshQuickPick(context, parserService) {
         }
         // Create QuickPick items from parsed sections
         const items = parseResult.sections.map(section => ({
-            label: section.name,
-            description: `Line ${section.line + 1}`, // Convert to 1-based for display
+            label: section.section,
+            description: `Line ${section.startLine}`, // Use 1-based line number directly
             section: section, // Keep reference to full section data
         }));
         if (items.length === 0) {
@@ -70,7 +70,9 @@ function registerAshQuickPick(context, parserService) {
             placeHolder: "Go to Ash section...",
         });
         if (pick && pick.section) {
-            const position = new vscode.Position(pick.section.line, pick.section.column);
+            const position = new vscode.Position(pick.section.startLine - 1, // Convert to 0-based for VS Code
+            0 // Start at beginning of line
+            );
             vscode.window.activeTextEditor.revealRange(new vscode.Range(position, position), vscode.TextEditorRevealType.InCenter);
             vscode.window.activeTextEditor.selection = new vscode.Selection(position, position);
         }

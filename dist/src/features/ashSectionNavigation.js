@@ -54,9 +54,10 @@ function registerAshSectionNavigation(context, parserService) {
             }
             // Return only main DSL sections for breadcrumbs - no nested details
             return parseResult.sections.map(section => {
-                const startPos = new vscode.Position(section.line, section.column);
-                const endPos = new vscode.Position(section.endLine, section.endColumn);
-                return new vscode.DocumentSymbol(section.name, section.type, vscode.SymbolKind.Class, new vscode.Range(startPos, endPos), new vscode.Range(startPos, startPos));
+                const startPos = new vscode.Position(section.startLine - 1, 0); // Convert to 0-based
+                const endPos = new vscode.Position(section.endLine - 1, 0); // Convert to 0-based
+                return new vscode.DocumentSymbol(section.section, "Section", // Generic type since ParsedSection doesn't have a type field
+                vscode.SymbolKind.Class, new vscode.Range(startPos, endPos), new vscode.Range(startPos, startPos));
             });
         },
     };
