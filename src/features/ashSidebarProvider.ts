@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { AshParserService } from "../ashParserService";
-import { ParsedSection, ParsedDetail } from "../parsers/parser";
+import { ParsedDetail } from "../parsers/parser";
 import { Logger } from "../utils/logger";
 
 export class AshSidebarProvider
@@ -56,11 +56,13 @@ export class AshSidebarProvider
               command: "ash-studio.revealSectionOrSubBlock",
               title: "Go to Section",
               arguments: [section.startLine],
-            }
+            },
+            undefined,
+            true // Mark as section
           )
       );
-    } else if (element.sectionLine !== undefined) {
-      // Children: show section details within a section
+    } else if (element.isSection && element.sectionLine !== undefined) {
+      // Level 1: Show details within a section
       const section = parseResult.sections.find(
         s => s.startLine === element.sectionLine
       );
@@ -68,22 +70,45 @@ export class AshSidebarProvider
         return [];
 
       return section.details.map(
-        (detail: ParsedDetail) =>
-          new AshSidebarItem(
-            `${detail.name || detail.detail}`, // Use detail.name or fallback to detail.detail
-            vscode.TreeItemCollapsibleState.None,
-            detail.line,
-            section.section, // Use section.section instead of section.name
-            {
-              command: "ash-studio.revealSectionOrSubBlock",
-              title: "Go to Detail",
-              arguments: [detail.line],
-            }
-          )
+        (detail: ParsedDetail) => this.createDetailTreeItem(detail)
+      );
+    } else if (element.detail && element.detail.childDetails && element.detail.childDetails.length > 0) {
+      // Level 2+: Show nested details (recursive handling)
+      return element.detail.childDetails.map(
+        (childDetail: ParsedDetail) => this.createDetailTreeItem(childDetail)
       );
     }
 
     return [];
+  }
+  
+  /**
+   * Helper method to create a tree item for a detail, handling nested details recursively
+   */
+  private createDetailTreeItem(detail: ParsedDetail): AshSidebarItem {
+    const hasChildren = detail.childDetails && detail.childDetails.length > 0;
+    
+    // Create a label that shows both block type and name (if available)
+    let label = detail.detail; // Default to just the block type
+    if (detail.name && detail.name !== detail.detail) {
+      label = `${detail.detail} ${detail.name}`; // Show both type and name
+    }
+    
+    return new AshSidebarItem(
+      label,
+      hasChildren
+        ? vscode.TreeItemCollapsibleState.Collapsed
+        : vscode.TreeItemCollapsibleState.None,
+      detail.line,
+      undefined, // Remove parent section display
+      {
+        command: "ash-studio.revealSectionOrSubBlock",
+        title: "Go to Detail",
+        arguments: [detail.line],
+      },
+      detail, // Pass the detail for recursive nesting
+      false // Not a section
+    );
   }
 
   refresh(): void {
@@ -92,12 +117,19 @@ export class AshSidebarProvider
 }
 
 export class AshSidebarItem extends vscode.TreeItem {
+  // Add a property to store the detail for recursive nesting
+  public readonly detail?: ParsedDetail;
+  // Add a property to track if this is a section item
+  public readonly isSection?: boolean;
+
   constructor(
     public readonly label: string,
     public readonly collapsibleState: vscode.TreeItemCollapsibleState,
     public readonly sectionLine?: number,
     public readonly parentSection?: string,
-    public readonly command?: vscode.Command
+    public readonly command?: vscode.Command,
+    detail?: ParsedDetail,
+    isSection: boolean = false
   ) {
     super(label, collapsibleState);
     if (sectionLine !== undefined) {
@@ -110,5 +142,7 @@ export class AshSidebarItem extends vscode.TreeItem {
     if (parentSection) {
       this.description = parentSection;
     }
+    this.detail = detail;
+    this.isSection = isSection;
   }
 }

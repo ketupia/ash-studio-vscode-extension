@@ -46,7 +46,6 @@ Each `DslBlock` describes a section or item in the DSL:
 - `namePattern`: (Optional) Regex to capture the name of child items (e.g.,
   `attribute :name, :string do`).
 - `children`: (Optional) Array of child `DslBlock` definitions for nested parsing.
-- `groupChildren`: (Optional) Whether to group child items by block name in the sidebar.
 
 ### How File Processing Works
 

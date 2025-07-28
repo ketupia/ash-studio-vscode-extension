@@ -1,4 +1,4 @@
-import * as vscode from "vscode";
+// No VSCode imports needed in the parser interface
 
 /**
  * Unified interfaces for all Ash DSL parsers
@@ -26,6 +26,8 @@ export interface ParsedDetail {
   rawContent?: string;
   /** Additional properties parsed from the detail */
   properties?: Map<string, unknown>;
+  /** Child details for nested structures (recursive) */
+  childDetails?: ParsedDetail[];
 }
 
 export interface ParsedSection {

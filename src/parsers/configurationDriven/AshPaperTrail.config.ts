@@ -6,8 +6,6 @@ const AshPaperTrailConfig: ModuleInterface = {
   dslBlocks: [
     {
       blockName: "paper_trail",
-      doBlock: "required",
-      groupChildren: false,
       children: [],
     },
   ],

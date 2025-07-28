@@ -1,6 +1,5 @@
-import { Parser, ParseResult, ParsedSection } from "../parser";
-import { analyzeElixirFile } from "./moduleParser";
-import { getAllAvailableConfigurations } from "./moduleParser";
+import { Parser, ParseResult } from "../parser";
+import { moduleParser, getAllAvailableConfigurations } from "./moduleParser";
 
 /**
  * Configuration-driven parser that uses ModuleInterface configurations
@@ -30,35 +29,13 @@ export class ConfigurationDrivenParser implements Parser {
     }
 
     try {
-      // Use the existing analyzeElixirFile function
-      const analysisResult = analyzeElixirFile(source);
-
-      // Convert from old interface to new unified interface
-      const sections: ParsedSection[] = analysisResult.parsedSections.map(
-        oldSection => ({
-          section: oldSection.section,
-          details: oldSection.details.map(oldDetail => ({
-            section: oldDetail.section,
-            detail: oldDetail.detail,
-            name: oldDetail.name,
-            line: oldDetail.line,
-            column: oldDetail.column,
-            endLine: oldDetail.endLine,
-            rawContent: undefined, // Not provided by current implementation
-            properties: undefined, // Not provided by current implementation
-          })),
-          startLine: oldSection.startLine,
-          endLine: oldSection.endLine,
-          rawContent: undefined, // Not provided by current implementation
-        })
-      );
-
-      return {
-        sections,
-        errors: [], // Configuration parser doesn't currently provide errors
-        isAshFile: true,
-        parserName: "ConfigurationDrivenParser",
-      };
+      // Delegate to the ModuleParser implementation
+      const result = moduleParser.parse(source);
+      
+      // Just update the parser name to maintain identity
+      result.parserName = "ConfigurationDrivenParser";
+      
+      return result;
     } catch (error) {
       return {
         sections: [],

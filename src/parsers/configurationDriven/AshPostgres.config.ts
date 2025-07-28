@@ -6,8 +6,6 @@ const AshPostgresConfig: ModuleInterface = {
   dslBlocks: [
     {
       blockName: "postgres",
-      doBlock: "required",
-      groupChildren: false,
       children: [],
     },
   ],

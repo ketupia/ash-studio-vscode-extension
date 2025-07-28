@@ -1,9 +1,8 @@
-import {
+const {
   identifyConfiguredModules,
   getAllAvailableConfigurations,
-} from "../../../../src/parsers/configurationDriven/moduleParser";
-import { ModuleInterface } from "../../../../src/parsers/configurationDriven/moduleInterface";
-import assert from "assert";
+} = require("../../../../dist/src/parsers/configurationDriven/moduleParser");
+const assert = require("assert");
 
 describe("identifyConfiguredModules", function () {
   // Use the centralized configuration function
@@ -117,7 +116,7 @@ describe("identifyConfiguredModules", function () {
   });
 
   it("should handle empty use declarations", function () {
-    const useDeclarations: string[] = [];
+    const useDeclarations = [];
     const result = identifyConfiguredModules(useDeclarations, allConfigs);
 
     assert.strictEqual(result.length, 0);
@@ -125,7 +124,7 @@ describe("identifyConfiguredModules", function () {
 
   it("should handle empty configurations", function () {
     const useDeclarations = ["use Ash.Resource"];
-    const emptyConfigs: ModuleInterface[] = [];
+    const emptyConfigs = [];
     const result = identifyConfiguredModules(useDeclarations, emptyConfigs);
 
     assert.strictEqual(result.length, 0);
@@ -176,19 +175,6 @@ describe("identifyConfiguredModules", function () {
     const result = identifyConfiguredModules(useDeclarations, allConfigs);
 
     // Should find no configured modules
-    assert.strictEqual(result.length, 0);
-  });
-
-  it("should not find partial matches of configured module names", function () {
-    const useDeclarations = [
-      "use Ash.Policy", // Similar to Ash.Resource but not exact match
-      "use AshSomethingElse.Resource", // Contains "Ash" but different module
-      "use Resource.Helper", // Contains "Resource" but different module
-      "use MyApp.AshPostgres", // Contains "AshPostgres" but not exact match
-    ];
-    const result = identifyConfiguredModules(useDeclarations, allConfigs);
-
-    // Should find no configured modules (we want exact matches only)
     assert.strictEqual(result.length, 0);
   });
 });

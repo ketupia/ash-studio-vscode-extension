@@ -6,50 +6,42 @@ const AshResourceConfig: ModuleInterface = {
   dslBlocks: [
     {
       blockName: "attributes",
-      doBlock: "required",
-      groupChildren: true,
       children: [
         {
           blockName: "attribute",
-          doBlock: "optional",
-          namePattern: "^w+",
+          namePattern: "(:\\w+|\\w+)",
         },
       ],
     },
     {
       blockName: "actions",
-      doBlock: "required",
       children: [
         {
           blockName: "create",
-          doBlock: "required",
-          namePattern: "^:?(\\w+)",
+          namePattern: "(:\\w+|\\w+)",
         },
         {
           blockName: "read",
-          doBlock: "optional",
-          namePattern: "^:?(\\w+)",
+          namePattern: "(:\\w+|\\w+)",
         },
         {
           blockName: "update",
-          doBlock: "optional",
-          namePattern: "^:?(\\w+)",
+          namePattern: "(:\\w+|\\w+)",
         },
         {
           blockName: "destroy",
-          doBlock: "optional",
-          namePattern: "^:?(\\w+)",
+          namePattern: "(:\\w+|\\w+)",
         },
         {
           blockName: "action",
-          doBlock: "optional",
-          namePattern: "^:?(\\w+)",
+          namePattern: "(:\\w+|\\w+)",
         },
       ],
     },
   ],
   codeLenses: {
-    validate: "https://hexdocs.pm/ash/validations.html",
+    calculations: "https://hexdocs.pm/ash/calculations.html",
+    validations: "https://hexdocs.pm/ash/validations.html",
   },
 };
 

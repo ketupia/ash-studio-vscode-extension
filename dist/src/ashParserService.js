@@ -35,8 +35,6 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AshParserService = void 0;
 const vscode = __importStar(require("vscode"));
-const ashParser_1 = require("./parsers/grammarBased/ashParser");
-const simpleParser_1 = require("./parsers/regexBased/simpleParser");
 const configurationDrivenParser_1 = require("./parsers/configurationDriven/configurationDrivenParser");
 const logger_1 = require("./utils/logger");
 /**
@@ -49,8 +47,8 @@ class AshParserService {
     // List of parsers to try in order - first one that succeeds wins
     parsers = [
         configurationDrivenParser_1.ConfigurationDrivenParser.getInstance(),
-        ashParser_1.AshParser.getInstance(),
-        new simpleParser_1.SimpleParser(),
+        // AshParser.getInstance(),
+        // new SimpleParser(),
     ];
     onDidParse = this._onDidParse.event;
     static getInstance() {

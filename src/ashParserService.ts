@@ -19,8 +19,8 @@ export class AshParserService {
   // List of parsers to try in order - first one that succeeds wins
   private parsers: Parser[] = [
     ConfigurationDrivenParser.getInstance(),
-    AshParser.getInstance(),
-    new SimpleParser(),
+    // AshParser.getInstance(),
+    // new SimpleParser(),
   ];
 
   public readonly onDidParse = this._onDidParse.event;
