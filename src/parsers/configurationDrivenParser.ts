@@ -32,10 +32,10 @@ export class ConfigurationDrivenParser implements Parser {
     try {
       // Delegate to the ModuleParser implementation
       const result = moduleParser.parse(source);
-      
+
       // Just update the parser name to maintain identity
       result.parserName = "ConfigurationDrivenParser";
-      
+
       return result;
     } catch (error) {
       return {

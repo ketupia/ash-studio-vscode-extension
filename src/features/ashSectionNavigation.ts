@@ -1,6 +1,5 @@
 import * as vscode from "vscode";
 import { AshParserService } from "../ashParserService";
-import { ParsedSection } from "../parsers/parser";
 
 export function registerAshSectionNavigation(
   context: vscode.ExtensionContext,
@@ -14,7 +13,7 @@ export function registerAshSectionNavigation(
   ];
 
   const provider: vscode.DocumentSymbolProvider = {
-    provideDocumentSymbols(document, token) {
+    provideDocumentSymbols(document) {
       // Use cached result if available, otherwise parse
       let parseResult = parser.getCachedResult(document);
       if (!parseResult) {

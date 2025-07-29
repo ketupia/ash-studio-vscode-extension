@@ -1,4 +1,6 @@
-const { findUseDeclarations } = require("../../../dist/src/parsers/moduleParser");
+const {
+  findUseDeclarations,
+} = require("../../../dist/src/parsers/moduleParser");
 const assert = require("assert");
 
 describe("findUseDeclarations", function () {
@@ -19,7 +21,9 @@ describe("findUseDeclarations", function () {
     const uses = findUseDeclarations(content);
     assert.strictEqual(uses.length, 1);
     assert(uses[0].includes("Ash.Resource"));
-    assert(uses[0].includes("extensions: [AshGraphql.Resource, AshJsonApi.Resource]"));
+    assert(
+      uses[0].includes("extensions: [AshGraphql.Resource, AshJsonApi.Resource]")
+    );
   });
 
   it("should find multiple use declarations", function () {

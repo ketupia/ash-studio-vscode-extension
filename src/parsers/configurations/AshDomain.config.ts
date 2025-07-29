@@ -9,9 +9,10 @@ const AshDomainConfig: ModuleInterface = {
       children: [
         {
           blockName: "resource",
-          namePattern: "([^\\s]+(?:\\([^\\)]*\\))?(?:\\s+[^\\s]+)*?)(?:\\s+do)?",
+          namePattern:
+            "([^\\s]+(?:\\([^\\)]*\\))?(?:\\s+[^\\s]+)*?)(?:\\s+do)?",
           children: [],
-        }
+        },
       ],
     },
   ],

@@ -69,31 +69,35 @@ export class AshSidebarProvider
       if (!section || !section.details || section.details.length === 0)
         return [];
 
-      return section.details.map(
-        (detail: ParsedDetail) => this.createDetailTreeItem(detail)
+      return section.details.map((detail: ParsedDetail) =>
+        this.createDetailTreeItem(detail)
       );
-    } else if (element.detail && element.detail.childDetails && element.detail.childDetails.length > 0) {
+    } else if (
+      element.detail &&
+      element.detail.childDetails &&
+      element.detail.childDetails.length > 0
+    ) {
       // Level 2+: Show nested details (recursive handling)
-      return element.detail.childDetails.map(
-        (childDetail: ParsedDetail) => this.createDetailTreeItem(childDetail)
+      return element.detail.childDetails.map((childDetail: ParsedDetail) =>
+        this.createDetailTreeItem(childDetail)
       );
     }
 
     return [];
   }
-  
+
   /**
    * Helper method to create a tree item for a detail, handling nested details recursively
    */
   private createDetailTreeItem(detail: ParsedDetail): AshSidebarItem {
     const hasChildren = detail.childDetails && detail.childDetails.length > 0;
-    
+
     // Create a label that shows both block type and name (if available)
     let label = detail.detail; // Default to just the block type
     if (detail.name && detail.name !== detail.detail) {
       label = `${detail.detail} ${detail.name}`; // Show both type and name
     }
-    
+
     return new AshSidebarItem(
       label,
       hasChildren

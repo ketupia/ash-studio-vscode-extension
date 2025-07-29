@@ -29,7 +29,7 @@ export interface AshStudioError {
   component: string;
   timestamp: number;
   originalError?: Error;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   recoveryAction?: string;
 }
 
@@ -55,7 +55,7 @@ export class ErrorHandler {
     component: string,
     message: string,
     originalError?: Error,
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
   ): AshStudioError {
     const error: AshStudioError = {
       id: this.generateErrorId(),

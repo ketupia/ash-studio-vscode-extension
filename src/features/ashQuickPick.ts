@@ -1,6 +1,5 @@
 import * as vscode from "vscode";
 import { AshParserService } from "../ashParserService";
-import { ParsedSection } from "../parsers/parser";
 
 export function registerAshQuickPick(
   context: vscode.ExtensionContext,

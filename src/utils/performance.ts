@@ -11,7 +11,7 @@ interface PerformanceMetric {
   duration: number;
   timestamp: number;
   success: boolean;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 interface AggregatedMetrics {
@@ -39,7 +39,7 @@ export class PerformanceMonitor {
   /**
    * Create a performance timer for an operation
    */
-  startTimer(operationName: string, metadata?: Record<string, any>) {
+  startTimer(operationName: string, metadata?: Record<string, unknown>) {
     if (!this.config.get("enablePerformanceMetrics")) {
       return { end: () => {} }; // No-op if disabled
     }
@@ -49,7 +49,7 @@ export class PerformanceMonitor {
     return {
       end: (
         success: boolean = true,
-        additionalMetadata?: Record<string, any>
+        additionalMetadata?: Record<string, unknown>
       ) => {
         const duration = performance.now() - startTime;
         const metric: PerformanceMetric = {
@@ -174,16 +174,16 @@ export class PerformanceMonitor {
  */
 export function measurePerformance(
   operationName: string,
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 ) {
   return function (
-    target: any,
+    target: unknown,
     propertyKey: string,
     descriptor: PropertyDescriptor
   ) {
     const originalMethod = descriptor.value;
 
-    descriptor.value = async function (...args: any[]) {
+    descriptor.value = async function (...args: unknown[]) {
       const monitor = PerformanceMonitor.getInstance();
       const timer = monitor.startTimer(operationName, metadata);
 

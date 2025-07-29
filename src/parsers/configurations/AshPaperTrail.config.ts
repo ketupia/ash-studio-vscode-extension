@@ -6,9 +6,9 @@ const AshPaperTrailConfig: ModuleInterface = {
   dslBlocks: [
     {
       blockName: "paper_trail",
-          children: [],
-        },
-      ],
+      children: [],
+    },
+  ],
   codeLenses: {
     paper_trail: "https://hexdocs.pm/ash_paper_trail/readme.html",
   },

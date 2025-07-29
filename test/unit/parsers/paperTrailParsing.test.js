@@ -23,12 +23,16 @@ describe("Paper Trail Parsing", function () {
 end`;
 
       const useDeclarations = findUseDeclarations(source);
-      
+
       assert.strictEqual(useDeclarations.length, 1);
-      assert(useDeclarations[0].includes("AshPaperTrail.Resource"), 
-        "Use declaration should include AshPaperTrail.Resource");
-      assert(useDeclarations[0].includes("extensions: ["), 
-        "Use declaration should include extensions array");
+      assert(
+        useDeclarations[0].includes("AshPaperTrail.Resource"),
+        "Use declaration should include AshPaperTrail.Resource"
+      );
+      assert(
+        useDeclarations[0].includes("extensions: ["),
+        "Use declaration should include extensions array"
+      );
     });
 
     it("should parse use declarations with mixed bracket and comma continuation", function () {
@@ -43,12 +47,16 @@ end`;
 end`;
 
       const useDeclarations = findUseDeclarations(source);
-      
+
       assert.strictEqual(useDeclarations.length, 1);
-      assert(useDeclarations[0].includes("AshPaperTrail.Resource"), 
-        "Use declaration should include AshPaperTrail.Resource");
-      assert(useDeclarations[0].includes("domain: MyApp.Domain"), 
-        "Use declaration should include domain after extensions");
+      assert(
+        useDeclarations[0].includes("AshPaperTrail.Resource"),
+        "Use declaration should include AshPaperTrail.Resource"
+      );
+      assert(
+        useDeclarations[0].includes("domain: MyApp.Domain"),
+        "Use declaration should include domain after extensions"
+      );
     });
 
     it("should identify AshPaperTrail.Resource from bracket continuation", function () {
@@ -60,9 +68,14 @@ end`;
 end`;
 
       const useDeclarations = findUseDeclarations(source);
-      const matchedModules = identifyConfiguredModules(useDeclarations, allConfigs);
-      
-      const paperTrailModule = matchedModules.find(m => m.declarationPattern === "AshPaperTrail.Resource");
+      const matchedModules = identifyConfiguredModules(
+        useDeclarations,
+        allConfigs
+      );
+
+      const paperTrailModule = matchedModules.find(
+        m => m.declarationPattern === "AshPaperTrail.Resource"
+      );
       assert(paperTrailModule, "Should identify AshPaperTrail.Resource module");
       assert.strictEqual(paperTrailModule.displayName, "Ash Paper Trail");
     });
@@ -84,22 +97,36 @@ end`;
 end`;
 
       const result = moduleParser.parse(source);
-      
+
       assert.strictEqual(result.isAshFile, true);
       assert(result.sections.length > 0, "Should have parsed sections");
-      
-      const paperTrailSection = result.sections.find(s => s.section === "paper_trail");
+
+      const paperTrailSection = result.sections.find(
+        s => s.section === "paper_trail"
+      );
       assert(paperTrailSection, "Should have paper_trail section");
-      assert(paperTrailSection.rawContent.includes("primary_key_type :uuid_v7"), 
-        "Should include primary_key_type configuration");
-      assert(paperTrailSection.rawContent.includes("change_tracking_mode :snapshot"), 
-        "Should include change_tracking_mode configuration");
-      assert(paperTrailSection.rawContent.includes("store_action_name? true"), 
-        "Should include store_action_name configuration");
-      assert(paperTrailSection.rawContent.includes("ignore_attributes [:inserted_at, :updated_at]"), 
-        "Should include ignore_attributes configuration");
-      assert(paperTrailSection.rawContent.includes("ignore_actions [:destroy]"), 
-        "Should include ignore_actions configuration");
+      assert(
+        paperTrailSection.rawContent.includes("primary_key_type :uuid_v7"),
+        "Should include primary_key_type configuration"
+      );
+      assert(
+        paperTrailSection.rawContent.includes("change_tracking_mode :snapshot"),
+        "Should include change_tracking_mode configuration"
+      );
+      assert(
+        paperTrailSection.rawContent.includes("store_action_name? true"),
+        "Should include store_action_name configuration"
+      );
+      assert(
+        paperTrailSection.rawContent.includes(
+          "ignore_attributes [:inserted_at, :updated_at]"
+        ),
+        "Should include ignore_attributes configuration"
+      );
+      assert(
+        paperTrailSection.rawContent.includes("ignore_actions [:destroy]"),
+        "Should include ignore_actions configuration"
+      );
     });
 
     it("should generate code lens for paper_trail block", function () {
@@ -113,13 +140,18 @@ end`;
 end`;
 
       const result = moduleParser.parse(source);
-      
+
       assert(result.codeLenses.length > 0, "Should have code lenses");
-      
-      const paperTrailLens = result.codeLenses.find(lens => 
-        lens.title && lens.title.includes("Ash Paper Trail"));
+
+      const paperTrailLens = result.codeLenses.find(
+        lens => lens.title && lens.title.includes("Ash Paper Trail")
+      );
       assert(paperTrailLens, "Should have Paper Trail code lens");
-      assert.strictEqual(paperTrailLens.line, 5, "Code lens should be on paper_trail line");
+      assert.strictEqual(
+        paperTrailLens.line,
+        5,
+        "Code lens should be on paper_trail line"
+      );
     });
 
     it("should parse paper_trail in complex Ash resource", function () {
@@ -163,30 +195,43 @@ end`;
 end`;
 
       const result = moduleParser.parse(source);
-      
+
       assert.strictEqual(result.isAshFile, true);
       assert(result.sections.length >= 4, "Should have multiple sections");
-      
+
       // Check that paper_trail section exists
-      const paperTrailSection = result.sections.find(s => s.section === "paper_trail");
+      const paperTrailSection = result.sections.find(
+        s => s.section === "paper_trail"
+      );
       assert(paperTrailSection, "Should have paper_trail section");
       assert(paperTrailSection.startLine > 0, "Should have valid start line");
-      assert(paperTrailSection.endLine > paperTrailSection.startLine, "Should have valid end line");
-      
+      assert(
+        paperTrailSection.endLine > paperTrailSection.startLine,
+        "Should have valid end line"
+      );
+
       // Check that other sections also exist (to ensure paper_trail doesn't break other parsing)
-      const postgresSection = result.sections.find(s => s.section === "postgres");
-      const attributesSection = result.sections.find(s => s.section === "attributes");
+      const postgresSection = result.sections.find(
+        s => s.section === "postgres"
+      );
+      const attributesSection = result.sections.find(
+        s => s.section === "attributes"
+      );
       const actionsSection = result.sections.find(s => s.section === "actions");
-      
+
       assert(postgresSection, "Should have postgres section");
       assert(attributesSection, "Should have attributes section");
       assert(actionsSection, "Should have actions section");
-      
+
       // Verify sections are in correct order
-      assert(paperTrailSection.startLine > postgresSection.endLine, 
-        "paper_trail should come after postgres");
-      assert(attributesSection.startLine > paperTrailSection.endLine, 
-        "attributes should come after paper_trail");
+      assert(
+        paperTrailSection.startLine > postgresSection.endLine,
+        "paper_trail should come after postgres"
+      );
+      assert(
+        attributesSection.startLine > paperTrailSection.endLine,
+        "attributes should come after paper_trail"
+      );
     });
 
     it("should handle paper_trail with no configuration options", function () {
@@ -199,12 +244,20 @@ end`;
 end`;
 
       const result = moduleParser.parse(source);
-      
+
       assert.strictEqual(result.isAshFile, true);
-      const paperTrailSection = result.sections.find(s => s.section === "paper_trail");
-      assert(paperTrailSection, "Should have paper_trail section even with no content");
-      assert.strictEqual(paperTrailSection.rawContent.trim(), "", 
-        "Should have empty raw content");
+      const paperTrailSection = result.sections.find(
+        s => s.section === "paper_trail"
+      );
+      assert(
+        paperTrailSection,
+        "Should have paper_trail section even with no content"
+      );
+      assert.strictEqual(
+        paperTrailSection.rawContent.trim(),
+        "",
+        "Should have empty raw content"
+      );
     });
   });
 
@@ -219,14 +272,19 @@ end`;
 end`;
 
       const result = moduleParser.parse(source);
-      
+
       // Should still be an Ash file due to Ash.Resource
       assert.strictEqual(result.isAshFile, true);
-      
+
       // But should not have paper_trail section since AshPaperTrail.Resource is not used
-      const paperTrailSection = result.sections.find(s => s.section === "paper_trail");
-      assert.strictEqual(paperTrailSection, undefined, 
-        "Should not have paper_trail section without AshPaperTrail.Resource");
+      const paperTrailSection = result.sections.find(
+        s => s.section === "paper_trail"
+      );
+      assert.strictEqual(
+        paperTrailSection,
+        undefined,
+        "Should not have paper_trail section without AshPaperTrail.Resource"
+      );
     });
 
     it("should handle malformed use declarations gracefully", function () {
@@ -245,7 +303,7 @@ end`;
       assert.doesNotThrow(() => {
         const result = moduleParser.parse(source);
         // The parser should handle this gracefully, even if it doesn't parse perfectly
-        assert.strictEqual(typeof result, 'object');
+        assert.strictEqual(typeof result, "object");
       });
     });
   });

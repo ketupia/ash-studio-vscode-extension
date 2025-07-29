@@ -74,7 +74,8 @@ src/
 ### Running Tests
 
 - **All tests**: `npx mocha test/organized-parser.test.js`
-- **Specific parser**: `npx mocha test/unit/parsers/configurationDriven/configuration-parser.test.js`
+- **Specific parser**:
+  `npx mocha test/unit/parsers/configurationDriven/configuration-parser.test.js`
 - **Integration only**: `npx mocha test/integration/parser-service.test.js`
 - **Configuration tests**: `npx mocha test/unit/parsers/configurationDriven/*.test.ts`
 

@@ -126,8 +126,7 @@
     "test:config": "mocha 'test/unit/parsers/configurationDriven/*.test.js'",
     "test:vscode": "node ./dist/test/runTest.js"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "@types/glob": "^8.1.0",
     "@types/mocha": "^10.0.10",

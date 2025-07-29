@@ -9,7 +9,7 @@ export default [
       ".vscode-test/**/*",
       "dist/**/*",
       "node_modules/**/*",
-      "**/*.min.js"
+      "**/*.min.js",
     ],
   },
   {

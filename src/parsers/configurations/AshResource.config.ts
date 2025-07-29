@@ -117,11 +117,13 @@ const AshResourceConfig: ModuleInterface = {
       children: [
         {
           blockName: "bypass",
-          namePattern: "([^\\s]+(?:\\([^\\)]*\\))?(?:\\s+[^\\s]+)*?)(?:\\s+do)?",
+          namePattern:
+            "([^\\s]+(?:\\([^\\)]*\\))?(?:\\s+[^\\s]+)*?)(?:\\s+do)?",
         },
         {
           blockName: "policy",
-          namePattern: "([^\\s]+(?:\\([^\\)]*\\))?(?:\\s+[^\\s]+)*?)(?:\\s+do)?",
+          namePattern:
+            "([^\\s]+(?:\\([^\\)]*\\))?(?:\\s+[^\\s]+)*?)(?:\\s+do)?",
         },
       ],
     },

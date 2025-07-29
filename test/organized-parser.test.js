@@ -19,8 +19,6 @@ require("./unit/parsers/authenticationParsing.test");
 require("./unit/parsers/paperTrailParsing.test");
 require("./unit/parsers/namePatternExtraction.test");
 
-
-
 // Parser Unit Tests - Requires VS Code API
 console.log("\n🔍 Parser Unit Tests:");
 // Skipping tests that require VS Code API

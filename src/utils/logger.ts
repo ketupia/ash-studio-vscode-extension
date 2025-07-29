@@ -35,7 +35,7 @@ export class Logger {
     level: LogLevel,
     component: string,
     message: string,
-    data?: any
+    data?: unknown
   ): void {
     if (level > this.logLevel) return;
 
@@ -65,19 +65,19 @@ export class Logger {
     }
   }
 
-  error(component: string, message: string, error?: Error | any): void {
+  error(component: string, message: string, error?: unknown): void {
     this.log(LogLevel.ERROR, component, message, error);
   }
 
-  warn(component: string, message: string, data?: any): void {
+  warn(component: string, message: string, data?: unknown): void {
     this.log(LogLevel.WARN, component, message, data);
   }
 
-  info(component: string, message: string, data?: any): void {
+  info(component: string, message: string, data?: unknown): void {
     this.log(LogLevel.INFO, component, message, data);
   }
 
-  debug(component: string, message: string, data?: any): void {
+  debug(component: string, message: string, data?: unknown): void {
     this.log(LogLevel.DEBUG, component, message, data);
   }
 

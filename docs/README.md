@@ -60,7 +60,8 @@ This folder contains comprehensive documentation for the Ash Studio VS Code Exte
 
 The Ash Studio extension uses a **hybrid parser architecture** with:
 
-- **Configuration-driven parser**: Flexible and maintainable parsing approach through module configuration
+- **Configuration-driven parser**: Flexible and maintainable parsing approach through module
+  configuration
 - **Services**: Centralized logging, configuration, performance monitoring, and error handling
 - **Testing**: Organized unit/integration test structure with 68 comprehensive tests
 

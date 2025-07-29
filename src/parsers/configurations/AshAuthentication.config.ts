@@ -18,7 +18,7 @@ const AshAuthenticationConfig: ModuleInterface = {
               blockName: "magic_link",
             },
           ],
-        }
+        },
       ],
     },
   ],

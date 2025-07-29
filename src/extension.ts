@@ -48,7 +48,7 @@ export function activate(context: vscode.ExtensionContext) {
     logger.info("Extension", "Using configuration-driven parser only");
 
     // Initialize the parser service with error handling
-    let parserService: AshParserService;
+    let parserService: AshParserService | null = null;
     try {
       console.log("🔧 Attempting to initialize parser service...");
       logger.info("Extension", "Attempting to initialize parser service...");
@@ -72,7 +72,7 @@ export function activate(context: vscode.ExtensionContext) {
         `Ash Studio parser initialization failed: ${parserError instanceof Error ? parserError.message : String(parserError)}`
       );
       // Continue without parser functionality
-      parserService = null as any;
+      parserService = null;
     }
 
     // Initialize sidebar with error handling
@@ -162,11 +162,12 @@ export function activate(context: vscode.ExtensionContext) {
 
         // Fallback minimal sidebar if parser failed
         const fallbackSidebar = {
-          getTreeItem: (element: any) =>
-            new vscode.TreeItem(
+          getTreeItem: () => {
+            return new vscode.TreeItem(
               "Parser Error",
               vscode.TreeItemCollapsibleState.None
-            ),
+            );
+          },
           getChildren: () => {
             console.log("🔄 Fallback sidebar getChildren called");
             return [{ label: "Parser service unavailable" }];
@@ -179,7 +180,7 @@ export function activate(context: vscode.ExtensionContext) {
 
         console.log("🎛️ Creating fallback tree view...");
         const fallbackTreeView = vscode.window.createTreeView("ashSidebar", {
-          treeDataProvider: fallbackSidebar as any,
+          treeDataProvider: fallbackSidebar as vscode.TreeDataProvider<unknown>,
           showCollapseAll: false,
         });
 
@@ -201,7 +202,10 @@ export function activate(context: vscode.ExtensionContext) {
         registerAshQuickPick(context, parserService);
         registerAshSectionNavigation(context, parserService);
         registerAshCodeLensProvider(context, parserService);
-        logger.info("Extension", "Navigation features and code lens provider registered successfully");
+        logger.info(
+          "Extension",
+          "Navigation features and code lens provider registered successfully"
+        );
       }
     } catch (navigationError) {
       logger.error(

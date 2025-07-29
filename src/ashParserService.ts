@@ -15,9 +15,7 @@ export class AshParserService {
   private _onDidParse = new vscode.EventEmitter<ParseResult>();
 
   // Parser implementation
-  private parsers: Parser[] = [
-    ConfigurationDrivenParser.getInstance(),
-  ];
+  private parsers: Parser[] = [ConfigurationDrivenParser.getInstance()];
 
   public readonly onDidParse = this._onDidParse.event;
 
