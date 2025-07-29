@@ -1,7 +1,7 @@
 import { ModuleInterface } from "../moduleInterface";
 
 const AshPaperTrailConfig: ModuleInterface = {
-  displayName: "Paper Trail",
+  displayName: "Ash Paper Trail",
   declarationPattern: "AshPaperTrail.Resource",
   dslBlocks: [
     {

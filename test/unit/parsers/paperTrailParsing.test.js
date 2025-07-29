@@ -64,7 +64,7 @@ end`;
       
       const paperTrailModule = matchedModules.find(m => m.declarationPattern === "AshPaperTrail.Resource");
       assert(paperTrailModule, "Should identify AshPaperTrail.Resource module");
-      assert.strictEqual(paperTrailModule.displayName, "Paper Trail");
+      assert.strictEqual(paperTrailModule.displayName, "Ash Paper Trail");
     });
   });
 
@@ -117,7 +117,7 @@ end`;
       assert(result.codeLenses.length > 0, "Should have code lenses");
       
       const paperTrailLens = result.codeLenses.find(lens => 
-        lens.title && lens.title.includes("Paper Trail"));
+        lens.title && lens.title.includes("Ash Paper Trail"));
       assert(paperTrailLens, "Should have Paper Trail code lens");
       assert.strictEqual(paperTrailLens.line, 5, "Code lens should be on paper_trail line");
     });

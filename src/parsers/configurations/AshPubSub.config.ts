@@ -1,7 +1,7 @@
 import { ModuleInterface } from "../moduleInterface";
 
 const AshPubSubConfig: ModuleInterface = {
-  displayName: "PubSub",
+  displayName: "Ash PubSub",
   declarationPattern: "Ash.Notifier.PubSub",
   dslBlocks: [
     {

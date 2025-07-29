@@ -1,6 +1,7 @@
 import { Parser, ParseResult, ParsedSection, ParsedDetail, ParseError, CodeLensEntry } from "./parser";
 import { ModuleInterface, DslBlock } from "./moduleInterface";
 import AshAuthenticationConfig from "./configurations/AshAuthentication.config";
+import AshDomainConfig from "./configurations/AshDomain.config";
 import AshPaperTrailConfig from "./configurations/AshPaperTrail.config";
 import AshPostgresConfig from "./configurations/AshPostgres.config";
 import AshPubSubConfig from "./configurations/AshPubSub.config";
@@ -13,6 +14,7 @@ import AshResourceConfig from "./configurations/AshResource.config";
 export function getAllAvailableConfigurations(): ModuleInterface[] {
   return [
     AshAuthenticationConfig,
+    AshDomainConfig,
     AshPaperTrailConfig,
     AshPostgresConfig,
     AshPubSubConfig,
