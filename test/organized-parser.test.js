@@ -2,7 +2,7 @@
  * Organized Parser Test Suite for Ash Studio VS Code Extension
  *
  * This test suite validates all parser components in an organized structure:
- * - Configuration-Driven Parser Tests
+ * - moduleParser Tests
  * - Integration Tests (Parser Service coordination)
  */
 

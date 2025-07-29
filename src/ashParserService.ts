@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { Parser, ParseResult } from "./parsers/parser";
-import { ConfigurationDrivenParser } from "./parsers/configurationDrivenParser";
+import { moduleParser } from "./parsers/moduleParser";
 import { Logger } from "./utils/logger";
 
 /**
@@ -14,8 +14,8 @@ export class AshParserService {
   >();
   private _onDidParse = new vscode.EventEmitter<ParseResult>();
 
-  // Parser implementation
-  private parsers: Parser[] = [ConfigurationDrivenParser.getInstance()];
+  // The single parser implementation
+  private parser: Parser = moduleParser;
 
   public readonly onDidParse = this._onDidParse.event;
 
@@ -39,62 +39,30 @@ export class AshParserService {
       return cached.result;
     }
 
-    // Try parsers in order until one succeeds
+    // Use the single parser
     const source = document.getText();
     const logger = Logger.getInstance();
-    let result: ParseResult | null = null;
+    let result: ParseResult;
 
-    for (const parser of this.parsers) {
-      try {
-        const parseResult = parser.parse(source);
-
-        // Consider a parser successful if:
-        // 1. It identifies the file as an Ash file, OR
-        // 2. It's the last parser (fallback)
-        const isLastParser = parser === this.parsers[this.parsers.length - 1];
-
-        if (parseResult.isAshFile || isLastParser) {
-          logger.debug(
-            "AshParserService",
-            `Parser ${parseResult.parserName} succeeded`,
-            {
-              isAshFile: parseResult.isAshFile,
-              sectionsFound: parseResult.sections.length,
-              errorsFound: parseResult.errors.length,
-              isLastParser,
-            }
-          );
-          result = parseResult;
-          break;
-        } else {
-          logger.debug(
-            "AshParserService",
-            `Parser ${parseResult.parserName} did not identify file as Ash file, trying next parser`
-          );
-        }
-      } catch (error) {
-        logger.warn(
-          "AshParserService",
-          `Parser failed with error, trying next parser`,
-          {
-            error: error instanceof Error ? error.message : String(error),
-          }
-        );
-        // Continue to next parser
-      }
-    }
-
-    // Fallback if no parser succeeded (shouldn't happen with SimpleParser as fallback)
-    if (!result) {
-      logger.error(
+    try {
+      result = this.parser.parse(source);
+      logger.debug(
         "AshParserService",
-        "All parsers failed, using empty result"
+        `Parser ${result.parserName} succeeded`,
+        {
+          isAshFile: result.isAshFile,
+          sectionsFound: result.sections.length,
+        }
       );
+    } catch (error) {
+      logger.error("AshParserService", "Parser failed with an error", {
+        error: error instanceof Error ? error.message : String(error),
+      });
+      // Fallback to an empty result on error
       result = {
         sections: [],
-        errors: [],
         isAshFile: false,
-        parserName: "EmptyFallback",
+        parserName: "ErrorFallback",
         codeLenses: [],
       };
     }
@@ -147,7 +115,6 @@ export class AshParserService {
     if (document.languageId !== "elixir") {
       return {
         sections: [],
-        errors: [],
         isAshFile: false,
         parserName: "LanguageFilter",
         codeLenses: [],

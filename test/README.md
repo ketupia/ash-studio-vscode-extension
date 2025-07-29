@@ -36,7 +36,6 @@ src/
 └── parsers/
     ├── parser.ts                                # Unified interfaces (tested implicitly)
     └── configurationDriven/                     # → test/unit/parsers/configurationDriven/
-        ├── configurationDrivenParser.ts
         ├── moduleParser.ts
         ├── moduleInterface.ts
         └── simpleParser.ts

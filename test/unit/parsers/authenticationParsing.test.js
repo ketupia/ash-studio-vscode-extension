@@ -1,7 +1,5 @@
 const assert = require("assert");
-const {
-  extractModulesForTesting,
-} = require("../../../dist/src/parsers/moduleParser");
+const { extractModules } = require("../../../dist/src/parsers/moduleParser");
 const AshAuthConfig =
   require("../../../dist/src/parsers/configurations/AshAuthentication.config").default;
 
@@ -29,7 +27,7 @@ end
     `;
 
     const matchedModules = [AshAuthConfig];
-    const result = extractModulesForTesting(source, matchedModules);
+    const result = extractModules(source, matchedModules);
 
     // Verify the structure
     assert.strictEqual(

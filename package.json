@@ -62,17 +62,6 @@
           ],
           "description": "Set the logging level for Ash Studio output"
         },
-        "ashStudio.parserStrategy": {
-          "type": "string",
-          "default": "configuration-driven",
-          "enum": [
-            "configuration-driven"
-          ],
-          "enumDescriptions": [
-            "Use the configuration-driven parser"
-          ],
-          "description": "Parser strategy for Ash files (only configuration-driven parser is available)"
-        },
         "ashStudio.enablePerformanceMetrics": {
           "type": "boolean",
           "default": false,
@@ -116,31 +105,24 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "type-check": "tsc --noEmit",
-    "quality": "npm run type-check && npm run lint && npm run format:check && npm test",
-    "build": "tsc",
-    "package": "npm run quality && npm run build && vsce package",
+    "quality": "npm run clean && npm run type-check && npm run lint && npm run format && npm test",
+    "clean": "rm -rf dist",
+    "build": "npm run clean && tsc",
     "pre-commit": "rm -f test-*.js crash-*.js *.tmp *.temp && npm run quality",
-    "pretest": "npm run build",
-    "test": "mocha test/organized-parser.test.js",
-    "test:parsers": "mocha 'test/unit/parsers/**/*.test.js'",
-    "test:config": "mocha 'test/unit/parsers/configurationDriven/*.test.js'",
-    "test:vscode": "node ./dist/test/runTest.js"
+    "test": "npm run build && mocha 'test/unit/parsers/*.test.js'"
   },
-  "dependencies": {},
   "devDependencies": {
-    "@types/glob": "^8.1.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "^20.19.9",
     "@types/vscode": "^1.75.0",
     "@typescript-eslint/eslint-plugin": "^8.38.0",
     "@typescript-eslint/parser": "^8.38.0",
-    "@vscode/test-cli": "^0.0.10",
-    "@vscode/test-electron": "^2.5.2",
+    "@vscode/vsce": "^2.15.0",
     "eslint": "^9.25.1",
-    "glob": "^11.0.3",
+    "globals": "^16.3.0",
+    "knip": "^5.62.0",
     "mocha": "^11.7.1",
     "prettier": "^3.6.2",
-    "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   }
 }

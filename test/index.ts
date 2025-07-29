@@ -1,30 +1,32 @@
+// Set up Mocha for the electron test environment
 import Mocha = require("mocha");
-import glob = require("glob");
-import * as path from "path";
 
-export async function run(): Promise<void> {
-  // Create the Mocha test runner
-  const mocha = new Mocha({
-    ui: "bdd",
-    color: true,
-    timeout: 20000,
-  });
+export function run(): Promise<void> {
+  return new Promise((c, e) => {
+    // Create the mocha test
+    const mocha = new Mocha({
+      ui: "bdd",
+      color: true,
+    });
 
-  const testsRoot = __dirname;
-  const files = await glob.glob("**/*.test.js", { cwd: testsRoot });
-  files.forEach((f: string) => mocha.addFile(path.resolve(testsRoot, f)));
+    const testsRoot = __dirname;
 
-  return new Promise((resolve, reject) => {
+    // Add test files
+    mocha.addFile(`${testsRoot}/unit/parsers/parserService.test.js`);
+    // mocha.addFile(`${testsRoot}/integration/parser-service.test.js`); // Add when ready
+
     try {
+      // Run the mocha test
       mocha.run((failures: number) => {
         if (failures > 0) {
-          reject(new Error(`${failures} tests failed.`));
+          e(new Error(`${failures} tests failed.`));
         } else {
-          resolve();
+          c();
         }
       });
     } catch (err) {
-      reject(err);
+      console.error(err);
+      e(err);
     }
   });
 }

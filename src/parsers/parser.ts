@@ -5,13 +5,6 @@
  * All parsers should implement these interfaces for consistency
  */
 
-export interface ParseError {
-  message: string;
-  line: number; // 1-based line number
-  column: number; // 1-based column number
-  offset: number; // character offset in source
-}
-
 export interface ParsedDetail {
   section: string; // parent section name
   detail: string; // detail type (e.g., "attribute", "action")
@@ -61,7 +54,6 @@ export interface CodeLensEntry {
 
 export interface ParseResult {
   sections: ParsedSection[];
-  errors: ParseError[];
   isAshFile: boolean; // whether this appears to be an Ash Resource/Domain file
   moduleName?: string; // extracted module name if available
   parserName: string; // name of the parser that was used

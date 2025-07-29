@@ -44,9 +44,6 @@ export function activate(context: vscode.ExtensionContext) {
       "FULL FUNCTIONALITY MODE - Initializing parser service and features"
     );
 
-    // We've removed dependency on nearley and moo libraries
-    logger.info("Extension", "Using configuration-driven parser only");
-
     // Initialize the parser service with error handling
     let parserService: AshParserService | null = null;
     try {
