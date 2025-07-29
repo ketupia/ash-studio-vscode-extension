@@ -1,4 +1,4 @@
-const { findUseDeclarations } = require("../../../../dist/src/parsers/configurationDriven/moduleParser");
+const { findUseDeclarations } = require("../../../dist/src/parsers/moduleParser");
 const assert = require("assert");
 
 describe("findUseDeclarations", function () {

@@ -9,8 +9,7 @@ export default [
       ".vscode-test/**/*",
       "dist/**/*",
       "node_modules/**/*",
-      "**/*.min.js",
-      "src/nearley/ashGrammar.js", // Generated Nearley grammar
+      "**/*.min.js"
     ],
   },
   {

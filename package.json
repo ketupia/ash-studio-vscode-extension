@@ -64,18 +64,14 @@
         },
         "ashStudio.parserStrategy": {
           "type": "string",
-          "default": "hybrid",
+          "default": "configuration-driven",
           "enum": [
-            "hybrid",
-            "grammar-only",
-            "simple-only"
+            "configuration-driven"
           ],
           "enumDescriptions": [
-            "Use grammar parser with simple parser fallback",
-            "Use only the grammar parser (Nearley)",
-            "Use only the simple regex-based parser"
+            "Use the configuration-driven parser"
           ],
-          "description": "Choose the parsing strategy for Ash files"
+          "description": "Parser strategy for Ash files (only configuration-driven parser is available)"
         },
         "ashStudio.enablePerformanceMetrics": {
           "type": "boolean",
@@ -121,25 +117,20 @@
     "format:check": "prettier --check .",
     "type-check": "tsc --noEmit",
     "quality": "npm run type-check && npm run lint && npm run format:check && npm test",
-    "build": "tsc && cp -r src/parsers/grammarBased/nearley dist/src/parsers/grammarBased/",
+    "build": "tsc",
     "package": "npm run quality && npm run build && vsce package",
     "pre-commit": "rm -f test-*.js crash-*.js *.tmp *.temp && npm run quality",
     "pretest": "npm run build",
     "test": "mocha test/organized-parser.test.js",
     "test:parsers": "mocha 'test/unit/parsers/**/*.test.js'",
-    "test:grammar": "mocha 'test/unit/parsers/grammar/*.test.js'",
-    "test:simple": "mocha 'test/unit/parsers/simple/*.test.js'",
-    "test:hybrid": "mocha 'test/unit/parsers/hybrid/*.test.js'",
+    "test:config": "mocha 'test/unit/parsers/configurationDriven/*.test.js'",
     "test:vscode": "node ./dist/test/runTest.js"
   },
   "dependencies": {
-    "moo": "^0.5.2",
-    "nearley": "^2.20.1"
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",
     "@types/mocha": "^10.0.10",
-    "@types/nearley": "^2.11.5",
     "@types/node": "^20.19.9",
     "@types/vscode": "^1.75.0",
     "@typescript-eslint/eslint-plugin": "^8.38.0",

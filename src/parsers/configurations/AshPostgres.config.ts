@@ -1,4 +1,5 @@
 import { ModuleInterface } from "../moduleInterface";
+// Using explicit path to avoid TypeScript resolution issues
 
 const AshPostgresConfig: ModuleInterface = {
   displayName: "Postgres",
@@ -10,7 +11,7 @@ const AshPostgresConfig: ModuleInterface = {
     },
   ],
   codeLenses: {
-    paper_trail: "https://hexdocs.pm/ash_paper_trail/readme.html",
+    postgres: "https://hexdocs.pm/ash_paper_trail/readme.html",
   },
 };
 

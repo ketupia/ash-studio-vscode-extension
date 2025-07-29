@@ -44,23 +44,8 @@ export function activate(context: vscode.ExtensionContext) {
       "FULL FUNCTIONALITY MODE - Initializing parser service and features"
     );
 
-    // Test if nearley dependencies are available
-    console.log("🔍 Testing nearley dependency availability...");
-    try {
-      const nearley = require("nearley");
-      console.log("✅ Nearley is available:", !!nearley);
-    } catch (nearleyError) {
-      console.error("❌ Nearley not available:", nearleyError);
-      logger.error("Extension", "Nearley dependency missing", nearleyError);
-    }
-
-    try {
-      const moo = require("moo");
-      console.log("✅ Moo is available:", !!moo);
-    } catch (mooError) {
-      console.error("❌ Moo not available:", mooError);
-      logger.error("Extension", "Moo dependency missing", mooError);
-    }
+    // We've removed dependency on nearley and moo libraries
+    logger.info("Extension", "Using configuration-driven parser only");
 
     // Initialize the parser service with error handling
     let parserService: AshParserService;

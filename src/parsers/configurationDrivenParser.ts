@@ -1,4 +1,4 @@
-import { Parser, ParseResult } from "../parser";
+import { Parser, ParseResult } from "./parser";
 import { moduleParser, getAllAvailableConfigurations } from "./moduleParser";
 
 /**

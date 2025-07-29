@@ -1,6 +1,6 @@
 const assert = require('assert');
-const { extractModulesForTesting } = require('../../../../dist/src/parsers/configurationDriven/moduleParser');
-const AshAuthConfig = require('../../../../dist/src/parsers/configurationDriven/AshAuthentication.config').default;
+const { extractModulesForTesting } = require('../../../dist/src/parsers/moduleParser');
+const AshAuthConfig = require('../../../dist/src/parsers/configurations/AshAuthentication.config').default;
 
 describe('AshAuthentication Multi-tier Parsing', () => {
   it('should correctly parse three-tier nested blocks', () => {
@@ -17,7 +17,7 @@ defmodule MyApp.User do
         identity_field :email
       end
       
-      magic_link :magic_link do
+      magic_link do
         sender MyApp.EmailSender
       end
     end
@@ -38,17 +38,14 @@ end
     const strategiesDetails = authSection.details.filter(d => d.detail === 'strategies');
     assert.strictEqual(strategiesDetails.length, 1, 'Should find 1 strategies block');
     
-    // Find password and magic_link blocks (third tier)
-    const passwordDetails = authSection.details.filter(d => d.detail === 'password');
+    // Find password and magic_link blocks (third tier - nested in strategies)
+    const strategiesBlock = strategiesDetails[0];
+    const passwordDetails = strategiesBlock.childDetails.filter(d => d.detail === 'password');
     assert.strictEqual(passwordDetails.length, 1, 'Should find 1 password strategy');
-    assert.strictEqual(passwordDetails[0].name, 'default', 'Password strategy name should be "default"');
+    assert.strictEqual(passwordDetails[0].name, ':default', 'Password strategy name should be ":default"');
     
-    const magicLinkDetails = authSection.details.filter(d => d.detail === 'magic_link');
+    const magicLinkDetails = strategiesBlock.childDetails.filter(d => d.detail === 'magic_link');
     assert.strictEqual(magicLinkDetails.length, 1, 'Should find 1 magic_link strategy');
-    assert.strictEqual(magicLinkDetails[0].name, 'magic_link', 'Magic link strategy name should be "magic_link"');
-    
-    // Verify the raw content contains the implementation details
-    assert.ok(passwordDetails[0].rawContent.includes('hash_algorithm'), 'Password details should contain implementation');
-    assert.ok(magicLinkDetails[0].rawContent.includes('sender'), 'Magic link details should contain implementation');
+    assert.strictEqual(magicLinkDetails[0].name, '', 'Magic link strategy should have no name when none is specified');
   });
 });

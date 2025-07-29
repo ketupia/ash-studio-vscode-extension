@@ -14,22 +14,16 @@ test/
 │   └── parser-service.test.js                  # AshParserService integration tests
 └── unit/
     └── parsers/
-        ├── configurationDriven/
-        │   ├── findUseDeclarations.test.ts      # Use declaration parsing tests
-        │   └── identifyConfiguredModules.test.ts # Module configuration tests
-        ├── grammarBased/
-        │   ├── ash-blocks.test.js               # Ash DSL block parsing
-        │   ├── basic-module.test.js             # Basic module structure
-        │   ├── identifiers.test.js              # Identifier parsing
-        │   ├── imports.test.js                  # Import statement parsing
-        │   ├── integration.test.js              # Grammar integration tests
-        │   ├── lists.test.js                    # List parsing
-        │   ├── literals.test.js                 # Literal value parsing
-        │   ├── module-attributes.test.js        # Module attribute parsing
-        │   ├── strings.test.js                  # String parsing
-        │   └── use-statements.test.js           # Use statement parsing
-        └── regexBased/
-            └── simple-parser.test.js            # SimpleParser (fallback) tests
+        └── configurationDriven/
+            ├── findUseDeclarations.test.ts      # Use declaration parsing tests
+            ├── identifyConfiguredModules.test.ts # Module configuration tests
+            ├── configuration-parser.test.js
+            ├── configuration-utils.test.js
+            ├── lists.test.js                    # List parsing
+            ├── literals.test.js                 # Literal value parsing
+            ├── module-attributes.test.js        # Module attribute parsing
+            ├── strings.test.js                  # String parsing
+            └── use-statements.test.js           # Use statement parsing
 ```
 
 ### Source Structure Mapping
@@ -41,13 +35,10 @@ src/
 ├── ashParserService.ts                          # → test/integration/parser-service.test.js
 └── parsers/
     ├── parser.ts                                # Unified interfaces (tested implicitly)
-    ├── configurationDriven/                     # → test/unit/parsers/configurationDriven/
-    │   ├── configurationDrivenParser.ts
-    │   ├── moduleParser.ts
-    │   └── moduleInterface.ts
-    ├── grammarBased/                            # → test/unit/parsers/grammarBased/
-    │   └── ashParser.ts
-    └── regexBased/                              # → test/unit/parsers/regexBased/
+    └── configurationDriven/                     # → test/unit/parsers/configurationDriven/
+        ├── configurationDrivenParser.ts
+        ├── moduleParser.ts
+        ├── moduleInterface.ts
         └── simpleParser.ts
 ```
 
@@ -66,10 +57,7 @@ src/
 ### Key Updates Made
 
 1. **Moved tests** to match source structure:
-   - `test/dslConfigurations/` → `test/unit/parsers/configurationDriven/`
-   - `test/unit/parsers/simple/` → `test/unit/parsers/regexBased/`
-   - `test/unit/parsers/grammar/` → `test/unit/parsers/grammarBased/`
-   - `test/unit/parsers/hybrid/` → `test/integration/` (renamed to reflect purpose)
+   - Now using `test/unit/parsers/configurationDriven/` for all parser tests
 
 2. **Updated import paths** to reflect new locations
 
@@ -86,7 +74,7 @@ src/
 ### Running Tests
 
 - **All tests**: `npx mocha test/organized-parser.test.js`
-- **Specific parser**: `npx mocha test/unit/parsers/regexBased/simple-parser.test.js`
+- **Specific parser**: `npx mocha test/unit/parsers/configurationDriven/configuration-parser.test.js`
 - **Integration only**: `npx mocha test/integration/parser-service.test.js`
 - **Configuration tests**: `npx mocha test/unit/parsers/configurationDriven/*.test.ts`
 

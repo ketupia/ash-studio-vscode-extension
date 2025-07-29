@@ -10,9 +10,7 @@ throughout the codebase.
 
 ### 1. **Hybrid Parser Strategy**
 
-- **Primary Parser**: Nearley grammar-based parser for comprehensive AST analysis
-- **Fallback Parser**: Simple regex-based parser for reliability and performance
-- **Strategy**: Always attempt grammar parser first, fallback to simple parser on errors
+- **Parser**: Configuration-driven parser for reliable, maintainable and flexible Ash DSL parsing
 - **Benefit**: Ensures extension never completely breaks on malformed code
 
 ### 2. **Centralized Services Pattern**
@@ -37,9 +35,11 @@ All major functionality is implemented as singleton services:
 ```
 src/
 ├── extension.ts              # Extension entry point and activation
-├── ashParserService.ts       # Centralized parser service with fallback
-├── ashParser.ts              # Nearley grammar-based parser
-├── simpleParser.ts           # Production-ready fallback parser
+├── ashParserService.ts       # Centralized parser service
+├── parser.ts                 # Common parser interfaces
+└── configurationDriven/      # Configuration-driven parser
+    ├── parser.ts              # Configuration-driven parser implementation
+    └── parserConfig.ts        # Configuration-driven parser configuration
 ├── features/                 # Feature implementations
 │   ├── ashSidebarProvider.ts # Sidebar tree view provider
 │   ├── ashQuickPick.ts       # Quick navigation commands
@@ -73,13 +73,13 @@ export class AshParserService {
 }
 ```
 
-### 2. **Strategy Pattern for Parsing**
+### 2. **Parser Strategy**
 
-The parser service implements a strategy pattern for different parsing approaches:
+The extension uses a configuration-driven parser strategy that offers:
 
-- Hybrid strategy (default): Grammar parser → Simple parser fallback
-- Grammar-only strategy: Only Nearley parser
-- Simple-only strategy: Only regex parser
+- Reliable parsing of Ash DSL files
+- Flexible configuration system for different Ash modules
+- Maintainable approach to handle evolving Ash DSL syntax
 
 ### 3. **Observer Pattern for Events**
 
@@ -110,7 +110,7 @@ All configuration is accessed through the `ConfigurationManager` with full TypeS
 ```typescript
 interface AshStudioConfig {
   logLevel: LogLevel;
-  parserStrategy: "hybrid" | "grammar-only" | "simple-only";
+  parserStrategy: "configuration-driven";
   enablePerformanceMetrics: boolean;
   // ... more options
 }
@@ -202,7 +202,7 @@ const result = await errorHandler.safeExecute(
 1. **Unit Tests**: Test individual parsers and utilities
 2. **Integration Tests**: Test parser interactions and fallback behavior
 3. **Performance Tests**: Verify parsing speed and memory usage
-4. **Hybrid Tests**: Validate grammar parser vs simple parser consistency
+4. **Configuration Tests**: Validate configuration-driven parser functionality
 
 ### Test Organization
 
@@ -254,7 +254,7 @@ Framework ready for linting/diagnostics:
 ### 1. **Build Process**
 
 ```bash
-npm run build    # TypeScript compilation + grammar copying
+npm run build    # TypeScript compilation
 npm test         # Run all tests
 npm run lint     # Code quality checks
 ```

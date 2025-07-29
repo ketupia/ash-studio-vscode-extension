@@ -20,13 +20,12 @@ ash-studio-vscode-extension/
 │   │   ├── ashQuickPick.ts       # Quick navigation commands
 │   │   └── ashSectionNavigation.ts # Document symbol provider
 │   ├── utils/                    # Shared utilities and services
+│   │   ├── parser.ts                 # Common parser interfaces
 │   │   ├── logger.ts             # Structured logging service
 │   │   ├── config.ts             # Configuration management
 │   │   ├── performance.ts        # Performance monitoring
 │   │   └── errorHandler.ts       # Centralized error handling
-│   └── nearley/                  # Grammar definitions
-│       ├── ashGrammar.ne         # Nearley grammar source
-│       └── ashGrammar.js         # Compiled grammar
+│   └── configurationDriven/      # Configuration-driven parser
 ├── examples/                     # Real-world Ash files for testing
 ├── docs/                         # Documentation
 └── test/                         # Test suites
@@ -85,7 +84,7 @@ function parseNode(node: any): ParseResult {
 - [ ] No crashes when opening complex Ash files
 - [ ] Sidebar displays correctly for valid Ash files
 - [ ] Quick Pick navigation works for all section types
-- [ ] Parser fallback works when grammar parser fails
+- [ ] Configuration-driven parser handles all supported Ash modules
 
 #### Real-World Validation
 
@@ -206,7 +205,7 @@ npm test
 
 # Run specific test categories
 npm run test:parsers  # All parser tests
-npm run test:grammar  # Grammar parser only
+npm run test:config   # Configuration-driven parser only
 npm run test:simple   # Simple parser only
 npm run test:hybrid   # Hybrid architecture only
 ```
@@ -214,7 +213,7 @@ npm run test:hybrid   # Hybrid architecture only
 ## Technology Stack
 
 - **Language**: TypeScript with strict mode
-- **Parser**: Nearley grammar parser + regex fallback
+- **Parser**: Configuration-driven parser
 - **Testing**: Mocha with organized test structure
 - **Quality**: ESLint, Prettier, TypeScript compiler
 - **Build**: TypeScript compiler with asset copying
@@ -245,7 +244,7 @@ function quickFix(data: any) {
 
 - Don't test only with simple examples
 - Don't wait until packaging to test complex files
-- Don't assume grammar parser works for all cases
+- Add proper configurations for new Ash modules
 
 ### ❌ **Error Suppression**
 

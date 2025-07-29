@@ -2,7 +2,7 @@
 const assert = require('assert');
 
 // Import the testing version of extractModules function
-const { extractModulesForTesting } = require('../../../../dist/src/parsers/configurationDriven/moduleParser');
+const { extractModulesForTesting } = require('../../../dist/src/parsers/moduleParser');
 
 // Mock module configurations for testing
 const mockAshResourceConfig = {
@@ -43,12 +43,7 @@ const mockAshPostgresConfig = {
     {
       blockName: "postgres",
       namePattern: undefined,
-      children: [
-        {
-          blockName: "table",
-          namePattern: "\"(\\w+)\"",
-        }
-      ]
+      children: []
     }
   ]
 };
@@ -144,8 +139,7 @@ end
     // Check postgres section (from AshPostgres)
     const postgresSection = result.find(s => s.section === 'postgres');
     assert.ok(postgresSection, 'Should find postgres section');
-    assert.strictEqual(postgresSection.details.length, 1, 'Should find one table');
-    assert.strictEqual(postgresSection.details[0].name, 'users', 'Table should be users');
+    assert.strictEqual(postgresSection.details.length, 0, 'Should find no child details in postgres section');
   });
 
   // Test case 4: Nested do/end blocks

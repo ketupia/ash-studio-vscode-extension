@@ -1,7 +1,7 @@
 const {
   identifyConfiguredModules,
   getAllAvailableConfigurations,
-} = require("../../../../dist/src/parsers/configurationDriven/moduleParser");
+} = require("../../../dist/src/parsers/moduleParser");
 const assert = require("assert");
 
 describe("identifyConfiguredModules", function () {

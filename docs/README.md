@@ -60,8 +60,7 @@ This folder contains comprehensive documentation for the Ash Studio VS Code Exte
 
 The Ash Studio extension uses a **hybrid parser architecture** with:
 
-- **Primary**: Nearley grammar-based parser for comprehensive AST analysis
-- **Fallback**: Simple regex-based parser for reliability
+- **Configuration-driven parser**: Flexible and maintainable parsing approach through module configuration
 - **Services**: Centralized logging, configuration, performance monitoring, and error handling
 - **Testing**: Organized unit/integration test structure with 68 comprehensive tests
 
@@ -71,7 +70,7 @@ This project maintains enterprise-grade quality through:
 
 - **TypeScript Strict Mode** - Type safety and compile-time error detection
 - **ESLint + Prettier** - Code quality and consistent formatting
-- **Comprehensive Testing** - 68 tests covering grammar, simple, and hybrid parser scenarios
+- **Comprehensive Testing** - Tests covering configuration-driven parser scenarios
 - **Centralized Logging** - Structured logging with VS Code output channel integration
 - **Performance Monitoring** - Built-in performance tracking and metrics collection
 

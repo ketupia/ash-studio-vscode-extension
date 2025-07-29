@@ -15,7 +15,8 @@ const AshAuthenticationConfig: ModuleInterface = {
               namePattern: "(:\\w+|\\w+)",
             },
             {
-              blockName: "magic_link"
+              blockName: "magic_link",
+              namePattern: "(:\\w+|\\w+)",
             },
           ],
         }
