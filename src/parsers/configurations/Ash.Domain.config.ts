@@ -1,6 +1,6 @@
 import { ModuleInterface } from "../moduleInterface";
 
-const AshDomainConfig: ModuleInterface = {
+const Ash_Domain_Config: ModuleInterface = {
   displayName: "Ash Domain",
   declarationPattern: "Ash.Domain",
   dslBlocks: [
@@ -21,4 +21,4 @@ const AshDomainConfig: ModuleInterface = {
   },
 };
 
-export default AshDomainConfig;
+export default Ash_Domain_Config;

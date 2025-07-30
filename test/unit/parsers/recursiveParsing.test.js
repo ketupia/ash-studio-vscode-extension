@@ -1,7 +1,7 @@
 const assert = require("assert");
 const { extractModules } = require("../../../dist/src/parsers/moduleParser");
-const AshResourceConfig =
-  require("../../../dist/src/parsers/configurations/AshResource.config").default;
+const Ash_Resource_Config =
+  require("../../../dist/src/parsers/configurations/Ash.Resource.config").default;
 
 describe("Recursive DSL Parsing", () => {
   it("should correctly parse resource with actual Ash configuration", () => {
@@ -24,7 +24,7 @@ describe("Recursive DSL Parsing", () => {
       end
     `;
 
-    const result = extractModules(testSource, [AshResourceConfig]);
+    const result = extractModules(testSource, [Ash_Resource_Config]);
 
     // Verify overall structure
     assert.strictEqual(result.length, 2, "Should find exactly 2 sections");

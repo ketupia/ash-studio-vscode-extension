@@ -16,14 +16,14 @@ import {
   CodeLensEntry,
 } from "./parser";
 import { ModuleInterface, DslBlock } from "./moduleInterface";
-import AshAuthenticationConfig from "./configurations/AshAuthentication.config";
-import AshDomainConfig from "./configurations/AshDomain.config";
-import AshPaperTrailConfig from "./configurations/AshPaperTrail.config";
-import AshPostgresConfig from "./configurations/AshPostgres.config";
-import AshPubSubConfig from "./configurations/AshPubSub.config";
-import AshResourceConfig from "./configurations/AshResource.config";
-
-// ... rest of the file remains unchanged ...
+import AshAdmin_Domain_Config from "./configurations/AshAdmin.Domain.config";
+import AshAdmin_Resource_Config from "./configurations/AshAdmin.Resource.config";
+import AshAuthentication_Config from "./configurations/AshAuthentication.config";
+import Ash_Domain_Config from "./configurations/Ash.Domain.config";
+import Ash_PubSub_Config from "./configurations/Ash.PubSub.config";
+import Ash_Resource_Config from "./configurations/Ash.Resource.config";
+import AshPaperTrail_Config from "./configurations/AshPaperTrail.config";
+import AshPostgres_Config from "./configurations/AshPostgres.config";
 
 /**
  * Returns all available ModuleInterface configurations.
@@ -31,16 +31,15 @@ import AshResourceConfig from "./configurations/AshResource.config";
  */
 export function getAllAvailableConfigurations(): ModuleInterface[] {
   return [
-    AshAuthenticationConfig,
-    AshDomainConfig,
-    AshPaperTrailConfig,
-    AshPostgresConfig,
-    AshPubSubConfig,
-    AshResourceConfig,
+    AshAdmin_Domain_Config,
+    AshAdmin_Resource_Config,
+    AshAuthentication_Config,
+    Ash_Domain_Config,
+    Ash_PubSub_Config,
+    Ash_Resource_Config,
+    AshPaperTrail_Config,
+    AshPostgres_Config,
     // Add new configurations here as they are created
-    // AshGraphqlConfig,
-    // AshJsonApiConfig,
-    // etc.
   ];
 }
 
