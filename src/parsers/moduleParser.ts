@@ -48,6 +48,16 @@ export function getAllAvailableConfigurations(): ModuleInterface[] {
  * to parse Ash DSL blocks in a structured way.
  */
 export class ModuleParser implements Parser {
+  private static instance: ModuleParser;
+  private constructor() {}
+
+  static getInstance(): ModuleParser {
+    if (!ModuleParser.instance) {
+      ModuleParser.instance = new ModuleParser();
+    }
+    return ModuleParser.instance;
+  }
+
   parse(source: string): ParseResult {
     const availableConfigs = getAllAvailableConfigurations();
     // Pass 1: Find all use declarations
@@ -86,7 +96,7 @@ export class ModuleParser implements Parser {
   }
 }
 
-export const moduleParser = new ModuleParser();
+export const moduleParser = ModuleParser.getInstance();
 
 /**
  * Extract code lenses from matched modules and parsed sections.
@@ -162,7 +172,6 @@ export function extractCodeLenses(
  * Extract DSL modules and their blocks from source code
  * Uses a context-driven approach where all imported modules contribute to parsing
  */
-// For testing only
 export function extractModules(
   source: string,
   matchedModules: ModuleInterface[]
