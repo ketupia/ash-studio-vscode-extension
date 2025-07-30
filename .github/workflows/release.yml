@@ -5,8 +5,15 @@ on:
     tags:
       - "v*" # Triggers on version tags like v0.0.1, v1.0.0, etc.
 
-  # Allow manual triggering of the workflow
+  # Allow manual triggering of the workflow for exceptional cases, such as re-releasing a specific version.
   workflow_dispatch:
+    inputs:
+      tag:
+        description: "The tag version to release (e.g., v1.0.0)"
+        required: true
+      reason:
+        description: "Reason for manually triggering the release"
+        required: false
 
 permissions:
   contents: write
