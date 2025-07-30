@@ -4,6 +4,8 @@ on:
   push:
     tags:
       - "v*" # Triggers on version tags like v0.0.1, v1.0.0, etc.
+
+  # Allow manual triggering of the workflow
   workflow_dispatch:
 
 permissions:
