@@ -1,6 +1,6 @@
 import { ModuleInterface } from "../moduleInterface";
 
-const AshResourceConfig: ModuleInterface = {
+const Ash_Resource_Config: ModuleInterface = {
   displayName: "Ash.Resource",
   declarationPattern: "Ash.Resource",
   dslBlocks: [
@@ -186,4 +186,4 @@ const AshResourceConfig: ModuleInterface = {
   },
 };
 
-export default AshResourceConfig;
+export default Ash_Resource_Config;

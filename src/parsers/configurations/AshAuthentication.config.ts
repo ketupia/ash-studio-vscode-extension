@@ -1,6 +1,6 @@
 import { ModuleInterface } from "../moduleInterface";
 
-const AshAuthenticationConfig: ModuleInterface = {
+const AshAuthentication_Config: ModuleInterface = {
   displayName: "Ash Authentication",
   declarationPattern: "AshAuthentication",
   dslBlocks: [
@@ -27,4 +27,4 @@ const AshAuthenticationConfig: ModuleInterface = {
   },
 };
 
-export default AshAuthenticationConfig;
+export default AshAuthentication_Config;

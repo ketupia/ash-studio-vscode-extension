@@ -1,7 +1,7 @@
 import { ModuleInterface } from "../moduleInterface";
 // Using explicit path to avoid TypeScript resolution issues
 
-const AshPostgresConfig: ModuleInterface = {
+const AshPostgres_Config: ModuleInterface = {
   displayName: "Postgres",
   declarationPattern: "AshPostgres.DataLayer",
   dslBlocks: [
@@ -15,4 +15,4 @@ const AshPostgresConfig: ModuleInterface = {
   },
 };
 
-export default AshPostgresConfig;
+export default AshPostgres_Config;

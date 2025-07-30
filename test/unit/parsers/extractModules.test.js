@@ -2,9 +2,7 @@
 const assert = require("assert");
 
 // Import the testing version of extractModules function
-const {
-  extractModulesForTesting,
-} = require("../../../dist/src/parsers/moduleParser");
+const { extractModules } = require("../../../dist/src/parsers/moduleParser");
 
 // Mock module configurations for testing
 const mockAshResourceConfig = {
@@ -65,7 +63,7 @@ end
     `;
 
     const matchedModules = [mockAshResourceConfig];
-    const result = extractModulesForTesting(source, matchedModules);
+    const result = extractModules(source, matchedModules);
 
     assert.strictEqual(result.length, 1, "Should find one section");
     assert.strictEqual(
@@ -108,7 +106,7 @@ end
     `;
 
     const matchedModules = [mockAshResourceConfig];
-    const result = extractModulesForTesting(source, matchedModules);
+    const result = extractModules(source, matchedModules);
 
     assert.strictEqual(result.length, 2, "Should find two sections");
 
@@ -164,7 +162,7 @@ end
     `;
 
     const matchedModules = [mockAshResourceConfig, mockAshPostgresConfig];
-    const result = extractModulesForTesting(source, matchedModules);
+    const result = extractModules(source, matchedModules);
 
     assert.strictEqual(result.length, 2, "Should find two sections");
 
@@ -204,7 +202,7 @@ end
     `;
 
     const matchedModules = [mockAshResourceConfig];
-    const result = extractModulesForTesting(source, matchedModules);
+    const result = extractModules(source, matchedModules);
 
     assert.strictEqual(result.length, 1, "Should find one section");
     assert.strictEqual(
@@ -243,7 +241,7 @@ end
     `;
 
     const matchedModules = [mockAshResourceConfig];
-    const result = extractModulesForTesting(source, matchedModules);
+    const result = extractModules(source, matchedModules);
 
     assert.strictEqual(result.length, 0, "Should find no sections");
   });
@@ -261,7 +259,7 @@ end
     `;
 
     const matchedModules = [mockAshResourceConfig];
-    const result = extractModulesForTesting(source, matchedModules);
+    const result = extractModules(source, matchedModules);
 
     assert.strictEqual(result.length, 1, "Should find one section");
     assert.strictEqual(
@@ -299,7 +297,7 @@ end
     `;
 
     const matchedModules = [mockAshResourceConfig, mockAshPostgresConfig];
-    const result = extractModulesForTesting(source, matchedModules);
+    const result = extractModules(source, matchedModules);
 
     assert.strictEqual(result.length, 3, "Should find three sections");
 
@@ -338,7 +336,7 @@ end
     `;
 
     const matchedModules = [mockAshResourceConfig];
-    const result = extractModulesForTesting(source, matchedModules);
+    const result = extractModules(source, matchedModules);
 
     // Should not double-count any blocks or details
     assert.strictEqual(result.length, 2, "Should find exactly two sections");
@@ -409,7 +407,7 @@ end
     `;
 
     const matchedModules = [mockRecursiveConfig];
-    const result = extractModulesForTesting(source, matchedModules);
+    const result = extractModules(source, matchedModules);
 
     assert.strictEqual(result.length, 2, "Should find two sections");
 

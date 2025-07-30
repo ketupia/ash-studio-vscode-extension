@@ -1,6 +1,6 @@
 import { ModuleInterface } from "../moduleInterface";
 
-const AshPaperTrailConfig: ModuleInterface = {
+const AshPaperTrail_Config: ModuleInterface = {
   displayName: "Ash Paper Trail",
   declarationPattern: "AshPaperTrail.Resource",
   dslBlocks: [
@@ -14,4 +14,4 @@ const AshPaperTrailConfig: ModuleInterface = {
   },
 };
 
-export default AshPaperTrailConfig;
+export default AshPaperTrail_Config;

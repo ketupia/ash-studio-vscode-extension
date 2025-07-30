@@ -1,18 +1,29 @@
+/**
+ * Main configuration-driven parser for Ash DSL blocks.
+ *
+ * This file contains:
+ * - ModuleParser: The core parser implementation using configuration-driven logic.
+ * - All parsing logic, configuration management, and helpers for Ash DSL parsing.
+ *
+ * Usage: Use the exported singleton `moduleParser` for all parsing tasks.
+ */
+
 import {
   Parser,
   ParseResult,
   ParsedSection,
   ParsedDetail,
-  ParseError,
   CodeLensEntry,
 } from "./parser";
 import { ModuleInterface, DslBlock } from "./moduleInterface";
-import AshAuthenticationConfig from "./configurations/AshAuthentication.config";
-import AshDomainConfig from "./configurations/AshDomain.config";
-import AshPaperTrailConfig from "./configurations/AshPaperTrail.config";
-import AshPostgresConfig from "./configurations/AshPostgres.config";
-import AshPubSubConfig from "./configurations/AshPubSub.config";
-import AshResourceConfig from "./configurations/AshResource.config";
+import AshAdmin_Domain_Config from "./configurations/AshAdmin.Domain.config";
+import AshAdmin_Resource_Config from "./configurations/AshAdmin.Resource.config";
+import AshAuthentication_Config from "./configurations/AshAuthentication.config";
+import Ash_Domain_Config from "./configurations/Ash.Domain.config";
+import Ash_PubSub_Config from "./configurations/Ash.PubSub.config";
+import Ash_Resource_Config from "./configurations/Ash.Resource.config";
+import AshPaperTrail_Config from "./configurations/AshPaperTrail.config";
+import AshPostgres_Config from "./configurations/AshPostgres.config";
 
 /**
  * Returns all available ModuleInterface configurations.
@@ -20,16 +31,15 @@ import AshResourceConfig from "./configurations/AshResource.config";
  */
 export function getAllAvailableConfigurations(): ModuleInterface[] {
   return [
-    AshAuthenticationConfig,
-    AshDomainConfig,
-    AshPaperTrailConfig,
-    AshPostgresConfig,
-    AshPubSubConfig,
-    AshResourceConfig,
+    AshAdmin_Domain_Config,
+    AshAdmin_Resource_Config,
+    AshAuthentication_Config,
+    Ash_Domain_Config,
+    Ash_PubSub_Config,
+    Ash_Resource_Config,
+    AshPaperTrail_Config,
+    AshPostgres_Config,
     // Add new configurations here as they are created
-    // AshGraphqlConfig,
-    // AshJsonApiConfig,
-    // etc.
   ];
 }
 
@@ -37,10 +47,6 @@ export function getAllAvailableConfigurations(): ModuleInterface[] {
  * A Parser implementation that uses ModuleInterface configurations
  * to parse Ash DSL blocks in a structured way.
  */
-// Export functions for testing purposes
-export const findEndOfBlockForTesting = findEndOfBlock;
-export const extractModulesForTesting = extractModules;
-
 export class ModuleParser implements Parser {
   private static instance: ModuleParser;
 
@@ -51,66 +57,37 @@ export class ModuleParser implements Parser {
     return ModuleParser.instance;
   }
 
-  /**
-   * Parse Ash DSL content using configuration-driven approach
-   * Uses a line-by-line scanning approach for better performance
-   */
   parse(source: string): ParseResult {
-    // Use all available configurations
     const availableConfigs = getAllAvailableConfigurations();
-
     // Pass 1: Find all use declarations
     const useDeclarations = findUseDeclarations(source);
     if (useDeclarations.length === 0) {
       return {
         sections: [],
-        errors: [],
         isAshFile: false,
         parserName: "ModuleParser",
         codeLenses: [],
       };
     }
-
-    // Pass 2: Identify which configurations match the found use declarations
+    // Identify which modules are present
     const matchedModules = identifyConfiguredModules(
       useDeclarations,
       availableConfigs
     );
-
     if (matchedModules.length === 0) {
       return {
         sections: [],
-        errors: [],
         isAshFile: false,
         parserName: "ModuleParser",
         codeLenses: [],
       };
     }
-
-    // Pass 3: Use line-by-line parsing to find DSL blocks
-    const sections: ParsedSection[] = [];
-    const errors: ParseError[] = [];
-    const codeLenses: CodeLensEntry[] = [];
-
-    try {
-      const parsedSections = extractModules(source, matchedModules);
-      sections.push(...parsedSections);
-
-      // Pass 4: Extract code lenses from modules
-      const extractedLenses = extractCodeLenses(source, matchedModules);
-      codeLenses.push(...extractedLenses);
-    } catch (error) {
-      errors.push({
-        message: error instanceof Error ? error.message : String(error),
-        line: 1,
-        column: 1,
-        offset: 0,
-      });
-    }
-
+    // Extract DSL modules and their blocks
+    const sections = extractModules(source, matchedModules);
+    // Extract code lenses for documentation
+    const codeLenses = extractCodeLenses(source, matchedModules);
     return {
       sections,
-      errors,
       isAshFile: true,
       parserName: "ModuleParser",
       codeLenses,
@@ -118,14 +95,13 @@ export class ModuleParser implements Parser {
   }
 }
 
-// Create a singleton instance for easy access
 export const moduleParser = ModuleParser.getInstance();
 
 /**
  * Extract code lenses from matched modules and parsed sections.
  * These will be shown in the editor as clickable links to documentation.
  */
-function extractCodeLenses(
+export function extractCodeLenses(
   source: string,
   matchedModules: ModuleInterface[]
 ): CodeLensEntry[] {
@@ -194,7 +170,7 @@ function extractCodeLenses(
  * Extract DSL modules and their blocks from source code
  * Uses a context-driven approach where all imported modules contribute to parsing
  */
-function extractModules(
+export function extractModules(
   source: string,
   matchedModules: ModuleInterface[]
 ): ParsedSection[] {
@@ -248,7 +224,7 @@ function extractModules(
           }
 
           // Parse child blocks using the children of this specific DSL block
-          const details = parseChildBlocksWithCombinedConfigs(
+          const details = parseChildBlocks(
             blockContent,
             dslBlock.children || [],
             matchedModules,
@@ -279,46 +255,9 @@ function extractModules(
 }
 
 /**
- * Parse child blocks using combined configurations from all imported modules
- * This allows multiple modules to contribute child block definitions
+ * Recursively parse child blocks using a combined configuration from all modules.
  */
-function parseChildBlocksWithCombinedConfigs(
-  parentContent: string,
-  dslBlockConfigs: DslBlock[],
-  allModules: ModuleInterface[],
-  parentStartLine: number
-): ParsedDetail[] {
-  // Group child blocks by their blockName
-  const blocksByName = new Map<string, DslBlock[]>();
-
-  // Collect all blocks with the same name from all configs
-  for (const block of dslBlockConfigs) {
-    if (!blocksByName.has(block.blockName)) {
-      blocksByName.set(block.blockName, []);
-    }
-    blocksByName.get(block.blockName)!.push(block);
-  }
-
-  // Parse each unique block type with combined configurations
-  return parseChildBlocksFromCombinedConfig(
-    parentContent,
-    Array.from(blocksByName.values()).map(blocks => ({
-      blockName: blocks[0].blockName,
-      namePattern: blocks.find(b => b.namePattern)?.namePattern,
-      children: blocks.flatMap(b => b.children || []),
-    })),
-    allModules,
-    parentStartLine
-  );
-}
-
-// The parseChildBlocksForModule function has been removed in favor of
-// parseChildBlocksWithCombinedConfigs which supports multiple modules
-
-/**
- * Parse child blocks using a combined configuration approach
- */
-function parseChildBlocksFromCombinedConfig(
+function parseChildBlocks(
   parentContent: string,
   childConfigs: DslBlock[],
   allModules: ModuleInterface[],
@@ -393,7 +332,7 @@ function parseChildBlocksFromCombinedConfig(
           // Process children recursively if this block has child configurations
           let nestedDetails: ParsedDetail[] = [];
           if (childConfig.children && childConfig.children.length > 0) {
-            nestedDetails = parseChildBlocksFromCombinedConfig(
+            nestedDetails = parseChildBlocks(
               nestedBlockContent,
               childConfig.children,
               allModules,

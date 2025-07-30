@@ -5,19 +5,13 @@
     "moduleResolution": "node",
     "lib": ["ES2022"],
     "outDir": "dist",
-    "rootDir": ".",
+    "rootDirs": ["src", "test"],
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "allowJs": true
   },
-  "include": [
-    "src/**/*.ts",
-    "test/**/*.ts",
-    "src/chevrotain/ashLexerParser.js",
-    "src/chevrotain/CstToAshSections.ts",
-    "src/chevrotain/testParser.js"
-  ],
-  "exclude": ["node_modules"]
+  "include": ["src", "test"],
+  "exclude": ["node_modules", "dist"]
 }

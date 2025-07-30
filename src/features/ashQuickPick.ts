@@ -28,12 +28,6 @@ export function registerAshQuickPick(
         return;
       }
 
-      if (parseResult.errors.length > 0) {
-        // Show parse errors but still try to show any sections we found
-        const errorMsg = parseResult.errors[0].message;
-        vscode.window.showWarningMessage(`Parse error: ${errorMsg}`);
-      }
-
       // Create QuickPick items from parsed sections
       const items = parseResult.sections.map(section => ({
         label: section.section,
