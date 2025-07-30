@@ -1,7 +1,8 @@
 # Ash Studio VS Code Extension
 
-A VS Code extension that enhances development experience for the Ash Framework (Elixir) with
-intelligent navigation and code insight tools.
+Working with Ash Framework projects often means dealing with long resource files, making it hard to find and navigate between sections.
+
+Ash Studio is a VS Code extension that solves this by providing navigation and code insight tools, helping you quickly jump between Ash DSL blocks and understand your code structure at a glance.
 
 ## ✨ Features
 
@@ -68,16 +69,23 @@ intelligent navigation and code insight tools.
 
 ### Supported Ash Constructs
 
-The extension recognizes and navigates:
+#### Core Ash Framework
 
-- **Resources & Domains**: Main Ash modules
-- **Attributes**: Field definitions and types
-- **Actions**: Create, read, update, delete operations
-- **Relationships**: Associations between resources
-- **Calculations**: Computed fields
-- **Aggregates**: Data aggregations
-- **Policies**: Authorization rules
-- **Code Interface**: API definitions
+The extension recognizes and navigates these core Ash DSL blocks:
+
+- **Resources**: `resource`, `attributes`, `actions`, `relationships`, `calculations`, `aggregates`,
+  `policies`, `code_interface`
+- **Domain**: `resources`
+- **PubSub**: `pub_sub`
+
+#### Ash Ecosystem Libraries
+
+The extension also supports DSL blocks from popular Ash libraries:
+
+- **AshAdmin**: `admin`
+- **AshAuthentication**: `authentication`, `strategies`
+- **AshPaperTrail**: `paper_trail`
+- **AshPostgres**: `postgres`
 
 ## 🐛 Troubleshooting
 

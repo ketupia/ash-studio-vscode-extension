@@ -14,7 +14,7 @@
 
 ### 3. CodeLens for Sections
 
-- [ ] Show clickable links above each Ash section for quick actions (e.g., "Go to section", "Copy
+- [X] Show clickable links above each Ash section for quick actions (e.g., "Go to section", "Copy
       section name") - maybe to docs
 
 ### 4. Hover Information
