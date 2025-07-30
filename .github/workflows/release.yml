@@ -30,12 +30,11 @@ jobs:
       - name: Ensure tag matches version in package.json
         run: |
           TAG_VERSION="${GITHUB_REF##*/}"
-          PKG_VERSION=$(jq -r .version package.json)
+          PKG_VERSION=$(node -p "require('./package.json').version")
           if [ "v$PKG_VERSION" != "$TAG_VERSION" ]; then
             echo "::error::Tag ($TAG_VERSION) does not match package.json version (v$PKG_VERSION)"
             exit 1
           fi
-        shell: bash
       - name: Build extension
         run: npm run build
       - name: Package extension
