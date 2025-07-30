@@ -49,7 +49,6 @@ export function getAllAvailableConfigurations(): ModuleInterface[] {
  */
 export class ModuleParser implements Parser {
   private static instance: ModuleParser;
-  private constructor() {}
 
   static getInstance(): ModuleParser {
     if (!ModuleParser.instance) {
@@ -102,7 +101,6 @@ export const moduleParser = ModuleParser.getInstance();
  * Extract code lenses from matched modules and parsed sections.
  * These will be shown in the editor as clickable links to documentation.
  */
-// For testing only
 export function extractCodeLenses(
   source: string,
   matchedModules: ModuleInterface[]

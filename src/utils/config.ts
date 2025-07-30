@@ -52,7 +52,7 @@ export class ConfigurationManager {
       case "enableHoverInfo":
         return config.get("enableHoverInfo", false) as AshStudioConfig[T];
       default:
-        throw new Error(`Unknown configuration key: ${String(key)}`);
+        throw new Error(`Unknown configuration key: ${key}`);
     }
   }
 
