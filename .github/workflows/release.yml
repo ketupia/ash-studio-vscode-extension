@@ -44,7 +44,7 @@ jobs:
             exit 1
           fi
       - name: Log manual release reason
-        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.reason != '' }}
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.reason != ''
         run: |
           echo "Manual release reason: ${{ github.event.inputs.reason }}"
       - name: Cache npm
@@ -64,7 +64,7 @@ jobs:
         run: npx @vscode/vsce package
       - name: Check VSIX exists
         run: |
-          if ! find . -name '*.vsix' -print -quit >/dev/null 2>&1; then
+          if ! find . -name '*.vsix' | head -n 1 >/dev/null 2>&1; then
             echo "::error::VSIX package not found!"
             exit 1
           fi
