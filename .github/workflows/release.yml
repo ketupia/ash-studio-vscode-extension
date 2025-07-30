@@ -1,0 +1,78 @@
+name: Release Extension
+
+on:
+  push:
+    tags:
+      - "v*" # Triggers on version tags like v0.0.1, v1.0.0, etc.
+
+  # Allow manual triggering of the workflow for exceptional cases, such as re-releasing a specific version.
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "The tag version to release (e.g., v1.0.0)"
+        required: true
+      reason:
+        description: "Reason for manually triggering the release"
+        required: false
+
+permissions:
+  contents: write
+  packages: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && format('refs/tags/{0}', github.event.inputs.tag) || github.ref }}
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+      - name: Ensure tag matches version in package.json
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG_VERSION="${{ github.event.inputs.tag }}"
+          else
+            TAG_VERSION="${GITHUB_REF##*/}"
+          fi
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          if [ "v$PKG_VERSION" != "$TAG_VERSION" ]; then
+            echo "::error::Tag ($TAG_VERSION) does not match package.json version (v$PKG_VERSION)"
+            exit 1
+          fi
+      - name: Log manual release reason
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.reason != ''
+        run: |
+          echo "Manual release reason: ${{ github.event.inputs.reason }}"
+# Removed redundant npm cache step as caching is already handled by setup-node with 'cache: "npm"'.
+      - name: Install dependencies
+        run: npm ci
+      - name: Run quality checks
+        run: npm run quality
+      - name: Build extension
+        run: npm run build
+      - name: Package extension
+        run: npx @vscode/vsce package
+      - name: Check VSIX exists
+        run: |
+          if ! ls *.vsix > /dev/null 2>&1; then
+            echo "::error::VSIX package not found!"
+            exit 1
+          fi
+      - name: Upload VSIX as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ash-studio-extension
+          path: "*.vsix"
+          retention-days: 30
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: "*.vsix"
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
