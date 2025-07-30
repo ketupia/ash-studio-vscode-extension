@@ -25,6 +25,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.tag || '' }}
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -33,11 +35,18 @@ jobs:
       - name: Ensure tag matches version in package.json
         run: |
           TAG_VERSION="${GITHUB_REF##*/}"
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG_VERSION="${{ github.event.inputs.tag }}"
+          fi
           PKG_VERSION=$(node -p "require('./package.json').version")
           if [ "v$PKG_VERSION" != "$TAG_VERSION" ]; then
             echo "::error::Tag ($TAG_VERSION) does not match package.json version (v$PKG_VERSION)"
             exit 1
           fi
+      - name: Log manual release reason
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.reason != '' }}
+        run: |
+          echo "Manual release reason: ${{ github.event.inputs.reason }}"
       - name: Install dependencies
         run: npm ci
       - name: Run quality checks
@@ -46,6 +55,12 @@ jobs:
         run: npm run build
       - name: Package extension
         run: npx @vscode/vsce package
+      - name: Check VSIX exists
+        run: |
+          if [ ! -f *.vsix ]; then
+            echo "::error::VSIX package not found!"
+            exit 1
+          fi
       - name: Upload VSIX as artifact
         uses: actions/upload-artifact@v4
         with:
