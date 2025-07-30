@@ -64,7 +64,7 @@ jobs:
         run: npx @vscode/vsce package
       - name: Check VSIX exists
         run: |
-          if [ ! -f *.vsix ]; then
+          if ! find . -name '*.vsix' -print -quit >/dev/null 2>&1; then
             echo "::error::VSIX package not found!"
             exit 1
           fi
