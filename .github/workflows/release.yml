@@ -23,10 +23,6 @@ jobs:
         with:
           node-version: "18"
           cache: "npm"
-      - name: Install dependencies
-        run: npm ci
-      - name: Run quality checks
-        run: npm run quality
       - name: Ensure tag matches version in package.json
         run: |
           TAG_VERSION="${GITHUB_REF##*/}"
@@ -35,6 +31,10 @@ jobs:
             echo "::error::Tag ($TAG_VERSION) does not match package.json version (v$PKG_VERSION)"
             exit 1
           fi
+      - name: Install dependencies
+        run: npm ci
+      - name: Run quality checks
+        run: npm run quality
       - name: Build extension
         run: npm run build
       - name: Package extension
