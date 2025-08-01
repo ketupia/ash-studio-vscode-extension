@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { AshParserService } from "../ashParserService";
+import { ParseResult, ParsedSection } from "../types/parser";
 
 export function registerAshSectionNavigation(
   context: vscode.ExtensionContext,
@@ -25,7 +26,7 @@ export function registerAshSectionNavigation(
         return [];
       }
       // Return only main DSL sections for breadcrumbs - no nested details
-      return latestParseResult.sections.map(section => {
+      return latestParseResult.sections.map((section: ParsedSection) => {
         const startPos = new vscode.Position(section.startLine - 1, 0); // Convert to 0-based
         const endPos = new vscode.Position(section.endLine - 1, 0); // Convert to 0-based
 

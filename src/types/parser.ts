@@ -1,9 +1,5 @@
-// No VSCode imports needed in the parser interface
-
-/**
- * Unified interfaces for all Ash DSL parsers
- * All parsers should implement these interfaces for consistency
- */
+// Centralized Ash parser types and interfaces for use across the extension
+// Only export public APIs. Document each interface/type clearly.
 
 export interface ParsedDetail {
   section: string; // parent section name
@@ -34,9 +30,6 @@ export interface ParsedSection {
   rawContent?: string;
 }
 
-/**
- * Represents a code lens entry to be displayed in the editor
- */
 export interface CodeLensEntry {
   /** The line number where this code lens should appear (1-based) */
   line: number;
@@ -61,9 +54,6 @@ export interface ParseResult {
   codeLenses: CodeLensEntry[]; // code lens entries to display in the editor
 }
 
-/**
- * Base interface that all Ash parsers must implement
- */
 export interface Parser {
   /**
    * Parse Ash DSL content from raw text

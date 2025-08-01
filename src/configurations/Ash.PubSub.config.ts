@@ -1,4 +1,4 @@
-import { ModuleInterface } from "../moduleInterface";
+import { ModuleInterface } from "../types/configurationRegistry";
 
 const Ash_PubSub_Config: ModuleInterface = {
   displayName: "Ash PubSub",

@@ -1,4 +1,4 @@
-import { ModuleInterface } from "../moduleInterface";
+import { ModuleInterface } from "../types/configurationRegistry";
 
 const AshPaperTrail_Config: ModuleInterface = {
   displayName: "Ash Paper Trail",

@@ -1,7 +1,6 @@
-const assert = require("assert");
-const { extractModules } = require("../../../dist/src/parsers/moduleParser");
-const Ash_Resource_Config =
-  require("../../../dist/src/parsers/configurations/Ash.Resource.config").default;
+import assert from "assert";
+import { extractModules } from "../../../src/parsers/moduleParser";
+import Ash_Resource_Config from "../../../src/configurations/Ash.Resource.config";
 
 describe("Recursive DSL Parsing", () => {
   it("should correctly parse resource with actual Ash configuration", () => {

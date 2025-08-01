@@ -14,35 +14,10 @@ import {
   ParsedSection,
   ParsedDetail,
   CodeLensEntry,
-} from "./parser";
-import { ModuleInterface, DslBlock } from "./moduleInterface";
-import AshAdmin_Domain_Config from "./configurations/AshAdmin.Domain.config";
-import AshAdmin_Resource_Config from "./configurations/AshAdmin.Resource.config";
-import AshAuthentication_Config from "./configurations/AshAuthentication.config";
-import Ash_Domain_Config from "./configurations/Ash.Domain.config";
-import Ash_PubSub_Config from "./configurations/Ash.PubSub.config";
-import Ash_Resource_Config from "./configurations/Ash.Resource.config";
-import AshPaperTrail_Config from "./configurations/AshPaperTrail.config";
-import AshPostgres_Config from "./configurations/AshPostgres.config";
+} from "../types/parser";
+import { ModuleInterface, DslBlock } from "../types/configurationRegistry";
+import { configurationRegistry } from "../configurations/registry";
 import { getTheoreticalDiagramFilePath } from "../utils/diagramUtils";
-
-/**
- * Returns all available ModuleInterface configurations.
- * Add new configurations here as they are created.
- */
-export function getAllAvailableConfigurations(): ModuleInterface[] {
-  return [
-    AshAdmin_Domain_Config,
-    AshAdmin_Resource_Config,
-    AshAuthentication_Config,
-    Ash_Domain_Config,
-    Ash_PubSub_Config,
-    Ash_Resource_Config,
-    AshPaperTrail_Config,
-    AshPostgres_Config,
-    // Add new configurations here as they are created
-  ];
-}
 
 /**
  * A Parser implementation that uses ModuleInterface configurations
@@ -64,7 +39,7 @@ export class ModuleParser implements Parser {
    * @param filePath The file path of the document (required for diagram CodeLenses)
    */
   parse(source: string, filePath?: string): ParseResult {
-    const availableConfigs = getAllAvailableConfigurations();
+    const availableConfigs = configurationRegistry.getAll();
     // Pass 1: Find all use declarations
     const useDeclarations = findUseDeclarations(source);
     if (useDeclarations.length === 0) {
@@ -137,12 +112,14 @@ export function extractCodeLenses(
             }
             const lineStart = currentPos - lines[line - 1].length - 1;
             const character = foundPos - lineStart;
+            // Ensure url is a string for CodeLensEntry.target
+            const target: string = typeof url === "string" ? url : String(url);
             codeLenses.push({
               line,
               character,
               title: `📘 ${module.displayName} Docs`,
               command: "ash-studio.openDocumentation",
-              target: url,
+              target,
               source: module.displayName,
               range: { startLine: line, endLine: line },
             });

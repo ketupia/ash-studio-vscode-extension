@@ -71,7 +71,31 @@
     structures, rather than inferring intent from names, titles, or other heuristics.
   - This ensures maintainability, clarity, and reduces ambiguity for both humans and AI agents.
 
----
+## Modularization & Interface-Driven Architecture
 
-If you add new features or patterns, update this file and `feature-plan.md` to keep AI agents
-productive.
+- All logic should be organized into small, well-defined modules with clear responsibilities.
+- Public APIs must be defined using TypeScript interfaces and types, placed in a shared `types/` or
+  `interfaces/` directory.
+- Pure logic (e.g., parsing, data models) must not depend on VS Code APIs.
+- VS Code integration (providers, commands, UI) should be isolated in dedicated modules.
+- All modules should explicitly export only their public API; helpers and internals should remain
+  private.
+- When adding new features, first define the interface and types, then implement the logic.
+
+## Commenting and Documentation Guidance
+
+- Do not leave comments about obsolete or deprecated functionality in the codebase.
+- Always update or rewrite comments to reflect the current, intended functionality and usage.
+- Remove files that are no longer needed, rather than leaving placeholders or deprecation notes.
+- Documentation and comments should help future maintainers understand the present state, not the
+  past.
+
+## Build & Test After Each Change
+
+- After making any code change (especially refactors or type/interface moves), always:
+  1. Run a full build (`npm run build`).
+  2. Run all available tests.
+  3. Fix any errors or warnings before proceeding.
+- Do not consider a refactor or feature complete until the build and tests pass.
+- When a test fails and the cause is unclear, ask for clarification. Sometimes the source is wrong,
+  sometimes the test is wrong—ask for help to determine which.

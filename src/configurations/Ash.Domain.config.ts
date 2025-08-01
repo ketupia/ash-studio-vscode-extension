@@ -1,4 +1,4 @@
-import { ModuleInterface } from "../moduleInterface";
+import { ModuleInterface } from "../types/configurationRegistry";
 
 const Ash_Domain_Config: ModuleInterface = {
   displayName: "Ash Domain",

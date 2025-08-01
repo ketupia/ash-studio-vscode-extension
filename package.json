@@ -130,7 +130,7 @@
     "clean": "rm -rf dist",
     "build": "npm run clean && tsc",
     "pre-commit": "rm -f test-*.js crash-*.js *.tmp *.temp && npm run quality",
-    "test": "npm run build && mocha 'test/**/*.test.js'"
+    "test": "npm run build && mocha -r ts-node/register 'test/**/*.test.ts'"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
@@ -144,6 +144,7 @@
     "knip": "^5.62.0",
     "mocha": "^11.7.1",
     "prettier": "^3.6.2",
+    "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   }
 }

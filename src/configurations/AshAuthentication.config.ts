@@ -1,4 +1,4 @@
-import { ModuleInterface } from "../moduleInterface";
+import { ModuleInterface } from "../types/configurationRegistry";
 
 const AshAuthentication_Config: ModuleInterface = {
   displayName: "Ash Authentication",

@@ -1,7 +1,5 @@
-const {
-  findUseDeclarations,
-} = require("../../../dist/src/parsers/moduleParser");
-const assert = require("assert");
+import { findUseDeclarations } from "../../../src/parsers/moduleParser";
+import assert from "assert";
 
 describe("findUseDeclarations", function () {
   it("should find a single-line use declaration", function () {

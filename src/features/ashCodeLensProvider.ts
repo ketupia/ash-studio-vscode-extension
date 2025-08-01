@@ -3,7 +3,7 @@ import { AshParserService } from "../ashParserService";
 import { Logger } from "../utils/logger";
 // Used indirectly through ParseResult.codeLenses
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { CodeLensEntry } from "../parsers/parser";
+import { CodeLensEntry } from "../types/parser";
 import { ConfigurationManager } from "../utils/config";
 
 /**

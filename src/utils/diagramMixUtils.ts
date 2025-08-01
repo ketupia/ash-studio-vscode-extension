@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import { spawn } from "child_process";
-import { DiagramSpec } from "../parsers/moduleInterface";
+import { DiagramSpec } from "../types/configurationRegistry";
 
 /**
  * Invokes the appropriate Mix task to generate a diagram for the given resource file and diagram spec.

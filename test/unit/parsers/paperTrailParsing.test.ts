@@ -1,13 +1,13 @@
-const {
+import {
   findUseDeclarations,
   identifyConfiguredModules,
-  getAllAvailableConfigurations,
   moduleParser,
-} = require("../../../dist/src/parsers/moduleParser");
-const assert = require("assert");
+} from "../../../src/parsers/moduleParser";
+import { configurationRegistry } from "../../../src/configurations/registry";
+import assert from "assert";
 
 describe("Paper Trail Parsing", function () {
-  const allConfigs = getAllAvailableConfigurations();
+  const allConfigs = configurationRegistry.getAll();
 
   describe("Use Declaration Parsing with Bracket Continuation", function () {
     it("should parse use declarations with bracket continuation for extensions", function () {
@@ -105,25 +105,27 @@ end`;
       );
       assert(paperTrailSection, "Should have paper_trail section");
       assert(
-        paperTrailSection.rawContent.includes("primary_key_type :uuid_v7"),
+        paperTrailSection?.rawContent?.includes("primary_key_type :uuid_v7"),
         "Should include primary_key_type configuration"
       );
       assert(
-        paperTrailSection.rawContent.includes("change_tracking_mode :snapshot"),
+        paperTrailSection?.rawContent?.includes(
+          "change_tracking_mode :snapshot"
+        ),
         "Should include change_tracking_mode configuration"
       );
       assert(
-        paperTrailSection.rawContent.includes("store_action_name? true"),
+        paperTrailSection?.rawContent?.includes("store_action_name? true"),
         "Should include store_action_name configuration"
       );
       assert(
-        paperTrailSection.rawContent.includes(
+        paperTrailSection?.rawContent?.includes(
           "ignore_attributes [:inserted_at, :updated_at]"
         ),
         "Should include ignore_attributes configuration"
       );
       assert(
-        paperTrailSection.rawContent.includes("ignore_actions [:destroy]"),
+        paperTrailSection?.rawContent?.includes("ignore_actions [:destroy]"),
         "Should include ignore_actions configuration"
       );
     });
@@ -223,7 +225,7 @@ end`;
 
       // Verify sections are in correct order
       assert(
-        paperTrailSection.startLine > postgresSection.endLine,
+        paperTrailSection.startLine > (postgresSection?.endLine ?? 0),
         "paper_trail should come after postgres"
       );
       assert(
@@ -251,7 +253,7 @@ end`;
         "Should have paper_trail section even with no content"
       );
       assert.strictEqual(
-        paperTrailSection.rawContent.trim(),
+        paperTrailSection?.rawContent?.trim(),
         "",
         "Should have empty raw content"
       );

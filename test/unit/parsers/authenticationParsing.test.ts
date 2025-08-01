@@ -1,7 +1,6 @@
-const assert = require("assert");
-const { extractModules } = require("../../../dist/src/parsers/moduleParser");
-const AshAuthConfig =
-  require("../../../dist/src/parsers/configurations/AshAuthentication.config").default;
+import assert from "assert";
+import { extractModules } from "../../../src/parsers/moduleParser";
+import AshAuthConfig from "../../../src/configurations/AshAuthentication.config";
 
 describe("AshAuthentication Multi-tier Parsing", () => {
   it("should correctly parse three-tier nested blocks", () => {
@@ -55,7 +54,7 @@ end
 
     // Find password and magic_link blocks (third tier - nested in strategies)
     const strategiesBlock = strategiesDetails[0];
-    const passwordDetails = strategiesBlock.childDetails.filter(
+    const passwordDetails = (strategiesBlock.childDetails ?? []).filter(
       d => d.detail === "password"
     );
     assert.strictEqual(
@@ -69,7 +68,7 @@ end
       'Password strategy name should be ":default"'
     );
 
-    const magicLinkDetails = strategiesBlock.childDetails.filter(
+    const magicLinkDetails = (strategiesBlock.childDetails ?? []).filter(
       d => d.detail === "magic_link"
     );
     assert.strictEqual(

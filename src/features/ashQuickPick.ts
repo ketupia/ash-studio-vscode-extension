@@ -1,5 +1,10 @@
 import * as vscode from "vscode";
 import { AshParserService } from "../ashParserService";
+import { ParsedSection } from "../types/parser";
+
+interface SectionQuickPickItem extends vscode.QuickPickItem {
+  section: ParsedSection;
+}
 
 export function registerAshQuickPick(
   context: vscode.ExtensionContext,
@@ -24,11 +29,13 @@ export function registerAshQuickPick(
         return;
       }
       // Create QuickPick items from parsed sections
-      const items = latestParseResult.sections.map(section => ({
-        label: section.section,
-        description: `Line ${section.startLine}`,
-        section: section,
-      }));
+      const items: SectionQuickPickItem[] = latestParseResult.sections.map(
+        (section: ParsedSection) => ({
+          label: section.section,
+          description: `Lines ${section.startLine}-${section.endLine}`,
+          section: section,
+        })
+      );
       if (items.length === 0) {
         vscode.window.showInformationMessage("No Ash sections found");
         return;
@@ -66,11 +73,13 @@ export function registerAshQuickPick(
           vscode.window.showInformationMessage("No parse result available");
           return;
         }
-        const items = latestParseResult.sections.map(section => ({
-          label: section.section,
-          description: `Line ${section.startLine}`,
-          section: section,
-        }));
+        const items: SectionQuickPickItem[] = latestParseResult.sections.map(
+          (section: ParsedSection) => ({
+            label: section.section,
+            description: `Lines ${section.startLine}-${section.endLine}`,
+            section: section,
+          })
+        );
         if (items.length === 0) {
           vscode.window.showInformationMessage("No Ash sections found");
           return;

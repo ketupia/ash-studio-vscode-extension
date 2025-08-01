@@ -1,8 +1,5 @@
-const assert = require("assert");
-const { describe, it } = require("mocha");
-
-// Import the module parser function we need to test
-// Since we're only testing the regex pattern directly, we'll use a simplified test approach
+import assert from "assert";
+import { describe, it } from "mocha";
 
 describe("Name Pattern Extraction", () => {
   it("should correctly extract names with and without colons using (:\\w+|\\w+) pattern", () => {

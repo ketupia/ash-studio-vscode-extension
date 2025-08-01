@@ -44,3 +44,11 @@ export interface DiagramSpec {
   /** For commands that support a type option (e.g., "class", "entity") */
   type?: string;
 }
+
+/**
+ * Interface for the configuration registry class.
+ * Allows for easier mocking and future extensibility.
+ */
+export interface ConfigurationRegistryInterface {
+  getAll(): ModuleInterface[];
+}

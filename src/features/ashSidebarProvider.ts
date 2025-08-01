@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { AshParserService } from "../ashParserService";
-import { ParsedDetail } from "../parsers/parser";
+import { ParsedDetail, ParsedSection } from "../types/parser";
 import { Logger } from "../utils/logger";
 
 export class AshSidebarProvider
@@ -46,7 +46,7 @@ export class AshSidebarProvider
     if (!element) {
       // Top-level: show main DSL sections
       return parseResult.sections.map(
-        section =>
+        (section: ParsedSection) =>
           new AshSidebarItem(
             section.section, // Use section.section instead of section.name
             section.details && section.details.length > 0
@@ -66,7 +66,7 @@ export class AshSidebarProvider
     } else if (element.isSection && element.sectionLine !== undefined) {
       // Level 1: Show details within a section
       const section = parseResult.sections.find(
-        s => s.startLine === element.sectionLine
+        (s: ParsedSection) => s.startLine === element.sectionLine
       );
       if (!section || !section.details || section.details.length === 0)
         return [];

@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import { DiagramSpec } from "../parsers/moduleInterface";
+import { DiagramSpec } from "../types/configurationRegistry";
 
 /**
  * Checks if the diagram file exists and is current (newer than the resource file).

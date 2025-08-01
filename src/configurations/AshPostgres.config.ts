@@ -1,4 +1,4 @@
-import { ModuleInterface } from "../moduleInterface";
+import { ModuleInterface } from "../types/configurationRegistry";
 // Using explicit path to avoid TypeScript resolution issues
 
 const AshPostgres_Config: ModuleInterface = {
