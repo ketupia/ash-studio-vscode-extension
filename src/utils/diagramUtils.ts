@@ -1,52 +1,6 @@
-import * as vscode from "vscode";
 import * as fs from "fs";
 import * as path from "path";
-import { spawn } from "child_process";
 import { DiagramSpec } from "../parsers/moduleInterface";
-
-/**
- * Invokes the appropriate Mix task to generate a diagram for the given resource file and diagram spec.
- * Returns a promise that resolves when the Mix task completes.
- */
-export async function generateDiagramWithMix(
-  resourceFilePath: string,
-  diagramSpec: DiagramSpec,
-  workspaceFolder?: vscode.WorkspaceFolder
-): Promise<void> {
-  return new Promise((resolve, reject) => {
-    // Determine the working directory (project root)
-    const cwd = workspaceFolder?.uri.fsPath || path.dirname(resourceFilePath);
-    // Get the diagram format from the extension setting
-    const config = vscode.workspace.getConfiguration();
-    const format = config.get<string>("ashStudio.diagramFormat", "plain");
-    // Build the Mix command with the selected format
-    const args = [
-      diagramSpec.command,
-      "--only",
-      resourceFilePath,
-      "--format",
-      format,
-    ];
-    const mix = spawn("mix", args, { cwd });
-    let stderr = "";
-    // mix.stdout.on("data", data => {
-    //   // Optionally, log or process stdout here if needed
-    // });
-    mix.stderr.on("data", data => {
-      stderr += data.toString();
-    });
-    mix.on("close", code => {
-      if (code === 0) {
-        resolve();
-      } else {
-        reject(new Error(`Mix task failed with code ${code}: ${stderr}`));
-      }
-    });
-    mix.on("error", err => {
-      reject(err);
-    });
-  });
-}
 
 /**
  * Checks if the diagram file exists and is current (newer than the resource file).
@@ -76,4 +30,39 @@ export function diagramExistsAndIsCurrent(
     }
   }
   return false;
+}
+
+/**
+ * Returns the theoretical/expected diagram file path for a resource and diagram spec.
+ * This does not check for existence, just returns the expected file name (first match).
+ */
+export function getTheoreticalDiagramFilePath(
+  resourceFilePath: string,
+  diagramSpec: DiagramSpec
+): string {
+  const resourceDir = path.dirname(resourceFilePath);
+  const resourceBase = path.basename(
+    resourceFilePath,
+    path.extname(resourceFilePath)
+  );
+  // Use the filePattern to construct the expected file name
+  // If the pattern is e.g. ".*-policy-flowchart.(mmd|svg|png|pdf)", default to .mmd
+  // Remove the ".*" and group, just use the base and the first extension
+  const extMatch = diagramSpec.filePattern.match(/\.\(([^)]+)\)/i);
+  let ext = "mmd";
+  if (extMatch && extMatch[1]) {
+    // If group, take first
+    ext = extMatch[1].split("|")[0];
+  }
+  // Remove any ".*" prefix and group from filePattern for the suffix
+  let suffix = diagramSpec.filePattern
+    .replace(/^\.\*-?/, "-")
+    .replace(/\(.*\)/, "")
+    .replace(/\.[^\.]+$/, "");
+  if (suffix.endsWith("$")) suffix = suffix.slice(0, -1);
+  // Remove any trailing period from suffix to avoid double dots
+  suffix = suffix.replace(/\.$/, "");
+  // Compose the file name
+  const fileName = `${resourceBase}${suffix}.${ext}`;
+  return path.join(resourceDir, fileName);
 }

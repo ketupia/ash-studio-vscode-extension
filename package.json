@@ -31,6 +31,14 @@
       {
         "command": "ash-studio.revealSectionOrSubBlock",
         "title": "Reveal Ash Section"
+      },
+      {
+        "command": "ash-studio.showDiagram",
+        "title": "Show Ash Diagram"
+      },
+      {
+        "command": "ash-studio.openDocumentation",
+        "title": "Open Ash Documentation"
       }
     ],
     "languages": [],

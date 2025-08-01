@@ -45,7 +45,8 @@ export class AshParserService {
     let result: ParseResult;
 
     try {
-      result = this.parser.parse(source);
+      // Pass file path to parser for diagram CodeLens support
+      result = this.parser.parse(source, document.fileName);
       logger.debug(
         "AshParserService",
         `Parser ${result.parserName} succeeded`,

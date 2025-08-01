@@ -68,7 +68,8 @@ export interface Parser {
   /**
    * Parse Ash DSL content from raw text
    * @param source - The source code to parse
+   * @param filePath - The file path of the document (required for diagram CodeLenses)
    * @returns ParseResult with sections, details, and any errors
    */
-  parse(source: string): ParseResult;
+  parse(source: string, filePath?: string): ParseResult;
 }

@@ -24,6 +24,7 @@ import Ash_PubSub_Config from "./configurations/Ash.PubSub.config";
 import Ash_Resource_Config from "./configurations/Ash.Resource.config";
 import AshPaperTrail_Config from "./configurations/AshPaperTrail.config";
 import AshPostgres_Config from "./configurations/AshPostgres.config";
+import { getTheoreticalDiagramFilePath } from "../utils/diagramUtils";
 
 /**
  * Returns all available ModuleInterface configurations.
@@ -57,7 +58,12 @@ export class ModuleParser implements Parser {
     return ModuleParser.instance;
   }
 
-  parse(source: string): ParseResult {
+  /**
+   * Parses the source code and returns a ParseResult.
+   * @param source The source code to parse
+   * @param filePath The file path of the document (required for diagram CodeLenses)
+   */
+  parse(source: string, filePath?: string): ParseResult {
     const availableConfigs = getAllAvailableConfigurations();
     // Pass 1: Find all use declarations
     const useDeclarations = findUseDeclarations(source);
@@ -82,8 +88,8 @@ export class ModuleParser implements Parser {
     }
     // Extract DSL modules and their blocks
     const sections = extractModules(source, matchedModules);
-    // Extract code lenses for documentation
-    const codeLenses = extractCodeLenses(source, matchedModules);
+    // Extract code lenses for documentation and diagrams (pass filePath)
+    const codeLenses = extractCodeLenses(source, matchedModules, filePath);
     return {
       sections,
       parserName: "ModuleParser",
@@ -100,7 +106,8 @@ export const moduleParser = ModuleParser.getInstance();
  */
 export function extractCodeLenses(
   source: string,
-  matchedModules: ModuleInterface[]
+  matchedModules: ModuleInterface[],
+  filePath?: string // <-- add filePath param for diagram resolution
 ): CodeLensEntry[] {
   const codeLenses: CodeLensEntry[] = [];
   const lines = source.split("\n");
@@ -147,7 +154,6 @@ export function extractCodeLenses(
     // Diagram CodeLenses
     if (module.diagramLenses) {
       for (const diagramSpec of module.diagramLenses) {
-        // Find all matching sections for this diagram keyword
         let searchPos = 0;
         let foundPos: number;
         while (
@@ -171,15 +177,24 @@ export function extractCodeLenses(
             }
             const lineStart = currentPos - lines[line - 1].length - 1;
             const character = foundPos - lineStart;
-            codeLenses.push({
-              line,
-              character,
-              title: `🖼️ ${diagramSpec.name}`,
-              command: "ash-studio.showDiagram",
-              target: JSON.stringify(diagramSpec),
-              source: module.displayName,
-              range: { startLine: line, endLine: line },
-            });
+            let diagramFilePath: string | undefined = undefined;
+            if (filePath) {
+              diagramFilePath = getTheoreticalDiagramFilePath(
+                filePath,
+                diagramSpec
+              );
+            }
+            if (diagramFilePath) {
+              codeLenses.push({
+                line,
+                character,
+                title: `🖼️ ${diagramSpec.name}`,
+                command: "ash-studio.showDiagram",
+                target: diagramFilePath,
+                source: module.displayName,
+                range: { startLine: line, endLine: line },
+              });
+            }
           }
           searchPos = foundPos + diagramSpec.keyword.length;
         }

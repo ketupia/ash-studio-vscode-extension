@@ -5,6 +5,7 @@ import { registerAshSectionNavigation } from "./features/ashSectionNavigation";
 import { registerAshCodeLensProvider } from "./features/ashCodeLensProvider";
 import { AshParserService } from "./ashParserService";
 import { Logger } from "./utils/logger";
+import { generateDiagramWebviewContent } from "./features/ashStudioWebview";
 
 // Removed unused debounce helper
 
@@ -192,6 +193,33 @@ export function activate(context: vscode.ExtensionContext) {
             editor.revealRange(new vscode.Range(position, position));
             vscode.window.showTextDocument(editor.document);
           }
+        }
+      )
+    );
+
+    // Register diagram and documentation commands
+    context.subscriptions.push(
+      vscode.commands.registerCommand(
+        "ash-studio.showDiagram",
+        (filePath: string, entry: any) => {
+          const panel = vscode.window.createWebviewPanel(
+            "ashDiagramPreview",
+            `Ash Diagram: ${entry.source}`,
+            vscode.ViewColumn.Beside,
+            { enableScripts: true }
+          );
+          panel.webview.html = generateDiagramWebviewContent(
+            entry.target,
+            panel.webview
+          );
+        }
+      )
+    );
+    context.subscriptions.push(
+      vscode.commands.registerCommand(
+        "ash-studio.openDocumentation",
+        (url: string) => {
+          vscode.env.openExternal(vscode.Uri.parse(url));
         }
       )
     );
