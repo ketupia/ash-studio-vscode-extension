@@ -184,6 +184,14 @@ const Ash_Resource_Config: ModuleInterface = {
     resource: "https://hexdocs.pm/ash/dsl-ash-resource.html",
     validations: "https://hexdocs.pm/ash/validations.html",
   },
+  diagrams: [
+    {
+      name: "Policy Flowchart",
+      keyword: "policies",
+      command: "ash.generate_policy_charts",
+      filePattern: "-policy-flowchart.(mmd|svg|png|pdf)",
+    },
+  ],
 };
 
 export default Ash_Resource_Config;

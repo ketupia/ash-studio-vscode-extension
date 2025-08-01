@@ -25,4 +25,22 @@ export interface ModuleInterface {
   codeLenses?: Record<string, string>;
   /** Array of DSL sections for this module */
   dslBlocks: DslBlock[];
+  /** Optional array of diagram specifications for this module */
+  diagrams?: DiagramSpec[];
+}
+
+/**
+ * Describes a diagram generation specification for Ash modules.
+ */
+export interface DiagramSpec {
+  /** Human-friendly name for the diagram (e.g., "Policy Flowchart") */
+  name: string;
+  /** The keyword/section to match (e.g., "policies", "classes") */
+  keyword: string;
+  /** The Mix command to run (e.g., "ash.generate_policy_charts") */
+  command: string;
+  /** The expected diagram file naming pattern (e.g., ".*-policy-flowchart.(mmd|svg|png|pdf)") */
+  filePattern: string;
+  /** For commands that support a type option (e.g., "class", "entity") */
+  type?: string;
 }
