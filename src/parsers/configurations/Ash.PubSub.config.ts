@@ -18,9 +18,12 @@ const Ash_PubSub_Config: ModuleInterface = {
       ],
     },
   ],
-  codeLenses: {
+  documentationLenses: {
     pub_sub: "https://hexdocs.pm/ash/Ash.Notifier.PubSub.html",
   },
+  diagramLenses: [
+    // ...existing code...
+  ],
 };
 
 export default Ash_PubSub_Config;

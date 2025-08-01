@@ -22,9 +22,10 @@ const AshAuthentication_Config: ModuleInterface = {
       ],
     },
   ],
-  codeLenses: {
+  documentationLenses: {
     authentication: "https://hexdocs.pm/ash_authentication/readme.html",
   },
+  diagramLenses: [],
 };
 
 export default AshAuthentication_Config;

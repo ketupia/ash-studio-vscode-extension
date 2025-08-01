@@ -50,8 +50,8 @@ export class AshParserService {
         "AshParserService",
         `Parser ${result.parserName} succeeded`,
         {
-          isAshFile: result.isAshFile,
           sectionsFound: result.sections.length,
+          codeLensesFound: result.codeLenses.length,
         }
       );
     } catch (error) {
@@ -61,7 +61,6 @@ export class AshParserService {
       // Fallback to an empty result on error
       result = {
         sections: [],
-        isAshFile: false,
         parserName: "ErrorFallback",
         codeLenses: [],
       };
@@ -115,12 +114,22 @@ export class AshParserService {
     if (document.languageId !== "elixir") {
       return {
         sections: [],
-        isAshFile: false,
         parserName: "LanguageFilter",
         codeLenses: [],
       };
     }
 
+    return this.getParseResult(document);
+  }
+
+  /**
+   * Called when a document is activated. Parses and emits results, using cache if available.
+   */
+  public documentActivated(document: vscode.TextDocument): ParseResult {
+    const cached = this.getCachedResult(document);
+    if (cached) {
+      return cached;
+    }
     return this.getParseResult(document);
   }
 }

@@ -9,9 +9,10 @@ const AshAdmin_Resource_Config: ModuleInterface = {
       children: [],
     },
   ],
-  codeLenses: {
+  documentationLenses: {
     admin: "https://hexdocs.pm/ash_admin/0.13.13/AshAdmin.Resource.html",
   },
+  diagramLenses: [],
 };
 
 export default AshAdmin_Resource_Config;

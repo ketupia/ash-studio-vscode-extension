@@ -170,7 +170,7 @@ const Ash_Resource_Config: ModuleInterface = {
       ],
     },
   ],
-  codeLenses: {
+  documentationLenses: {
     actions: "https://hexdocs.pm/ash/actions.html",
     aggregates: "https://hexdocs.pm/ash/aggregates.html",
     attributes: "https://hexdocs.pm/ash/attributes.html",
@@ -184,7 +184,7 @@ const Ash_Resource_Config: ModuleInterface = {
     resource: "https://hexdocs.pm/ash/dsl-ash-resource.html",
     validations: "https://hexdocs.pm/ash/validations.html",
   },
-  diagrams: [
+  diagramLenses: [
     {
       name: "Policy Flowchart",
       keyword: "policies",

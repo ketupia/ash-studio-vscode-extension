@@ -44,7 +44,9 @@ export interface CodeLensEntry {
   character: number;
   /** The title/label to display in the code lens */
   title: string;
-  /** The URL or command to execute when the code lens is clicked */
+  /** The command to execute when the code lens is clicked */
+  command: string;
+  /** The URL or data to pass as an argument to the command */
   target: string;
   /** The source of this code lens (module name, block type, etc.) */
   source: string;
@@ -54,7 +56,6 @@ export interface CodeLensEntry {
 
 export interface ParseResult {
   sections: ParsedSection[];
-  isAshFile: boolean; // whether this appears to be an Ash Resource/Domain file
   moduleName?: string; // extracted module name if available
   parserName: string; // name of the parser that was used
   codeLenses: CodeLensEntry[]; // code lens entries to display in the editor

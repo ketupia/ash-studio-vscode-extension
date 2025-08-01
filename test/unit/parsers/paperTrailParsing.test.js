@@ -98,7 +98,6 @@ end`;
 
       const result = moduleParser.parse(source);
 
-      assert.strictEqual(result.isAshFile, true);
       assert(result.sections.length > 0, "Should have parsed sections");
 
       const paperTrailSection = result.sections.find(
@@ -196,7 +195,6 @@ end`;
 
       const result = moduleParser.parse(source);
 
-      assert.strictEqual(result.isAshFile, true);
       assert(result.sections.length >= 4, "Should have multiple sections");
 
       // Check that paper_trail section exists
@@ -245,7 +243,6 @@ end`;
 
       const result = moduleParser.parse(source);
 
-      assert.strictEqual(result.isAshFile, true);
       const paperTrailSection = result.sections.find(
         s => s.section === "paper_trail"
       );
@@ -273,10 +270,7 @@ end`;
 
       const result = moduleParser.parse(source);
 
-      // Should still be an Ash file due to Ash.Resource
-      assert.strictEqual(result.isAshFile, true);
-
-      // But should not have paper_trail section since AshPaperTrail.Resource is not used
+      // Should not have paper_trail section since AshPaperTrail.Resource is not used
       const paperTrailSection = result.sections.find(
         s => s.section === "paper_trail"
       );

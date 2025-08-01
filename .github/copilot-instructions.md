@@ -64,6 +64,13 @@
   parsing.
 - See `feature-plan.md` for current and planned features.
 
+## AI Coding Preferences
+
+- **Prefer declarative approaches over inferred/heuristic logic.**
+  - For example, always use explicit fields (like a `command` property) in configuration and data
+    structures, rather than inferring intent from names, titles, or other heuristics.
+  - This ensures maintainability, clarity, and reduces ambiguity for both humans and AI agents.
+
 ---
 
 If you add new features or patterns, update this file and `feature-plan.md` to keep AI agents

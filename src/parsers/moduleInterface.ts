@@ -21,12 +21,12 @@ export interface ModuleInterface {
   displayName: string;
   /** The declaration pattern to match in the use statement (e.g., "Ash.Resource") */
   declarationPattern: string;
-  /** Map of keywords to documentation URLs for CodeLens features */
-  codeLenses?: Record<string, string>;
   /** Array of DSL sections for this module */
   dslBlocks: DslBlock[];
-  /** Optional array of diagram specifications for this module */
-  diagrams?: DiagramSpec[];
+  /** Map of keywords to documentation URLs for CodeLens features */
+  documentationLenses?: Record<string, string>;
+  /** Array of diagram lens specifications for this module */
+  diagramLenses?: DiagramSpec[];
 }
 
 /**

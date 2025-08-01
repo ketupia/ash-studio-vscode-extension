@@ -13,10 +13,16 @@ export class AshCodeLensProvider implements vscode.CodeLensProvider {
   // Track disposables for cleanup
   private disposables: vscode.Disposable[] = [];
 
+  // Cache the latest parse result
+  private latestParseResult: ReturnType<
+    AshParserService["documentActivated"]
+  > | null = null;
+
   constructor(private readonly parserService: AshParserService) {
-    // Listen for parse events to refresh code lenses when content changes
+    // Listen for parse events to refresh code lenses and update cache
     this.disposables.push(
-      this.parserService.onDidParse(() => {
+      this.parserService.onDidParse(result => {
+        this.latestParseResult = result;
         this.triggerCodeLensRefresh();
       })
     );
@@ -36,25 +42,18 @@ export class AshCodeLensProvider implements vscode.CodeLensProvider {
    */
   async provideCodeLenses(
     document: vscode.TextDocument,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _token: vscode.CancellationToken
   ): Promise<vscode.CodeLens[] | null> {
-    // Check if CodeLens is enabled in settings
     if (!ConfigurationManager.getInstance().get("enableCodeLens")) {
       return null;
     }
-
     try {
-      // Get parse results for this document
-      const parseResult = await this.parserService.getParseResult(document);
-      if (!parseResult || !parseResult.isAshFile) {
+      if (!this.latestParseResult) {
         return null;
       }
-
       // Convert our CodeLensEntry objects to VS Code CodeLens objects
       const codeLenses: vscode.CodeLens[] = [];
-
-      for (const entry of parseResult.codeLenses) {
+      for (const entry of this.latestParseResult.codeLenses) {
         // Create a range for the CodeLens
         const line = Math.max(0, entry.line - 1); // Convert to 0-based line number
         const range = new vscode.Range(
@@ -71,44 +70,36 @@ export class AshCodeLensProvider implements vscode.CodeLensProvider {
           `Creating code lens: ${entry.title} -> ${entry.target}`
         );
 
-        try {
-          const uri = vscode.Uri.parse(entry.target);
-          Logger.getInstance().debug(
-            "AshCodeLensProvider",
-            `Parsed URI: ${uri.toString()}`
-          );
-
-          // Use our custom command for better control and logging
+        // Assign command directly from entry
+        if (entry.command === "ash-studio.showDiagram") {
           lens.command = {
             title: entry.title,
-            command: "ash-studio.openDocumentation",
+            command: entry.command,
+            arguments: [document.uri.fsPath, entry],
+            tooltip: `View diagram for ${entry.source}`,
+          };
+        } else if (entry.command === "ash-studio.openDocumentation") {
+          lens.command = {
+            title: entry.title,
+            command: entry.command,
             arguments: [entry.target],
             tooltip: `View documentation for ${entry.source}`,
           };
-
-          // Alternative: use the built-in vscode.open command if needed
-          // lens.command = {
-          //   title: entry.title,
-          //   command: "vscode.open",
-          //   arguments: [uri],
-          //   tooltip: `View documentation for ${entry.source}`
-          // };
-        } catch (error) {
-          Logger.getInstance().error(
-            "AshCodeLensProvider",
-            `Failed to parse URI: ${entry.target}`,
-            error
-          );
-          // Fallback: create a command that shows an error message
+        } else {
+          // Fallback: show error if command is unknown
           lens.command = {
             title: entry.title,
             command: "vscode.window.showErrorMessage",
-            arguments: [`Failed to open documentation: ${entry.target}`],
+            arguments: [
+              `Unknown CodeLens command: ${entry.command} for ${entry.title}`,
+            ],
           };
         }
 
         codeLenses.push(lens);
       }
+
+      // Remove manual diagram CodeLens logic; all CodeLenses now come from parseResult.codeLenses
 
       return codeLenses;
     } catch (error) {

@@ -6,17 +6,7 @@ import { registerAshCodeLensProvider } from "./features/ashCodeLensProvider";
 import { AshParserService } from "./ashParserService";
 import { Logger } from "./utils/logger";
 
-// Add debounce helper
-function debounce<T extends (...args: unknown[]) => void>(
-  fn: T,
-  delay: number
-): (...args: Parameters<T>) => void {
-  let timer: NodeJS.Timeout;
-  return (...args: Parameters<T>) => {
-    clearTimeout(timer);
-    timer = setTimeout(() => fn(...args), delay);
-  };
-}
+// Removed unused debounce helper
 
 export function activate(context: vscode.ExtensionContext) {
   // CRITICAL: Multiple debugging outputs to track activation issues
@@ -89,27 +79,7 @@ export function activate(context: vscode.ExtensionContext) {
         context.subscriptions.push(treeView);
         console.log("✅ Tree view added to subscriptions");
 
-        // Set up document change listener with debouncing and crash protection
-        let isRefreshing = false;
-        const debouncedRefresh = debounce(() => {
-          try {
-            if (isRefreshing) {
-              logger.debug(
-                "Extension",
-                "Refresh already in progress, skipping"
-              );
-              return;
-            }
-            isRefreshing = true;
-            logger.debug("Extension", "Debounced refresh triggered");
-            sidebarProvider.refresh();
-          } catch (refreshError) {
-            logger.error("Extension", "Error refreshing sidebar", refreshError);
-          } finally {
-            isRefreshing = false;
-          }
-        }, 300);
-
+        // Set up document change listener and parser triggers
         const onActiveEditorChanged = (
           editor: vscode.TextEditor | undefined
         ) => {
@@ -118,16 +88,9 @@ export function activate(context: vscode.ExtensionContext) {
               hasEditor: !!editor,
               fileName: editor?.document?.fileName,
             });
-            // Clear cache for the new document to avoid conflicts
-            if (
-              parserService &&
-              editor &&
-              "clearCache" in parserService &&
-              typeof parserService.clearCache === "function"
-            ) {
-              parserService.clearCache(editor.document);
+            if (parserService && editor) {
+              parserService.documentActivated(editor.document);
             }
-            debouncedRefresh();
           } catch (error) {
             logger.error("Extension", "Error in onActiveEditorChanged", error);
           }
@@ -135,9 +98,11 @@ export function activate(context: vscode.ExtensionContext) {
 
         const onDocumentChanged = (e: vscode.TextDocumentChangeEvent) => {
           try {
-            if (e.document === vscode.window.activeTextEditor?.document) {
-              logger.debug("Extension", "Document changed, triggering refresh");
-              debouncedRefresh();
+            if (
+              parserService &&
+              e.document === vscode.window.activeTextEditor?.document
+            ) {
+              parserService.documentActivated(e.document);
             }
           } catch (error) {
             logger.error("Extension", "Error in onDocumentChanged", error);

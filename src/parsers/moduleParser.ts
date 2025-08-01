@@ -64,7 +64,6 @@ export class ModuleParser implements Parser {
     if (useDeclarations.length === 0) {
       return {
         sections: [],
-        isAshFile: false,
         parserName: "ModuleParser",
         codeLenses: [],
       };
@@ -77,7 +76,6 @@ export class ModuleParser implements Parser {
     if (matchedModules.length === 0) {
       return {
         sections: [],
-        isAshFile: false,
         parserName: "ModuleParser",
         codeLenses: [],
       };
@@ -88,7 +86,6 @@ export class ModuleParser implements Parser {
     const codeLenses = extractCodeLenses(source, matchedModules);
     return {
       sections,
-      isAshFile: true,
       parserName: "ModuleParser",
       codeLenses,
     };
@@ -108,61 +105,87 @@ export function extractCodeLenses(
   const codeLenses: CodeLensEntry[] = [];
   const lines = source.split("\n");
 
-  // For each matched module, search for its code lens keywords throughout the entire source
   for (const module of matchedModules) {
-    if (!module.codeLenses) {
-      continue;
-    }
-
-    // Search for each keyword in the entire source code
-    for (const [keyword, url] of Object.entries(module.codeLenses)) {
-      let searchPos = 0;
-      let foundPos: number;
-
-      // Find all occurrences of this keyword
-      while ((foundPos = source.indexOf(keyword, searchPos)) !== -1) {
-        // Make sure it's a whole word by checking boundaries
-        const prevChar = foundPos > 0 ? source.charAt(foundPos - 1) : " ";
-        const nextChar =
-          foundPos + keyword.length < source.length
-            ? source.charAt(foundPos + keyword.length)
-            : " ";
-
-        const isWholeWord =
-          !/[a-zA-Z0-9_]/.test(prevChar) && !/[a-zA-Z0-9_]/.test(nextChar);
-
-        if (isWholeWord) {
-          // Convert position to line and character
-          let line = 1;
-          let currentPos = 0;
-
-          while (currentPos < foundPos && line - 1 < lines.length) {
-            currentPos += lines[line - 1].length + 1; // +1 for the newline
-            if (currentPos <= foundPos) {
-              line++;
+    // Documentation CodeLenses
+    if (module.documentationLenses) {
+      for (const [keyword, url] of Object.entries(module.documentationLenses)) {
+        let searchPos = 0;
+        let foundPos: number;
+        while ((foundPos = source.indexOf(keyword, searchPos)) !== -1) {
+          const prevChar = foundPos > 0 ? source.charAt(foundPos - 1) : " ";
+          const nextChar =
+            foundPos + keyword.length < source.length
+              ? source.charAt(foundPos + keyword.length)
+              : " ";
+          const isWholeWord =
+            !/[a-zA-Z0-9_]/.test(prevChar) && !/[a-zA-Z0-9_]/.test(nextChar);
+          if (isWholeWord) {
+            let line = 1;
+            let currentPos = 0;
+            while (currentPos < foundPos && line - 1 < lines.length) {
+              currentPos += lines[line - 1].length + 1;
+              if (currentPos <= foundPos) {
+                line++;
+              }
             }
+            const lineStart = currentPos - lines[line - 1].length - 1;
+            const character = foundPos - lineStart;
+            codeLenses.push({
+              line,
+              character,
+              title: `📘 ${module.displayName} Docs`,
+              command: "ash-studio.openDocumentation",
+              target: url,
+              source: module.displayName,
+              range: { startLine: line, endLine: line },
+            });
           }
-
-          // Calculate the character position within the line
-          const lineStart = currentPos - lines[line - 1].length - 1;
-          const character = foundPos - lineStart;
-
-          // Add the code lens
-          codeLenses.push({
-            line,
-            character,
-            title: `📘 ${module.displayName} Docs`,
-            target: url,
-            source: module.displayName,
-            range: { startLine: line, endLine: line },
-          });
+          searchPos = foundPos + keyword.length;
         }
-
-        searchPos = foundPos + keyword.length;
+      }
+    }
+    // Diagram CodeLenses
+    if (module.diagramLenses) {
+      for (const diagramSpec of module.diagramLenses) {
+        // Find all matching sections for this diagram keyword
+        let searchPos = 0;
+        let foundPos: number;
+        while (
+          (foundPos = source.indexOf(diagramSpec.keyword, searchPos)) !== -1
+        ) {
+          const prevChar = foundPos > 0 ? source.charAt(foundPos - 1) : " ";
+          const nextChar =
+            foundPos + diagramSpec.keyword.length < source.length
+              ? source.charAt(foundPos + diagramSpec.keyword.length)
+              : " ";
+          const isWholeWord =
+            !/[a-zA-Z0-9_]/.test(prevChar) && !/[a-zA-Z0-9_]/.test(nextChar);
+          if (isWholeWord) {
+            let line = 1;
+            let currentPos = 0;
+            while (currentPos < foundPos && line - 1 < lines.length) {
+              currentPos += lines[line - 1].length + 1;
+              if (currentPos <= foundPos) {
+                line++;
+              }
+            }
+            const lineStart = currentPos - lines[line - 1].length - 1;
+            const character = foundPos - lineStart;
+            codeLenses.push({
+              line,
+              character,
+              title: `🖼️ ${diagramSpec.name}`,
+              command: "ash-studio.showDiagram",
+              target: JSON.stringify(diagramSpec),
+              source: module.displayName,
+              range: { startLine: line, endLine: line },
+            });
+          }
+          searchPos = foundPos + diagramSpec.keyword.length;
+        }
       }
     }
   }
-
   return codeLenses;
 }
 

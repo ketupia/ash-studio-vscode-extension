@@ -16,19 +16,19 @@ const Ash_Domain_Config: ModuleInterface = {
       ],
     },
   ],
-  codeLenses: {
+  documentationLenses: {
     resources: "https://hexdocs.pm/ash/domains.html",
   },
-  diagrams: [
+  diagramLenses: [
     {
-      name: "Class Diagram",
+      name: "Class",
       keyword: "resources",
       command: "ash.generate_resource_diagrams",
       filePattern: "-mermaid-class-diagram.(mmd|svg|png|pdf)",
       type: "class",
     },
     {
-      name: "Entity Resource Diagram",
+      name: "Entity Resource",
       keyword: "resources",
       command: "ash.generate_resource_diagrams",
       filePattern: "-mermaid-entity-diagram.(mmd|svg|png|pdf)",

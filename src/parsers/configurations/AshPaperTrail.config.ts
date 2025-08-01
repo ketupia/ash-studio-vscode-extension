@@ -9,9 +9,10 @@ const AshPaperTrail_Config: ModuleInterface = {
       children: [],
     },
   ],
-  codeLenses: {
+  documentationLenses: {
     paper_trail: "https://hexdocs.pm/ash_paper_trail/readme.html",
   },
+  diagramLenses: [],
 };
 
 export default AshPaperTrail_Config;

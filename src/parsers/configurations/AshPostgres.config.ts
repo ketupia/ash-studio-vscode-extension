@@ -10,9 +10,10 @@ const AshPostgres_Config: ModuleInterface = {
       children: [],
     },
   ],
-  codeLenses: {
+  documentationLenses: {
     postgres: "https://hexdocs.pm/ash_paper_trail/readme.html",
   },
+  diagramLenses: [],
 };
 
 export default AshPostgres_Config;

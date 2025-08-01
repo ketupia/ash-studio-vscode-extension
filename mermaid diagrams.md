@@ -201,9 +201,9 @@ outside the user's source tree.
 
 2. **Diagram Generation Utilities**
 
-- [ ] Implement a function to invoke the appropriate Mix task for diagram generation, given a
+- [x] Implement a function to invoke the appropriate Mix task for diagram generation, given a
       DiagramSpec and resource file path.
-- [ ] Implement a function to check if a diagram file already exists and is current, given a
+- [x] Implement a function to check if a diagram file already exists and is current, given a
       DiagramSpec and resource file path.
 - [ ] Add unit tests for both functions to ensure correct Mix invocation and file existence/age
       checking.
@@ -225,7 +225,7 @@ outside the user's source tree.
          interval if additional events occur.
 
 7. **Webview Integration**
-   - [ ] Render mermaid diagrams in a webview using the mermaid.js CDN.
+   - [x] Render mermaid diagrams in a webview using the mermaid.js CDN.
    - [ ] Handle loading state if diagram generation is in progress.
 
 8. **CodeLens and UI Integration**
