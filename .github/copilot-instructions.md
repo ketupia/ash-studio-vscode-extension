@@ -37,8 +37,7 @@
 
 ## Developer Workflows
 
-- **Build:** `npm run build` (TypeScript, outputs to `dist/`)
-- **Test:** No formal test suite yet; manual testing via VS Code Extension Development Host.
+- **Build:** `npm test` (TypeScript, outputs to `dist/`)
 - **Debug:** Use VS Code's extension debugging tools. Reload window after build changes.
 - **Sidebar Registration:**
   - Sidebar view is registered in `package.json` under `contributes.views.explorer` with id
@@ -50,7 +49,6 @@
 - All new features should be implemented as separate modules in `src/` and imported in
   `extension.ts`.
 - Only `dist/extension.js` should be referenced as the extension entry point.
-- Keep `feature-plan.md` and this file up to date as features and patterns evolve.
 
 ## Integration Points
 
@@ -93,7 +91,7 @@
 ## Build & Test After Each Change
 
 - After making any code change (especially refactors or type/interface moves), always:
-  1. Run a full build (`npm run build`).
+  1. Run a full build (`npm test`).
   2. Run all available tests.
   3. Fix any errors or warnings before proceeding.
 - Do not consider a refactor or feature complete until the build and tests pass.

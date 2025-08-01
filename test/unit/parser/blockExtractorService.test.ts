@@ -1,8 +1,92 @@
 import assert from "assert";
-import { extractModules } from "../../../src/parsers/moduleParser";
+import { BlockExtractorService } from "../../../src/parser/blockExtractorService";
+import AshAuthConfig from "../../../src/configurations/AshAuthentication.config";
 import Ash_Resource_Config from "../../../src/configurations/Ash.Resource.config";
+import { ParsedSection } from "../../../src/types/parser";
 
-describe("Recursive DSL Parsing", () => {
+describe("BlockExtractorService (AshAuthentication Multi-tier Parsing)", () => {
+  it("should correctly parse three-tier nested blocks", () => {
+    // Test source with 3-tier nesting: authentication > strategies > password/magic_link
+    const source = `
+defmodule MyApp.User do
+  use Ash.Resource
+  use AshAuthentication
+
+  authentication do
+    strategies do
+      password :default do
+        hash_algorithm Bcrypt
+        identity_field :email
+      end
+      
+      magic_link do
+        sender MyApp.EmailSender
+      end
+    end
+  end
+end
+    `;
+
+    const matchedModules = [AshAuthConfig];
+    const blockExtractor = new BlockExtractorService();
+    const result = blockExtractor.extractModules(source, matchedModules);
+
+    // Verify the structure
+    assert.strictEqual(
+      result.length,
+      1,
+      "Should find 1 top-level section (authentication)"
+    );
+
+    const authSection = result[0];
+    assert.strictEqual(
+      authSection.section,
+      "authentication",
+      "Should find authentication section"
+    );
+
+    // Find strategies blocks (second tier)
+    const strategiesDetails = authSection.details.filter(
+      d => d.detail === "strategies"
+    );
+    assert.strictEqual(
+      strategiesDetails.length,
+      1,
+      "Should find 1 strategies block"
+    );
+
+    // Find password and magic_link blocks (third tier - nested in strategies)
+    const strategiesBlock = strategiesDetails[0];
+    const passwordDetails = (strategiesBlock.childDetails ?? []).filter(
+      d => d.detail === "password"
+    );
+    assert.strictEqual(
+      passwordDetails.length,
+      1,
+      "Should find 1 password strategy"
+    );
+    assert.strictEqual(
+      passwordDetails[0].name,
+      ":default",
+      'Password strategy name should be ":default"'
+    );
+
+    const magicLinkDetails = (strategiesBlock.childDetails ?? []).filter(
+      d => d.detail === "magic_link"
+    );
+    assert.strictEqual(
+      magicLinkDetails.length,
+      1,
+      "Should find 1 magic_link strategy"
+    );
+    assert.strictEqual(
+      magicLinkDetails[0].name,
+      "",
+      "Magic link strategy should have no name when none is specified"
+    );
+  });
+});
+describe("BlockExtractorService (Recursive DSL Parsing)", () => {
   it("should correctly parse resource with actual Ash configuration", () => {
     const testSource = `
       defmodule MyApp.User do
@@ -23,7 +107,10 @@ describe("Recursive DSL Parsing", () => {
       end
     `;
 
-    const result = extractModules(testSource, [Ash_Resource_Config]);
+    const blockExtractor = new BlockExtractorService();
+    const result = blockExtractor.extractModules(testSource, [
+      Ash_Resource_Config,
+    ]);
 
     // Verify overall structure
     assert.strictEqual(result.length, 2, "Should find exactly 2 sections");
@@ -87,7 +174,8 @@ describe("Recursive DSL Parsing", () => {
       end
     `;
 
-    const result = extractModules(testSource, [mockConfig]);
+    const blockExtractor = new BlockExtractorService();
+    const result = blockExtractor.extractModules(testSource, [mockConfig]);
 
     // Verify structure
     assert.strictEqual(result.length, 1, "Should find exactly 1 section");
@@ -119,4 +207,22 @@ describe("Recursive DSL Parsing", () => {
       "Should extract attribute name"
     );
   });
+});
+const extractModules = new BlockExtractorService().extractModules;
+
+describe("extractModules", function () {
+  it("should extract modules correctly", function () {
+    const input = `
+      // some input that represents a module
+    `;
+    const expectedOutput: ParsedSection[] = [
+      // expected output modules
+    ];
+
+    const result = extractModules(input, []);
+
+    assert.deepStrictEqual(result, expectedOutput);
+  });
+
+  // ...additional tests
 });

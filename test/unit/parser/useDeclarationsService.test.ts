@@ -1,5 +1,7 @@
-import { findUseDeclarations } from "../../../src/parsers/moduleParser";
+import { UseDeclarationService } from "../../../src/parser/useDeclarationService";
 import assert from "assert";
+
+const findUseDeclarations = new UseDeclarationService().findUseDeclarations;
 
 describe("findUseDeclarations", function () {
   it("should find a single-line use declaration", function () {

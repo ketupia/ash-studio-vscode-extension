@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { Parser, ParseResult } from "./types/parser";
-import { moduleParser } from "./parsers/moduleParser";
+import { moduleParser } from "./parser/moduleParser";
 import { Logger } from "./utils/logger";
 
 /**

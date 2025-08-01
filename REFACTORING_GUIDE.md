@@ -54,6 +54,11 @@ service-like modules.
 7. **Update Documentation**
    - Revise this file and `feature-plan.md` to reflect the new structure and conventions.
 
+8. **Build & Test**
+   - Run all tests with `npm test` after any code change (no need to run `npm run build`
+     separately).
+   - Fix any errors or warnings before proceeding.
+
 ---
 
 ## Per-Type/Interface Extraction Checklist
