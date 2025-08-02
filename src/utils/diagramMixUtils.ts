@@ -20,7 +20,7 @@ export async function generateDiagramWithMix(
     const format = config.get<string>("ashStudio.diagramFormat", "plain");
     // Build the Mix command with the selected format
     const args = [
-      diagramSpec.command,
+      diagramSpec.mixCommand,
       "--only",
       resourceFilePath,
       "--format",

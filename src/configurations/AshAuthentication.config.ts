@@ -17,9 +17,6 @@ const AshAuthentication_Config: ModuleInterface = {
       ],
     },
   ],
-  documentationLenses: {
-    authentication: "https://hexdocs.pm/ash_authentication/readme.html",
-  },
   diagramLenses: [],
 };
 

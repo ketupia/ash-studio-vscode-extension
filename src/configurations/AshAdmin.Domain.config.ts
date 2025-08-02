@@ -9,9 +9,6 @@ const AshAdmin_Domain_Config: ModuleInterface = {
       childPatterns: [],
     },
   ],
-  documentationLenses: {
-    admin: "https://hexdocs.pm/ash_admin/0.13.13/AshAdmin.Domain.html",
-  },
   diagramLenses: [],
 };
 

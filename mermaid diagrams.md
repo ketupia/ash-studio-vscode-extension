@@ -25,7 +25,7 @@ outside the user's source tree.
       Diagram").
     - `keyword`: The keyword/section to match (e.g., "policies", "classes").
     - `command`: The Mix command to run (e.g., "ash.generate_policy_charts",
-      "ash.generate_resource_diagrams").
+      "ash-studio.showDiagram").
     - `filePattern`: The expected diagram file naming pattern, which should account for the format
       (e.g., `.*-policy-flowchart.(mmd|svg|png|pdf)`).
     - `type` (optional): For commands that support a type option (e.g., "class", "entity"), specify

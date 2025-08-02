@@ -154,12 +154,6 @@ export interface ModuleInterface {
   dslBlocks: DslBlock[];
 
   /**
-   * Map of keywords to documentation URLs for CodeLens features
-   * Enables clickable documentation links in the editor for specific DSL elements.
-   */
-  documentationLenses?: Record<string, string>;
-
-  /**
    * Array of diagram generation specifications for this module
    * Enables automatic diagram generation from DSL content (flowcharts, ERDs, etc.)
    */
@@ -175,7 +169,7 @@ export interface DiagramSpec {
   /** The keyword/section to match (e.g., "policies", "classes") */
   keyword: string;
   /** The Mix command to run (e.g., "ash.generate_policy_charts") */
-  command: string;
+  mixCommand: string;
   /** The expected diagram file naming pattern (e.g., ".*-policy-flowchart.(mmd|svg|png|pdf)") */
   filePattern: string;
   /** For commands that support a type option (e.g., "class", "entity") */

@@ -18,7 +18,7 @@ export class DiagramCodeLensService implements ICodeLensService {
             line: section.startLine,
             character: 0,
             title: `🖼️ ${spec.name}`,
-            command: spec.command,
+            command: "ash-studio.showDiagram",
             target: filePath || "",
             source: this.moduleConfig.displayName,
             range: { startLine: section.startLine, endLine: section.endLine },

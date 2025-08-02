@@ -86,14 +86,12 @@ export class AshCodeLensProvider implements vscode.CodeLensProvider {
             tooltip: `View documentation for ${entry.source}`,
           };
         } else {
-          // Fallback: show error if command is unknown
-          lens.command = {
-            title: entry.title,
-            command: "vscode.window.showErrorMessage",
-            arguments: [
-              `Unknown CodeLens command: ${entry.command} for ${entry.title}`,
-            ],
-          };
+          const logger = Logger.getInstance();
+          logger.error(
+            "Code Lens Provicer",
+            `Unknown Command ${entry.command}`
+          );
+          vscode.window.showErrorMessage(`Unknown Command ${entry.command}`);
         }
 
         codeLenses.push(lens);

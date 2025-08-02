@@ -13,7 +13,6 @@ import { configurationRegistry } from "../configurations/registry";
 import { UseDeclarationService } from "./useDeclarationService";
 import { ModuleMatcherService } from "./moduleMatcherService";
 import { BlockExtractorService } from "./blockExtractorService";
-import { DocumentationCodeLensService } from "./documentationCodeLensService";
 import { DiagramCodeLensService } from "./diagramCodeLensService";
 
 /**
@@ -76,10 +75,8 @@ export class ModuleParser implements Parser {
     // Use new code lens services per module config
     let codeLenses: CodeLensEntry[] = [];
     for (const module of matchedModules) {
-      const docLensService = new DocumentationCodeLensService(module);
       const diagramLensService = new DiagramCodeLensService(module);
       codeLenses = codeLenses.concat(
-        docLensService.getCodeLenses(sections, filePath),
         diagramLensService.getCodeLenses(sections, filePath)
       );
     }
