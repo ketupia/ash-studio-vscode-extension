@@ -113,12 +113,12 @@ export interface ChildPattern {
  * 1. Match files that use this module (via declarationPattern)
  * 2. Find root-level DSL blocks (via dslBlocks array)
  * 3. Parse nested content within each block (via children definitions)
- * 4. Generate documentation links and diagrams (via lens configurations)
+ * 4. Generate  diagrams (via lens configurations)
  */
 export interface ModuleInterface {
   /**
    * Human-friendly name for the module (e.g., "Ash Resource", "Ash Domain", "AshPostgres Repo")
-   * Used in UI displays, error messages, and documentation.
+   * Used in UI displays, error messages, and diagrams.
    */
   displayName: string;
 

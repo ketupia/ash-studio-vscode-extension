@@ -1,17 +1,17 @@
 # Ash Studio VS Code Extension
 
-Working with Ash Framework projects often means dealing with long resource files, making it hard to find and navigate between sections.
+Working with Ash Framework projects often means dealing with long resource files, making it hard to
+find and navigate between sections.
 
-Ash Studio is a VS Code extension that solves this by providing navigation and code insight tools, helping you quickly jump between Ash DSL blocks and understand your code structure at a glance.
+Ash Studio is a VS Code extension that solves this by providing navigation and code insight tools,
+helping you quickly jump between Ash DSL blocks and understand your code structure at a glance.
 
 ## ✨ Features
 
 - **🧭 Smart Navigation** - Jump between Ash sections with document outline integration
 - **⚡ Quick Section Search** - Instantly find and navigate to any Ash section via Command Palette
 - **📊 Sidebar Overview** - Dedicated panel showing all Ash sections and their hierarchy
-- **📚 Documentation Links** - CodeLens provides direct links to Ash documentation for DSL blocks
-- **�️ Robust Parsing** - Works reliably with complex Ash files using intelligent fallback
-  strategies
+- **📚 Mermaid Diagram Code Lenses** - CodeLens provides direct viewing of mermaid diagrams
 
 ## 📦 Installation
 
@@ -38,10 +38,20 @@ Ash Studio is a VS Code extension that solves this by providing navigation and c
    - **Sidebar Panel**: Look for "Ash Studio" in the Explorer sidebar
    - **Document Outline**: View Ash sections in VS Code's Outline panel
    - **Quick Navigation**: Use `Cmd+Shift+P` → "Go to Ash Section..."
+4. Consider adding some version of this to your .gitignore if you don't want diagrams saved in your
+   repo.
+
+```gitignore
+lib/**/*.mmd
+lib/**/*.svg
+lib/**/*.png
+lib/**/*.pdf
+lib/**/*.md
+```
 
 ## 🎯 Usage
 
-### Navigation and Documentation Features
+### Navigation and Diagram Features
 
 **Sidebar Navigation**
 
@@ -61,11 +71,11 @@ Ash Studio is a VS Code extension that solves this by providing navigation and c
 - See all Ash sections as navigable tree structure
 - Click to jump to any section
 
-**CodeLens Documentation Links**
+**CodeLens Mermaid Diagram Links**
 
-- Enable CodeLens in settings (see Configuration section)
-- Hover over DSL blocks like `resource`, `authentication`, etc. to see documentation links
-- Click on CodeLens links to open relevant Ash Framework documentation in your browser
+- Click on CodeLens links to open the mermaid diagram in a webview. Diagrams will be created using
+  mix tasks.
+- Choose the diagram format in settings.
 
 ### Supported Ash Constructs
 
@@ -92,34 +102,7 @@ The extension also supports DSL blocks from popular Ash libraries:
 **Extension not activating?**
 
 - Ensure your `.ex` files contain `use Ash.Resource` or `use Ash.Domain`
-- Check that file extensions are `.ex` (not `.exs`)
-
-**Sidebar showing as empty?**
-
-- Open an Ash file (Resource or Domain)
-- Check VS Code's Output panel → "Ash Studio" for parsing logs
-- Verify the file has recognizable Ash DSL sections
-
-**Performance with large files?**
-
-- The extension automatically uses optimized parsing for complex files
-- Large files (>5000 lines) use fast simple parser mode
-- No action needed - this is automatic and transparent
-
-**Missing sections in navigation?**
-
-- Complex or malformed DSL blocks may not be recognized
-- Check VS Code Output → "Ash Studio" for parsing details
-- File an issue with example code if needed
-
-## 🔧 Configuration
-
-Access settings via VS Code Preferences → Extensions → Ash Studio:
-
-- **Log Level**: Control debug output (Error/Warning/Info/Debug)
-- **Auto Refresh**: Automatically update sidebar when files change
-- **CodeLens**: Enable or disable documentation links in Elixir files
-- **Performance**: Enable metrics collection and tune parsing delays
+- check the Ash Studio channel in the Output window for errors
 
 ## 💬 Support & Feedback
 
@@ -127,17 +110,3 @@ Access settings via VS Code Preferences → Extensions → Ash Studio:
 - **Feature Requests**: Use GitHub Issues with "enhancement" label
 - **Questions**: Start a
   [GitHub Discussion](https://github.com/ketupia/ash-studio-vscode-extension/discussions)
-
-## 🏗️ For Developers
-
-Interested in contributing or understanding the architecture? See our comprehensive developer
-documentation:
-
-- **[Development Guide](docs/DEVELOPMENT_GUIDE.md)** - Setup, quality standards, and contribution
-  guidelines
-- **[Architecture Overview](docs/ARCHITECTURE.md)** - Technical design and implementation details
-- **[Feature Roadmap](docs/feature-plan.md)** - Planned features and development priorities
-
----
-
-**Made with ❤️ for the Ash Framework community**

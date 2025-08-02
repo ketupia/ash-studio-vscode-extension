@@ -38,16 +38,6 @@ export function getOrCreateAshStudioWebview(
 }
 
 /**
- * Set the HTML content of the AshStudio webview panel.
- * @param {string} html - The HTML to display.
- */
-export function setAshStudioWebviewContent(html: string) {
-  if (ashStudioPanel) {
-    ashStudioPanel.webview.html = html;
-  }
-}
-
-/**
  * Generate HTML content for the AshStudio webview based on the diagram file type.
  * @param diagramFilePath Absolute path to the diagram file.
  * @param webview The webview instance (for resource URIs).

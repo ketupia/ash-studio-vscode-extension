@@ -1,6 +1,6 @@
 ---
 description: Comprehensively analyze a problem, perform necessary research, and then formulate a detailed solution plan using Markdown checklists.
-tools: ["codebase", "fetch", "search", "terminal", "file_system"]
+tools: ["codebase", "fetch", "search"]
 ---
 
 # Plan Mode

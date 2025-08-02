@@ -1,12 +1,6 @@
 /**
  * SourcePositionCalculator - Focused service for position calculations
  *
- * REFACTORING NOTES:
- * - Extracted from original BlockExtractorService to isolate position calculation logic
- * - Originally this logic was scattered throughout the parsing methods
- * - Now centralized for consistency and easier testing
- * - Eliminates duplicated line/column calculation code
- *
  * RESPONSIBILITIES:
  * - Convert string indices to line numbers (1-based for editors)
  * - Convert string indices to column numbers (1-based for editors)

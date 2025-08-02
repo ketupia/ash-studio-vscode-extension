@@ -121,7 +121,7 @@ export class AshSidebarProvider
   }
 }
 
-export class AshSidebarItem extends vscode.TreeItem {
+class AshSidebarItem extends vscode.TreeItem {
   // Add a property to store the detail for recursive nesting
   public readonly detail?: ParsedDetail;
   // Add a property to track if this is a section item

@@ -130,3 +130,38 @@
 - Do not consider a refactor or feature complete until the build and tests pass.
 - When a test fails and the cause is unclear, ask for clarification. Sometimes the source is wrong,
   sometimes the test is wrong—ask for help to determine which.
+
+## General Development Guidelines
+
+- **Use Class-Based Registries and Singletons:**  
+  For shared registries or service-like modules, define a class with clear public methods and export
+  a singleton instance. This approach improves testability, extensibility, and aligns with familiar
+  patterns from C# and Elixir.
+
+- **Centralize Shared Types and Interfaces:**  
+  Move all shared interfaces and types to a dedicated types file (e.g., `src/types/ash.ts`). Update
+  all imports to use these centralized definitions, and ensure only the shared types module exports
+  them.
+
+- **Separate Pure Logic from VS Code Integration:**  
+  Keep parsing, data modeling, and utility logic free of VS Code API dependencies. Place all VS
+  Code-dependent code (such as providers, commands, and UI) in a dedicated directory (e.g.,
+  `src/features/`).
+
+- **Define Clear Public and Private APIs:**  
+  Only export public interfaces and functions. Mark helpers and internal functions as private or
+  leave them unexported.
+
+- **Document Module Boundaries and APIs:**  
+  Add module-level comments describing the public API and intended usage for each module.
+
+- **Maintain and Expand Tests:**  
+  Ensure tests import only public APIs. Add or expand unit tests for pure logic modules, especially
+  when extracting or refactoring types and interfaces.
+
+- **Keep Documentation Up to Date:**  
+  Revise documentation files to reflect the current structure and conventions after any significant
+  change.
+
+- **Build and Test After Every Change:**  
+  Run all tests (`npm test`) after any code change. Fix all errors and warnings before proceeding.

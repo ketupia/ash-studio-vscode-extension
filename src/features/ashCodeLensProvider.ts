@@ -1,13 +1,10 @@
 import * as vscode from "vscode";
 import { AshParserService } from "../ashParserService";
 import { Logger } from "../utils/logger";
-// Used indirectly through ParseResult.codeLenses
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { CodeLensEntry } from "../types/parser";
 import { ConfigurationManager } from "../utils/config";
 
 /**
- * Provides CodeLens for Ash DSL files, displaying documentation links.
+ * Provides CodeLens for Ash DSL files, displaying diagram links.
  */
 export class AshCodeLensProvider implements vscode.CodeLensProvider {
   // Track disposables for cleanup
@@ -29,7 +26,7 @@ export class AshCodeLensProvider implements vscode.CodeLensProvider {
             new vscode.Position(line, entry.character + 1)
           );
 
-          // Create the CodeLens with a command that opens the documentation URL
+          // Create the CodeLens with a command that opens the diagram
           const lens = new vscode.CodeLens(range);
 
           // Debug logging

@@ -1,13 +1,6 @@
 /**
  * BlockContentExtractor - Focused service for content extraction
- *
- * REFACTORING NOTES:
- * - Extracted from original BlockExtractorService to follow Single Responsibility Principle
- * - Handles only content extraction concerns, not block identification or parsing
- * - Makes the code more testable by isolating content extraction logic
- * - Reduces complexity in the main extraction service
- * - Unified extractDoBlockContent and extractContentToNextBlock into a single method
- *
+ * *
  * RESPONSIBILITIES:
  * - Extract inner content from do...end blocks (with or without matching 'end')
  * - Extract block names using name patterns

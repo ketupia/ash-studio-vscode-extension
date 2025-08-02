@@ -1,36 +1,5 @@
-import * as fs from "fs";
 import * as path from "path";
 import { DiagramSpec } from "../types/configurationRegistry";
-
-/**
- * Checks if the diagram file exists and is current (newer than the resource file).
- * Returns true if the diagram exists and is up to date, false otherwise.
- */
-export function diagramExistsAndIsCurrent(
-  resourceFilePath: string,
-  diagramSpec: DiagramSpec
-): boolean {
-  const resourceDir = path.dirname(resourceFilePath);
-  const resourceBase = path.basename(
-    resourceFilePath,
-    path.extname(resourceFilePath)
-  );
-  // Prepend the root file name to the diagramSpec.filePattern
-  const filePattern = new RegExp(resourceBase + diagramSpec.filePattern);
-  const resourceStat = fs.statSync(resourceFilePath);
-  // Find matching diagram files in the resource directory
-  const files = fs.readdirSync(resourceDir);
-  for (const file of files) {
-    if (filePattern.test(file)) {
-      const diagramPath = path.join(resourceDir, file);
-      const diagramStat = fs.statSync(diagramPath);
-      if (diagramStat.mtimeMs >= resourceStat.mtimeMs) {
-        return true;
-      }
-    }
-  }
-  return false;
-}
 
 /**
  * Returns the theoretical/expected diagram file path for a resource and diagram spec.

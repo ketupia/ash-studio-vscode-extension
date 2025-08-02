@@ -68,7 +68,7 @@ export function activate(context: vscode.ExtensionContext) {
       )
     );
 
-    // Register diagram and documentation commands
+    // Register diagram commands
     context.subscriptions.push(
       vscode.commands.registerCommand(
         /**

@@ -6,13 +6,6 @@ import { SourcePositionCalculator } from "./sourcePositionCalculator";
 
 /**
  * ChildBlockParser - Focused service for parsing nested block structures
- *
- * REFACTORING NOTES:
- * - Extracted the most complex parsing logic from original BlockExtractorService
- * - Originally nested deeply within the main parsing loop, making it hard to test
- * - Now isolated with clear dependencies on other focused services
- * - Handles the recursive nature of Ash DSL blocks (blocks within blocks)
- *
  * RESPONSIBILITIES:
  * - Parse child elements within parent blocks (e.g., attributes within attributes block)
  * - Handle multiple block formats: do...end, single-line, function calls
