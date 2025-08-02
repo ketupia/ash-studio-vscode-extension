@@ -5,12 +5,12 @@ import { registerAshSectionNavigation } from "./features/ashSectionNavigation";
 import { registerAshCodeLensProvider } from "./features/ashCodeLensProvider";
 import { AshParserService } from "./ashParserService";
 import { Logger } from "./utils/logger";
-import { generateDiagramWebviewContent } from "./features/ashStudioWebview";
-
-interface DiagramEntry {
-  source?: string;
-  target?: string;
-}
+import {
+  generateDiagramWebviewContent,
+  getOrCreateAshStudioWebview,
+} from "./features/ashStudioWebview";
+import { CodeLensEntry } from "./types/parser";
+import { getTheoreticalDiagramFilePath } from "./utils/diagramUtils";
 
 export function activate(context: vscode.ExtensionContext) {
   const logger = Logger.getInstance();
@@ -70,16 +70,26 @@ export function activate(context: vscode.ExtensionContext) {
     // Register diagram and documentation commands
     context.subscriptions.push(
       vscode.commands.registerCommand(
+        /**
+         * Registers the ash-studio.showDiagram command to display a diagram in a webview panel.
+         * Reuses a single webview panel for all diagrams. Resolves the diagram file path using the
+         * CodeLensEntry's target (resource file) and diagramSpec, then renders the diagram.
+         *
+         * @param filePath - The resource file path (unused, kept for compatibility)
+         * @param entry - The CodeLensEntry containing diagram metadata and resource info
+         */
         "ash-studio.showDiagram",
-        (filePath: string, entry: DiagramEntry) => {
-          const panel = vscode.window.createWebviewPanel(
-            "ashDiagramPreview",
-            `Ash Diagram: ${entry?.source || "Unknown"}`,
-            vscode.ViewColumn.Beside,
-            { enableScripts: true }
+        (filePath: string, entry: CodeLensEntry) => {
+          const diagramFilePath = getTheoreticalDiagramFilePath(
+            entry.target,
+            entry.diagramSpec
+          );
+          const panel = getOrCreateAshStudioWebview(
+            `AshStudio Diagram View`,
+            "ashDiagramPreview"
           );
           panel.webview.html = generateDiagramWebviewContent(
-            entry?.target || "",
+            diagramFilePath,
             panel.webview
           );
         }

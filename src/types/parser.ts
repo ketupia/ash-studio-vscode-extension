@@ -45,6 +45,12 @@ export interface CodeLensEntry {
   source: string;
   /** The range of text this code lens applies to (start and end lines, 1-based) */
   range?: { startLine: number; endLine: number };
+  /**
+   * The diagram specification associated with this code lens.
+   * This property provides all metadata needed by the showDiagram handler
+   * to locate and display the diagram. Required for all CodeLensEntry objects.
+   */
+  diagramSpec: import("./configurationRegistry").DiagramSpec;
 }
 
 export interface ParseResult {
