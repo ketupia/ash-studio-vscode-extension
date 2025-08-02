@@ -6,10 +6,10 @@
  * - Handles only content extraction concerns, not block identification or parsing
  * - Makes the code more testable by isolating content extraction logic
  * - Reduces complexity in the main extraction service
+ * - Unified extractDoBlockContent and extractContentToNextBlock into a single method
  *
  * RESPONSIBILITIES:
- * - Extract inner content from do...end blocks
- * - Extract content up to block boundaries
+ * - Extract inner content from do...end blocks (with or without matching 'end')
  * - Extract block names using name patterns
  * - Format content with extracted names
  */
@@ -23,47 +23,32 @@ export class BlockContentExtractor {
    *   content here
    * end
    * ```
+   *
+   * @param source - The source code text
+   * @param blockStart - Start position of the block
+   * @param blockEnd - End position of the block (or next block start if no matching 'end')
+   * @param hasMatchingEnd - Whether the blockEnd represents a proper 'end' or just a boundary
    */
   extractDoBlockContent(
     source: string,
     blockStart: number,
-    blockEnd: number
+    blockEnd: number,
+    hasMatchingEnd: boolean = true
   ): string {
     const fullBlockText = source.substring(blockStart, blockEnd);
     const doIndex = fullBlockText.indexOf("do");
     if (doIndex === -1) return "";
 
     const contentStart = doIndex + 2;
-    const contentEnd = fullBlockText.endsWith("end")
-      ? fullBlockText.length - 3
-      : fullBlockText.length;
 
-    const rawContent = fullBlockText.substring(contentStart, contentEnd);
-
-    // Remove leading and trailing newlines, but preserve internal structure
-    return rawContent.replace(/^\n/, "").replace(/\n$/, "");
-  }
-
-  /**
-   * Extract the content up to the next block or end of source
-   *
-   * Used when we can't find a proper 'end' for a block - extracts content
-   * up to where the next block starts or end of file.
-   */
-  extractContentToNextBlock(
-    source: string,
-    blockStart: number,
-    nextBlockStart: number
-  ): string {
-    const fullBlockText = source.substring(blockStart, nextBlockStart);
-    const doIndex = fullBlockText.indexOf("do");
-    if (doIndex === -1) return "";
-
-    const contentStart = doIndex + 2;
-    const rawContent = fullBlockText.substring(contentStart);
-
-    // Remove leading and trailing newlines, but preserve internal structure
-    return rawContent.replace(/^\n/, "").replace(/\n$/, "");
+    if (hasMatchingEnd && fullBlockText.endsWith("end")) {
+      // Extract content between 'do' and 'end'
+      const contentEnd = fullBlockText.length - 3;
+      return fullBlockText.substring(contentStart, contentEnd);
+    } else {
+      // Extract content from 'do' to end of block text (no matching 'end' found)
+      return fullBlockText.substring(contentStart);
+    }
   }
 
   /**

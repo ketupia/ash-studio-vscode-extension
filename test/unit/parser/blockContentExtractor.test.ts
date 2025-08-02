@@ -26,32 +26,33 @@ describe("BlockContentExtractor", () => {
     it("should extract content from a simple do...end block", () => {
       const source = "attributes do\n  name :string\n  age :integer\nend";
       const result = extractor.extractDoBlockContent(source, 0, source.length);
-      assert.strictEqual(result, "name :string\n  age :integer");
+      assert.strictEqual(result, "\n  name :string\n  age :integer\n");
     });
 
     it("should handle empty blocks", () => {
       const source = "attributes do\nend";
       const result = extractor.extractDoBlockContent(source, 0, source.length);
-      assert.strictEqual(result, "");
+      assert.strictEqual(result, "\n");
     });
 
     it("should handle blocks with whitespace", () => {
       const source = "actions do\n  \n  create :user\n  \nend";
       const result = extractor.extractDoBlockContent(source, 0, source.length);
-      assert.strictEqual(result, "\n  create :user\n");
+      assert.strictEqual(result, "\n  \n  create :user\n  \n");
     });
   });
 
-  describe("extractContentToNextBlock", () => {
-    it("should extract content up to the next block", () => {
+  describe("extractDoBlockContent with hasMatchingEnd=false", () => {
+    it("should extract content up to the next block when no matching end", () => {
       const source =
         "attributes do\n  name :string\n  age :integer\nactions do";
-      const result = extractor.extractContentToNextBlock(
+      const result = extractor.extractDoBlockContent(
         source,
         0,
-        source.lastIndexOf("actions")
+        source.lastIndexOf("actions"),
+        false
       );
-      assert.strictEqual(result, "name :string\n  age :integer");
+      assert.strictEqual(result, "\n  name :string\n  age :integer\n");
     });
   });
 

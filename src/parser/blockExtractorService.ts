@@ -204,10 +204,11 @@ export class BlockExtractorService {
     dslBlock: DslBlock,
     match: RegExpMatchArray
   ): ParsedSection {
-    const blockContent = this.contentExtractor.extractContentToNextBlock(
+    const blockContent = this.contentExtractor.extractDoBlockContent(
       source,
       blockStart,
-      nextBlockStart
+      nextBlockStart,
+      false // No matching 'end' found
     );
 
     const name = this.contentExtractor.extractBlockName(
