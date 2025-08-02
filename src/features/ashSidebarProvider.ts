@@ -21,7 +21,6 @@ export class AshSidebarProvider
   > | null = null;
 
   constructor(private parserService: AshParserService) {
-    this.logger.info("AshSidebarProvider", "Sidebar provider initialized");
     // Listen for parse events to refresh the sidebar and update cache
     this.parserService.onDidParse(result => {
       this.latestParseResult = result;

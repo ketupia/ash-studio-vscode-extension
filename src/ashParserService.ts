@@ -70,9 +70,6 @@ export class AshParserService {
     // Cache the result
     this.parseCache.set(uri, { result, version });
 
-    // Notify listeners
-    this._onDidParse.fire(result);
-
     return result;
   }
 
@@ -127,10 +124,14 @@ export class AshParserService {
    * Called when a document is activated. Parses and emits results, using cache if available.
    */
   public documentActivated(document: vscode.TextDocument): ParseResult {
+    let result: ParseResult;
     const cached = this.getCachedResult(document);
     if (cached) {
-      return cached;
+      result = cached;
+    } else {
+      result = this.getParseResult(document);
     }
-    return this.getParseResult(document);
+    this._onDidParse.fire(result);
+    return result;
   }
 }
