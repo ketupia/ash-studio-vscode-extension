@@ -8,7 +8,7 @@
  * Usage: Use the exported singleton `moduleParser` for all parsing tasks.
  */
 
-import { Parser, ParseResult } from "../types/parser";
+import { CodeLensEntry, Parser, ParseResult } from "../types/parser";
 import { configurationRegistry } from "../configurations/registry";
 import { UseDeclarationService } from "./useDeclarationService";
 import { ModuleMatcherService } from "./moduleMatcherService";
@@ -25,15 +25,11 @@ export class ModuleParser implements Parser {
   private useDeclarationService: UseDeclarationService;
   private moduleMatcherService: ModuleMatcherService;
   private blockExtractorService: BlockExtractorService;
-  private documentationCodeLensService: DocumentationCodeLensService;
-  private diagramCodeLensService: DiagramCodeLensService;
 
   private constructor() {
     this.useDeclarationService = new UseDeclarationService();
     this.moduleMatcherService = new ModuleMatcherService();
     this.blockExtractorService = new BlockExtractorService();
-    this.documentationCodeLensService = new DocumentationCodeLensService();
-    this.diagramCodeLensService = new DiagramCodeLensService();
   }
 
   static getInstance(): ModuleParser {
@@ -77,18 +73,16 @@ export class ModuleParser implements Parser {
       source,
       matchedModules
     );
-    // Extract code lenses for documentation and diagrams (pass filePath)
-    const docLenses =
-      this.documentationCodeLensService.extractDocumentationLenses(
-        source,
-        matchedModules
+    // Use new code lens services per module config
+    let codeLenses: CodeLensEntry[] = [];
+    for (const module of matchedModules) {
+      const docLensService = new DocumentationCodeLensService(module);
+      const diagramLensService = new DiagramCodeLensService(module);
+      codeLenses = codeLenses.concat(
+        docLensService.getCodeLenses(sections, filePath),
+        diagramLensService.getCodeLenses(sections, filePath)
       );
-    const diagramLenses = this.diagramCodeLensService.extractDiagramLenses(
-      source,
-      matchedModules,
-      filePath
-    );
-    const codeLenses = [...docLenses, ...diagramLenses];
+    }
     return {
       sections,
       parserName: "ModuleParser",

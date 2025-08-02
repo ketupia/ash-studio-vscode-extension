@@ -6,18 +6,13 @@ const AshAuthentication_Config: ModuleInterface = {
   dslBlocks: [
     {
       blockName: "authentication",
-      children: [
+      childPatterns: [
         {
-          blockName: "strategies",
-          children: [
-            {
-              blockName: "password",
-              namePattern: "(:\\w+|\\w+)",
-            },
-            {
-              blockName: "magic_link",
-            },
-          ],
+          keyword: "password",
+          namePattern: "(:\\w+|\\w+)",
+        },
+        {
+          keyword: "magic_link",
         },
       ],
     },

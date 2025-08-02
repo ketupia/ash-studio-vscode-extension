@@ -6,13 +6,13 @@ const Ash_PubSub_Config: ModuleInterface = {
   dslBlocks: [
     {
       blockName: "pub_sub",
-      children: [
+      childPatterns: [
         // {
-        //   blockName: "publish",
+        //   keyword: "publish",
         //   namePattern: "(:\\w+|\\w+)",
         // },
         // {
-        //   blockName: "publish_all",
+        //   keyword: "publish_all",
         //   namePattern: "(:\\w+|\\w+)",
         // },
       ],

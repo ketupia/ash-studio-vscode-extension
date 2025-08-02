@@ -7,7 +7,7 @@ const AshPostgres_Config: ModuleInterface = {
   dslBlocks: [
     {
       blockName: "postgres",
-      children: [],
+      childPatterns: [],
     },
   ],
   documentationLenses: {

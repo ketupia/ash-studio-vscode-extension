@@ -130,7 +130,8 @@
     "clean": "rm -rf dist",
     "build": "npm run clean && tsc",
     "pre-commit": "rm -f test-*.js crash-*.js *.tmp *.temp && npm run quality",
-    "test": "npm run build && mocha -r ts-node/register 'test/**/*.test.ts'"
+    "copy-test-example_files": "mkdir -p dist/test/example_files && cp -R test/example_files/* dist/test/example_files/",
+    "test": "npm run build && npm run copy-test-example_files && mocha -r ts-node/register 'test/**/*.test.ts'"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",

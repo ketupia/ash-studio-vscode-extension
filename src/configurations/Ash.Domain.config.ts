@@ -6,12 +6,11 @@ const Ash_Domain_Config: ModuleInterface = {
   dslBlocks: [
     {
       blockName: "resources",
-      children: [
+      childPatterns: [
         {
-          blockName: "resource",
+          keyword: "resource",
           namePattern:
             "([^\\s]+(?:\\([^\\)]*\\))?(?:\\s+[^\\s]+)*?)(?:\\s+do)?",
-          children: [],
         },
       ],
     },
@@ -28,10 +27,10 @@ const Ash_Domain_Config: ModuleInterface = {
       type: "class",
     },
     {
-      name: "Entity Resource",
+      name: "Entity Relationship",
       keyword: "resources",
       command: "ash.generate_resource_diagrams",
-      filePattern: "-mermaid-entity-diagram.(mmd|svg|png|pdf)",
+      filePattern: "-mermaid-er-diagram.(mmd|svg|png|pdf)",
       type: "er",
     },
   ],

@@ -63,3 +63,7 @@ export interface Parser {
    */
   parse(source: string, filePath?: string): ParseResult;
 }
+
+export interface ICodeLensService {
+  getCodeLenses(sections: ParsedSection[], filePath?: string): CodeLensEntry[];
+}

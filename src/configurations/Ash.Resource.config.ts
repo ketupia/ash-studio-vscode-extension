@@ -6,122 +6,122 @@ const Ash_Resource_Config: ModuleInterface = {
   dslBlocks: [
     {
       blockName: "actions",
-      children: [
+      childPatterns: [
         {
-          blockName: "create",
+          keyword: "create",
           namePattern: "(:\\w+|\\w+)",
         },
         {
-          blockName: "read",
+          keyword: "read",
           namePattern: "(:\\w+|\\w+)",
         },
         {
-          blockName: "update",
+          keyword: "update",
           namePattern: "(:\\w+|\\w+)",
         },
         {
-          blockName: "destroy",
+          keyword: "destroy",
           namePattern: "(:\\w+|\\w+)",
         },
         {
-          blockName: "action",
+          keyword: "action",
           namePattern: "(:\\w+|\\w+)",
         },
       ],
     },
     {
       blockName: "aggregates",
-      children: [
+      childPatterns: [
         {
-          blockName: "count",
+          keyword: "count",
           namePattern: "(:\\w+|\\w+)",
         },
         {
-          blockName: "exists",
+          keyword: "exists",
           namePattern: "(:\\w+|\\w+)",
         },
         {
-          blockName: "fist",
+          keyword: "fist",
           namePattern: "(:\\w+|\\w+)",
         },
         {
-          blockName: "sum",
+          keyword: "sum",
           namePattern: "(:\\w+|\\w+)",
         },
         {
-          blockName: "list",
+          keyword: "list",
           namePattern: "(:\\w+|\\w+)",
         },
         {
-          blockName: "max",
+          keyword: "max",
           namePattern: "(:\\w+|\\w+)",
         },
         {
-          blockName: "min",
+          keyword: "min",
           namePattern: "(:\\w+|\\w+)",
         },
         {
-          blockName: "avg",
+          keyword: "avg",
           namePattern: "(:\\w+|\\w+)",
         },
         {
-          blockName: "custom",
+          keyword: "custom",
         },
       ],
     },
     {
       blockName: "attributes",
-      children: [
+      childPatterns: [
         {
-          blockName: "attribute",
+          keyword: "attribute",
           namePattern: "(:\\w+|\\w+)",
         },
       ],
     },
     {
       blockName: "calculations",
-      children: [
+      childPatterns: [
         {
-          blockName: "calculate",
+          keyword: "calculate",
           namePattern: "(:\\w+|\\w+)",
         },
       ],
     },
     {
       blockName: "changes",
-      children: [
+      childPatterns: [
         {
-          blockName: "change",
+          keyword: "change",
         },
       ],
     },
     {
       blockName: "code_interface",
-      children: [
+      childPatterns: [
         {
-          blockName: "define",
+          keyword: "define",
         },
       ],
     },
     {
       blockName: "identities",
-      children: [
+      childPatterns: [
         {
-          blockName: "identity",
+          keyword: "identity",
           namePattern: "(:\\w+|\\w+)",
         },
       ],
     },
     {
       blockName: "policies",
-      children: [
+      childPatterns: [
         {
-          blockName: "bypass",
+          keyword: "bypass",
           namePattern:
             "([^\\s]+(?:\\([^\\)]*\\))?(?:\\s+[^\\s]+)*?)(?:\\s+do)?",
         },
         {
-          blockName: "policy",
+          keyword: "policy",
           namePattern:
             "([^\\s]+(?:\\([^\\)]*\\))?(?:\\s+[^\\s]+)*?)(?:\\s+do)?",
         },
@@ -129,42 +129,42 @@ const Ash_Resource_Config: ModuleInterface = {
     },
     {
       blockName: "preparations",
-      children: [
+      childPatterns: [
         {
-          blockName: "prepare",
+          keyword: "prepare",
         },
       ],
     },
     {
       blockName: "relationships",
-      children: [
+      childPatterns: [
         {
-          blockName: "belongs_to",
+          keyword: "belongs_to",
           namePattern: "(:\\w+|\\w+)",
         },
         {
-          blockName: "has_many",
+          keyword: "has_many",
           namePattern: "(:\\w+|\\w+)",
         },
         {
-          blockName: "has_one",
+          keyword: "has_one",
           namePattern: "(:\\w+|\\w+)",
         },
         {
-          blockName: "many_to_many",
+          keyword: "many_to_many",
           namePattern: "(:\\w+|\\w+)",
         },
       ],
     },
     {
       blockName: "resource",
-      children: [],
+      childPatterns: [],
     },
     {
       blockName: "validations",
-      children: [
+      childPatterns: [
         {
-          blockName: "validate",
+          keyword: "validate",
           namePattern: "(:\\w+|\\w+)",
         },
       ],

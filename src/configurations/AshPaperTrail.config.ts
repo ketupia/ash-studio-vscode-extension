@@ -6,7 +6,7 @@ const AshPaperTrail_Config: ModuleInterface = {
   dslBlocks: [
     {
       blockName: "paper_trail",
-      children: [],
+      childPatterns: [],
     },
   ],
   documentationLenses: {

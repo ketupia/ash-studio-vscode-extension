@@ -82,11 +82,34 @@
 
 ## Commenting and Documentation Guidance
 
-- Do not leave comments about obsolete or deprecated functionality in the codebase.
-- Always update or rewrite comments to reflect the current, intended functionality and usage.
-- Remove files that are no longer needed, rather than leaving placeholders or deprecation notes.
-- Documentation and comments should help future maintainers understand the present state, not the
-  past.
+- **Prefer comprehensive source code documentation over separate markdown files.**
+  - Write detailed JSDoc comments for all public classes, methods, and interfaces.
+  - Focus on explaining WHAT the code does and HOW it works in its current state.
+  - Document the purpose, responsibilities, and behavior of each component.
+  - Include architectural patterns and design decisions that are currently in use.
+  - Document complex algorithms, business logic, and non-obvious implementation details inline.
+
+- **Source code should be self-documenting:**
+  - Comments should explain the "what" and "how" of current functionality.
+  - Include examples of usage in JSDoc when helpful.
+  - Document parameters, return types, and thrown exceptions thoroughly.
+  - Add comments explaining any non-trivial regex patterns, algorithms, or workarounds.
+  - Reference related methods/classes in comments when there are important relationships.
+  - Explain the architecture and responsibilities of each service/class.
+
+- **Avoid redundant external documentation:**
+  - Don't create separate markdown files that duplicate information better captured in code
+    comments.
+  - Keep README files focused on setup, overview, and getting started.
+  - Use inline documentation for implementation details, API usage, and architectural notes.
+
+- **Maintenance guidelines for comments:**
+  - Do not leave comments about obsolete or deprecated functionality in the codebase.
+  - Avoid lengthy refactoring history or "before/after" comparisons in comments.
+  - Always update or rewrite comments to reflect the current, intended functionality and usage.
+  - Remove files that are no longer needed, rather than leaving placeholders or deprecation notes.
+  - Documentation and comments should help future maintainers understand the present state and
+    current architecture.
 
 ## Build & Test After Each Change
 

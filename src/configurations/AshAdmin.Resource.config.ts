@@ -6,7 +6,7 @@ const AshAdmin_Resource_Config: ModuleInterface = {
   dslBlocks: [
     {
       blockName: "admin",
-      children: [],
+      childPatterns: [],
     },
   ],
   documentationLenses: {
