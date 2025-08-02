@@ -59,7 +59,7 @@ export function generateDiagramWebviewContent(
 ): string {
   const ext = path.extname(diagramFilePath).toLowerCase();
   if (!fs.existsSync(diagramFilePath)) {
-    return `<html><body><h2>Diagram not found</h2><p>${diagramFilePath}</p></body></html>`;
+    return `<html><body><h2>Generating diagram...</h2><p style='color:#888;font-size:0.9em;'>${diagramFilePath}</p></body></html>`;
   }
 
   if ([".svg", ".png", ".jpg", ".jpeg", ".gif"].includes(ext)) {

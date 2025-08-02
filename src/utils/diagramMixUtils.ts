@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import { spawn } from "child_process";
+import * as fs from "fs";
 import { DiagramSpec } from "../types/configurationRegistry";
 
 /**
@@ -9,12 +10,23 @@ import { DiagramSpec } from "../types/configurationRegistry";
  */
 export async function generateDiagramWithMix(
   resourceFilePath: string,
-  diagramSpec: DiagramSpec,
-  workspaceFolder?: vscode.WorkspaceFolder
+  diagramSpec: DiagramSpec
 ): Promise<void> {
+  // Find project root by searching for mix.exs upwards
+  function findMixProjectRoot(startDir: string): string | null {
+    let dir = startDir;
+    while (true) {
+      const mixPath = path.join(dir, "mix.exs");
+      if (fs.existsSync(mixPath)) return dir;
+      const parent = path.dirname(dir);
+      if (parent === dir) break;
+      dir = parent;
+    }
+    return null;
+  }
   return new Promise((resolve, reject) => {
-    // Determine the working directory (project root)
-    const cwd = workspaceFolder?.uri.fsPath || path.dirname(resourceFilePath);
+    const startDir = path.dirname(resourceFilePath);
+    const cwd = findMixProjectRoot(startDir) || startDir;
     // Get the diagram format from the extension setting
     const config = vscode.workspace.getConfiguration();
     const format = config.get<string>("ashStudio.diagramFormat", "plain");
@@ -28,9 +40,10 @@ export async function generateDiagramWithMix(
     ];
     const mix = spawn("mix", args, { cwd });
     let stderr = "";
-    // mix.stdout.on("data", data => {
-    //   // Optionally, log or process stdout here if needed
-    // });
+    let stdout = "";
+    mix.stdout.on("data", data => {
+      stdout += data.toString();
+    });
     mix.stderr.on("data", data => {
       stderr += data.toString();
     });

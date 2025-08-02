@@ -11,6 +11,7 @@ import {
 } from "./features/ashStudioWebview";
 import { CodeLensEntry } from "./types/parser";
 import { getTheoreticalDiagramFilePath } from "./utils/diagramUtils";
+import { generateDiagramWithMix } from "./utils/diagramMixUtils";
 
 export function activate(context: vscode.ExtensionContext) {
   const logger = Logger.getInstance();
@@ -79,7 +80,7 @@ export function activate(context: vscode.ExtensionContext) {
          * @param entry - The CodeLensEntry containing diagram metadata and resource info
          */
         "ash-studio.showDiagram",
-        (filePath: string, entry: CodeLensEntry) => {
+        async (filePath: string, entry: CodeLensEntry) => {
           const diagramFilePath = getTheoreticalDiagramFilePath(
             entry.target,
             entry.diagramSpec
@@ -88,10 +89,28 @@ export function activate(context: vscode.ExtensionContext) {
             `AshStudio Diagram View`,
             "ashDiagramPreview"
           );
+
+          // Set initial content (may be placeholder if file doesn't exist yet)
           panel.webview.html = generateDiagramWebviewContent(
             diagramFilePath,
             panel.webview
           );
+
+          // Run Mix and update the webview when done
+          generateDiagramWithMix(entry.target, entry.diagramSpec)
+            .then(() => {
+              panel.webview.html = generateDiagramWebviewContent(
+                diagramFilePath,
+                panel.webview
+              );
+            })
+            .catch(err => {
+              vscode.window.showErrorMessage(
+                `Failed to generate diagram: ${
+                  err instanceof Error ? err.message : String(err)
+                }`
+              );
+            });
         }
       )
     );
