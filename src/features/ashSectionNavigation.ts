@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { AshParserService } from "../ashParserService";
+import { ParseResult, ParsedSection } from "../types/parser";
 
 export function registerAshSectionNavigation(
   context: vscode.ExtensionContext,
@@ -12,20 +13,20 @@ export function registerAshSectionNavigation(
     { language: "elixir", pattern: "**/*.ex" },
   ];
 
-  const provider: vscode.DocumentSymbolProvider = {
-    provideDocumentSymbols(document) {
-      // Use cached result if available, otherwise parse
-      let parseResult = parser.getCachedResult(document);
-      if (!parseResult) {
-        parseResult = parser.getParseResult(document);
-      }
+  // Cache the latest parse result
+  let latestParseResult: ReturnType<typeof parser.documentActivated> | null =
+    null;
+  parser.onDidParse(result => {
+    latestParseResult = result;
+  });
 
-      if (!parseResult.isAshFile) {
+  const provider: vscode.DocumentSymbolProvider = {
+    provideDocumentSymbols() {
+      if (!latestParseResult) {
         return [];
       }
-
       // Return only main DSL sections for breadcrumbs - no nested details
-      return parseResult.sections.map(section => {
+      return latestParseResult.sections.map((section: ParsedSection) => {
         const startPos = new vscode.Position(section.startLine - 1, 0); // Convert to 0-based
         const endPos = new vscode.Position(section.endLine - 1, 0); // Convert to 0-based
 
@@ -43,4 +44,11 @@ export function registerAshSectionNavigation(
   context.subscriptions.push(
     vscode.languages.registerDocumentSymbolProvider(ashSelector, provider)
   );
+
+  // Listen for parse events to re-register the DocumentSymbolProvider
+  parser.onDidParse(() => {
+    context.subscriptions.push(
+      vscode.languages.registerDocumentSymbolProvider(ashSelector, provider)
+    );
+  });
 }

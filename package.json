@@ -31,6 +31,10 @@
       {
         "command": "ash-studio.revealSectionOrSubBlock",
         "title": "Reveal Ash Section"
+      },
+      {
+        "command": "ash-studio.showDiagram",
+        "title": "Show Ash Diagram"
       }
     ],
     "languages": [],
@@ -43,6 +47,7 @@
       ]
     },
     "configuration": {
+      "type": "object",
       "title": "Ash Studio",
       "properties": {
         "ashStudio.logLevel": {
@@ -62,39 +67,22 @@
           ],
           "description": "Set the logging level for Ash Studio output"
         },
-        "ashStudio.enablePerformanceMetrics": {
-          "type": "boolean",
-          "default": false,
-          "description": "Enable performance monitoring and metrics collection"
-        },
-        "ashStudio.sidebarAutoRefresh": {
-          "type": "boolean",
-          "default": true,
-          "description": "Automatically refresh sidebar when file changes"
-        },
-        "ashStudio.parseDebounceMs": {
-          "type": "number",
-          "default": 300,
-          "minimum": 100,
-          "maximum": 2000,
-          "description": "Debounce delay in milliseconds for parsing file changes"
-        },
-        "ashStudio.maxCacheSize": {
-          "type": "number",
-          "default": 100,
-          "minimum": 10,
-          "maximum": 1000,
-          "description": "Maximum number of parsed files to keep in cache"
-        },
         "ashStudio.enableCodeLens": {
           "type": "boolean",
           "default": true,
           "description": "Enable CodeLens for Ash sections (experimental)"
         },
-        "ashStudio.enableHoverInfo": {
-          "type": "boolean",
-          "default": false,
-          "description": "Enable hover information for Ash constructs (experimental)"
+        "ashStudio.diagramFormat": {
+          "type": "string",
+          "default": "plain",
+          "enum": [
+            "plain",
+            "md",
+            "svg",
+            "pdf",
+            "png"
+          ],
+          "description": "The output format for generated diagrams. 'plain' (default) prints mermaid text, 'md' prints a markdown code block, 'svg', 'pdf', and 'png' generate image files."
         }
       }
     }
@@ -109,7 +97,8 @@
     "clean": "rm -rf dist",
     "build": "npm run clean && tsc",
     "pre-commit": "rm -f test-*.js crash-*.js *.tmp *.temp && npm run quality",
-    "test": "npm run build && mocha 'test/**/*.test.js'"
+    "copy-test-example_files": "mkdir -p dist/test/example_files && cp -R test/example_files/* dist/test/example_files/",
+    "test": "npm run build && npm run copy-test-example_files && mocha -r ts-node/register 'test/**/*.test.ts'"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
@@ -123,6 +112,7 @@
     "knip": "^5.62.0",
     "mocha": "^11.7.1",
     "prettier": "^3.6.2",
+    "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   }
 }

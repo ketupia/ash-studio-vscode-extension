@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
-import { Parser, ParseResult } from "./parsers/parser";
-import { moduleParser } from "./parsers/moduleParser";
+import { Parser, ParseResult } from "./types/parser";
+import { moduleParser } from "./parser/moduleParser";
 import { Logger } from "./utils/logger";
 
 /**
@@ -45,13 +45,14 @@ export class AshParserService {
     let result: ParseResult;
 
     try {
-      result = this.parser.parse(source);
+      // Pass file path to parser for diagram CodeLens support
+      result = this.parser.parse(source, document.fileName);
       logger.debug(
         "AshParserService",
         `Parser ${result.parserName} succeeded`,
         {
-          isAshFile: result.isAshFile,
           sectionsFound: result.sections.length,
+          codeLensesFound: result.codeLenses.length,
         }
       );
     } catch (error) {
@@ -61,7 +62,6 @@ export class AshParserService {
       // Fallback to an empty result on error
       result = {
         sections: [],
-        isAshFile: false,
         parserName: "ErrorFallback",
         codeLenses: [],
       };
@@ -69,9 +69,6 @@ export class AshParserService {
 
     // Cache the result
     this.parseCache.set(uri, { result, version });
-
-    // Notify listeners
-    this._onDidParse.fire(result);
 
     return result;
   }
@@ -115,12 +112,26 @@ export class AshParserService {
     if (document.languageId !== "elixir") {
       return {
         sections: [],
-        isAshFile: false,
         parserName: "LanguageFilter",
         codeLenses: [],
       };
     }
 
     return this.getParseResult(document);
+  }
+
+  /**
+   * Called when a document is activated. Parses and emits results, using cache if available.
+   */
+  public documentActivated(document: vscode.TextDocument): ParseResult {
+    let result: ParseResult;
+    const cached = this.getCachedResult(document);
+    if (cached) {
+      result = cached;
+    } else {
+      result = this.getParseResult(document);
+    }
+    this._onDidParse.fire(result);
+    return result;
   }
 }

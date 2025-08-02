@@ -8,12 +8,7 @@ import { LogLevel } from "./logger";
 
 export interface AshStudioConfig {
   logLevel: LogLevel;
-  enablePerformanceMetrics: boolean;
-  sidebarAutoRefresh: boolean;
-  parseDebounceMs: number;
-  maxCacheSize: number;
   enableCodeLens: boolean;
-  enableHoverInfo: boolean;
 }
 
 export class ConfigurationManager {
@@ -36,21 +31,8 @@ export class ConfigurationManager {
     switch (key) {
       case "logLevel":
         return config.get("logLevel", LogLevel.INFO) as AshStudioConfig[T];
-      case "enablePerformanceMetrics":
-        return config.get(
-          "enablePerformanceMetrics",
-          false
-        ) as AshStudioConfig[T];
-      case "sidebarAutoRefresh":
-        return config.get("sidebarAutoRefresh", true) as AshStudioConfig[T];
-      case "parseDebounceMs":
-        return config.get("parseDebounceMs", 300) as AshStudioConfig[T];
-      case "maxCacheSize":
-        return config.get("maxCacheSize", 100) as AshStudioConfig[T];
       case "enableCodeLens":
         return config.get("enableCodeLens", false) as AshStudioConfig[T];
-      case "enableHoverInfo":
-        return config.get("enableHoverInfo", false) as AshStudioConfig[T];
       default:
         throw new Error(`Unknown configuration key: ${key}`);
     }
@@ -79,12 +61,7 @@ export class ConfigurationManager {
   getAll(): AshStudioConfig {
     return {
       logLevel: this.get("logLevel"),
-      enablePerformanceMetrics: this.get("enablePerformanceMetrics"),
-      sidebarAutoRefresh: this.get("sidebarAutoRefresh"),
-      parseDebounceMs: this.get("parseDebounceMs"),
-      maxCacheSize: this.get("maxCacheSize"),
       enableCodeLens: this.get("enableCodeLens"),
-      enableHoverInfo: this.get("enableHoverInfo"),
     };
   }
 }

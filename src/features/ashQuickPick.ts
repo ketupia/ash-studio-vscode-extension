@@ -1,5 +1,10 @@
 import * as vscode from "vscode";
 import { AshParserService } from "../ashParserService";
+import { ParsedSection } from "../types/parser";
+
+interface SectionQuickPickItem extends vscode.QuickPickItem {
+  section: ParsedSection;
+}
 
 export function registerAshQuickPick(
   context: vscode.ExtensionContext,
@@ -7,48 +12,39 @@ export function registerAshQuickPick(
 ) {
   const parser = parserService || AshParserService.getInstance();
 
+  // Cache the latest parse result
+  let latestParseResult: ReturnType<typeof parser.documentActivated> | null =
+    null;
+
+  // Listen for parse events to update the cache
+  parser.onDidParse(result => {
+    latestParseResult = result;
+  });
+
   const quickPickCommand = vscode.commands.registerCommand(
     "ash-studio.gotoSection",
     async () => {
-      const editor = vscode.window.activeTextEditor;
-      if (!editor) {
-        vscode.window.showInformationMessage("No active editor");
+      if (!latestParseResult) {
+        vscode.window.showInformationMessage("No parse result available");
         return;
       }
-
-      const document = editor.document;
-
-      // Use the centralized parser service
-      const parseResult = parser.getParseResult(document);
-
-      if (!parseResult.isAshFile) {
-        vscode.window.showInformationMessage(
-          "Not an Ash file (Resource, Domain, or Type)"
-        );
-        return;
-      }
-
       // Create QuickPick items from parsed sections
-      const items = parseResult.sections.map(section => ({
-        label: section.section,
-        description: `Line ${section.startLine}`, // Use 1-based line number directly
-        section: section, // Keep reference to full section data
-      }));
-
+      const items: SectionQuickPickItem[] = latestParseResult.sections.map(
+        (section: ParsedSection) => ({
+          label: section.section,
+          description: `Lines ${section.startLine}-${section.endLine}`,
+          section: section,
+        })
+      );
       if (items.length === 0) {
         vscode.window.showInformationMessage("No Ash sections found");
         return;
       }
-
       const pick = await vscode.window.showQuickPick(items, {
         placeHolder: "Go to Ash section...",
       });
-
       if (pick && pick.section) {
-        const position = new vscode.Position(
-          pick.section.startLine - 1, // Convert to 0-based for VS Code
-          0 // Start at beginning of line
-        );
+        const position = new vscode.Position(pick.section.startLine - 1, 0);
         vscode.window.activeTextEditor!.revealRange(
           new vscode.Range(position, position),
           vscode.TextEditorRevealType.InCenter
@@ -61,4 +57,49 @@ export function registerAshQuickPick(
     }
   );
   context.subscriptions.push(quickPickCommand);
+
+  // Track the current quick pick command registration
+  let quickPickDisposable: vscode.Disposable | undefined = quickPickCommand;
+
+  // Listen for parse events to re-register the command (ensures latest parse result)
+  parser.onDidParse(() => {
+    if (quickPickDisposable) {
+      quickPickDisposable.dispose();
+    }
+    quickPickDisposable = vscode.commands.registerCommand(
+      "ash-studio.gotoSection",
+      async () => {
+        if (!latestParseResult) {
+          vscode.window.showInformationMessage("No parse result available");
+          return;
+        }
+        const items: SectionQuickPickItem[] = latestParseResult.sections.map(
+          (section: ParsedSection) => ({
+            label: section.section,
+            description: `Lines ${section.startLine}-${section.endLine}`,
+            section: section,
+          })
+        );
+        if (items.length === 0) {
+          vscode.window.showInformationMessage("No Ash sections found");
+          return;
+        }
+        const pick = await vscode.window.showQuickPick(items, {
+          placeHolder: "Go to Ash section...",
+        });
+        if (pick && pick.section) {
+          const position = new vscode.Position(pick.section.startLine - 1, 0);
+          vscode.window.activeTextEditor!.revealRange(
+            new vscode.Range(position, position),
+            vscode.TextEditorRevealType.InCenter
+          );
+          vscode.window.activeTextEditor!.selection = new vscode.Selection(
+            position,
+            position
+          );
+        }
+      }
+    );
+    context.subscriptions.push(quickPickDisposable);
+  });
 }

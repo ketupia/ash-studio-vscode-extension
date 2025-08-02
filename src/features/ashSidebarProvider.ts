@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { AshParserService } from "../ashParserService";
-import { ParsedDetail } from "../parsers/parser";
+import { ParsedDetail, ParsedSection } from "../types/parser";
 import { Logger } from "../utils/logger";
 
 export class AshSidebarProvider
@@ -15,8 +15,17 @@ export class AshSidebarProvider
 
   private logger = Logger.getInstance();
 
+  // Cache the latest parse result
+  private latestParseResult: ReturnType<
+    AshParserService["documentActivated"]
+  > | null = null;
+
   constructor(private parserService: AshParserService) {
-    this.logger.info("AshSidebarProvider", "Sidebar provider initialized");
+    // Listen for parse events to refresh the sidebar and update cache
+    this.parserService.onDidParse(result => {
+      this.latestParseResult = result;
+      this.refresh();
+    });
   }
 
   getTreeItem(element: AshSidebarItem): vscode.TreeItem {
@@ -24,27 +33,19 @@ export class AshSidebarProvider
   }
 
   async getChildren(element?: AshSidebarItem): Promise<AshSidebarItem[]> {
-    const editor = vscode.window.activeTextEditor;
-    if (!editor) {
+    if (!this.latestParseResult) {
       this.logger.debug(
         "AshSidebarProvider",
-        "No active editor, returning empty sidebar"
+        "No parse result available, returning empty sidebar"
       );
       return [];
     }
-    const document = editor.document;
-
-    // Use the centralized parser service
-    const parseResult = this.parserService.getParseResult(document);
-
-    if (!parseResult.isAshFile) {
-      return [];
-    }
+    const parseResult = this.latestParseResult;
 
     if (!element) {
       // Top-level: show main DSL sections
       return parseResult.sections.map(
-        section =>
+        (section: ParsedSection) =>
           new AshSidebarItem(
             section.section, // Use section.section instead of section.name
             section.details && section.details.length > 0
@@ -64,7 +65,7 @@ export class AshSidebarProvider
     } else if (element.isSection && element.sectionLine !== undefined) {
       // Level 1: Show details within a section
       const section = parseResult.sections.find(
-        s => s.startLine === element.sectionLine
+        (s: ParsedSection) => s.startLine === element.sectionLine
       );
       if (!section || !section.details || section.details.length === 0)
         return [];
@@ -120,7 +121,7 @@ export class AshSidebarProvider
   }
 }
 
-export class AshSidebarItem extends vscode.TreeItem {
+class AshSidebarItem extends vscode.TreeItem {
   // Add a property to store the detail for recursive nesting
   public readonly detail?: ParsedDetail;
   // Add a property to track if this is a section item
