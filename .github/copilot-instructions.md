@@ -69,6 +69,16 @@
     structures, rather than inferring intent from names, titles, or other heuristics.
   - This ensures maintainability, clarity, and reduces ambiguity for both humans and AI agents.
 
+- **Design semantic APIs and service interfaces.**
+  - Method names and parameters should express the caller's intent, not implementation details.
+  - For example, use `getBlockStartLineNumber()` and `getBlockEndLineNumber()` instead of
+    `getLineNumber()` and `getLineNumberFromRegexMatch()`.
+  - The caller should not need to understand internal implementation quirks (like regex match
+    positions including newlines) to use the API correctly.
+  - Service boundaries should be based on domain concepts, not technical implementation details.
+  - Function signatures should make the purpose and usage clear without requiring knowledge of
+    internal algorithms or data structures.
+
 ## Modularization & Interface-Driven Architecture
 
 - All logic should be organized into small, well-defined modules with clear responsibilities.

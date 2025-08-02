@@ -27,6 +27,32 @@ export class SourcePositionCalculator {
   }
 
   /**
+   * Calculate the line number for a block start position (1-based)
+   *
+   * Handles positions from regex matches that may include newline characters
+   * at the beginning of the match. This is specifically for block start positions
+   * where the regex anchor ^ may have matched the newline at the end of the previous line.
+   */
+  getBlockStartLineNumber(source: string, position: number): number {
+    // If the position points to a newline character, it likely means
+    // a regex with ^ anchor matched the newline at the end of the previous line.
+    // Adjust by moving to the next character to get the correct line number.
+    const adjustedPosition =
+      source.charAt(position) === "\n" ? position + 1 : position;
+    return source.substring(0, adjustedPosition).split("\n").length;
+  }
+
+  /**
+   * Calculate the line number for a block end position (1-based)
+   *
+   * Uses standard position calculation for end positions that point to
+   * actual content boundaries (like after an 'end' keyword).
+   */
+  getBlockEndLineNumber(source: string, position: number): number {
+    return this.getLineNumber(source, position);
+  }
+
+  /**
    * Calculate the column number for a given position in source text (1-based)
    *
    * Finds the distance from the last newline to determine column position.

@@ -223,14 +223,20 @@ export class BlockExtractorService {
     const details = this.patternMatcher.findPatterns(
       finalContent,
       dslBlock.childPatterns || [],
-      this.positionCalculator.getLineNumber(source, blockStart)
+      this.positionCalculator.getBlockStartLineNumber(source, blockStart)
     );
 
     return {
       section: dslBlock.blockName,
       rawContent: finalContent,
-      startLine: this.positionCalculator.getLineNumber(source, blockStart),
-      endLine: this.positionCalculator.getLineNumber(source, nextBlockStart),
+      startLine: this.positionCalculator.getBlockStartLineNumber(
+        source,
+        blockStart
+      ),
+      endLine: this.positionCalculator.getBlockEndLineNumber(
+        source,
+        nextBlockStart
+      ),
       details,
     };
   }
@@ -263,14 +269,17 @@ export class BlockExtractorService {
     const details = this.patternMatcher.findPatterns(
       finalContent,
       dslBlock.childPatterns || [],
-      this.positionCalculator.getLineNumber(source, blockStart)
+      this.positionCalculator.getBlockStartLineNumber(source, blockStart)
     );
 
     return {
       section: dslBlock.blockName,
       rawContent: finalContent,
-      startLine: this.positionCalculator.getLineNumber(source, blockStart),
-      endLine: this.positionCalculator.getLineNumber(source, blockEnd),
+      startLine: this.positionCalculator.getBlockStartLineNumber(
+        source,
+        blockStart
+      ),
+      endLine: this.positionCalculator.getBlockEndLineNumber(source, blockEnd),
       details,
     };
   }

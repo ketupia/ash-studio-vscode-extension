@@ -1,6 +1,5 @@
 import assert from "assert";
 import { BlockExtractorService } from "../../../src/parser/blockExtractorService";
-import AshAuthConfig from "../../../src/configurations/AshAuthentication.config";
 import Ash_Resource_Config from "../../../src/configurations/Ash.Resource.config";
 import Ash_Domain_Config from "../../../src/configurations/Ash.Domain.config";
 import fs from "fs";
@@ -10,23 +9,55 @@ const exampleFileTestCases = [
   {
     file: "domains/music.ex",
     config: Ash_Domain_Config,
-    sections: [{ name: "resources", detailCount: 4 }],
+    sections: [
+      {
+        name: "resources",
+        detailCount: 4,
+        startLine: 46,
+        endLine: undefined,
+      },
+    ],
   },
   {
     file: "resources/album.ex",
     config: Ash_Resource_Config,
     sections: [
-      { name: "attributes", detailCount: 3 },
-      { name: "actions", detailCount: 3 },
-      { name: "policies", detailCount: 4 },
+      {
+        name: "attributes",
+        detailCount: 3,
+        startLine: undefined,
+        endLine: undefined,
+      },
+      {
+        name: "actions",
+        detailCount: 3,
+        startLine: undefined,
+        endLine: undefined,
+      },
+      {
+        name: "policies",
+        detailCount: 4,
+        startLine: undefined,
+        endLine: undefined,
+      },
     ],
   },
   {
     file: "resources/user.ex",
     config: Ash_Resource_Config,
     sections: [
-      { name: "attributes", detailCount: 4 },
-      { name: "actions", detailCount: 11 },
+      {
+        name: "attributes",
+        detailCount: 4,
+        startLine: undefined,
+        endLine: undefined,
+      },
+      {
+        name: "actions",
+        detailCount: 11,
+        startLine: undefined,
+        endLine: undefined,
+      },
     ],
   },
 ];
@@ -48,7 +79,7 @@ exampleFileTestCases.forEach(({ file, config, sections }) => {
       const attributesSection = result.find(s => s.section === "attributes");
       console.log("Attributes section details:", attributesSection?.details);
 
-      sections.forEach(({ name, detailCount }) => {
+      sections.forEach(({ name, detailCount, startLine, endLine }) => {
         const section = result.find(s => s.section === name);
         assert.ok(section, `Should find section: ${name}`);
         if (detailCount !== undefined) {
@@ -56,6 +87,20 @@ exampleFileTestCases.forEach(({ file, config, sections }) => {
             section.details.length,
             detailCount,
             `Section ${name} should have ${detailCount} details`
+          );
+        }
+        if (startLine !== undefined) {
+          assert.strictEqual(
+            section.startLine,
+            startLine,
+            `Section ${name} should start at line ${startLine}`
+          );
+        }
+        if (endLine !== undefined) {
+          assert.strictEqual(
+            section.endLine,
+            endLine,
+            `Section ${name} should end at line ${endLine}`
           );
         }
       });
