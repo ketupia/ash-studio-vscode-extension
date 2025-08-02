@@ -115,15 +115,6 @@ export function activate(context: vscode.ExtensionContext) {
       )
     );
 
-    context.subscriptions.push(
-      vscode.commands.registerCommand(
-        "ash-studio.openDocumentation",
-        (url: string) => {
-          vscode.env.openExternal(vscode.Uri.parse(url));
-        }
-      )
-    );
-
     logger.info("Extension", "...complete");
   } catch (error) {
     logger.error("Extension", "Extension activation failed", error);

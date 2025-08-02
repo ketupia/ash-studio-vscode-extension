@@ -13,16 +13,53 @@ export class AshCodeLensProvider implements vscode.CodeLensProvider {
   // Track disposables for cleanup
   private disposables: vscode.Disposable[] = [];
 
-  // Cache the latest parse result
-  private latestParseResult: ReturnType<
-    AshParserService["documentActivated"]
-  > | null = null;
+  // Internal code lens list, always reflects the latest parse event
+  private codeLenses: vscode.CodeLens[] = [];
 
   constructor(private readonly parserService: AshParserService) {
-    // Listen for parse events to refresh code lenses and update cache
+    // Listen for parse events to update code lenses and trigger refresh
     this.disposables.push(
       this.parserService.onDidParse(result => {
-        this.latestParseResult = result;
+        this.codeLenses = [];
+        for (const entry of result.codeLenses) {
+          // Create a range for the CodeLens
+          const line = Math.max(0, entry.line - 1); // Convert to 0-based line number
+          const range = new vscode.Range(
+            new vscode.Position(line, entry.character),
+            new vscode.Position(line, entry.character + 1)
+          );
+
+          // Create the CodeLens with a command that opens the documentation URL
+          const lens = new vscode.CodeLens(range);
+
+          // Debug logging
+          Logger.getInstance().debug(
+            "AshCodeLensProvider",
+            `Creating code lens: ${entry.title} -> ${entry.target}`
+          );
+
+          // Assign command directly from entry
+          if (entry.command === "ash-studio.showDiagram") {
+            lens.command = {
+              title: entry.title,
+              command: entry.command,
+              arguments: [
+                vscode.window.activeTextEditor?.document.uri.fsPath ?? "",
+                entry,
+              ],
+              tooltip: `View diagram for ${entry.source}`,
+            };
+          } else {
+            const logger = Logger.getInstance();
+            logger.error(
+              "Code Lens Provider",
+              `Unknown Command ${entry.command}`
+            );
+            vscode.window.showErrorMessage(`Unknown Command ${entry.command}`);
+          }
+
+          this.codeLenses.push(lens);
+        }
         this.triggerCodeLensRefresh();
       })
     );
@@ -38,75 +75,13 @@ export class AshCodeLensProvider implements vscode.CodeLensProvider {
   }
 
   /**
-   * Provides CodeLens for the given document
+   * Provides CodeLens for Ash DSL files
    */
-  async provideCodeLenses(
-    document: vscode.TextDocument,
-    _token: vscode.CancellationToken
-  ): Promise<vscode.CodeLens[] | null> {
+  async provideCodeLenses(): Promise<vscode.CodeLens[]> {
     if (!ConfigurationManager.getInstance().get("enableCodeLens")) {
-      return null;
+      return [];
     }
-    try {
-      if (!this.latestParseResult) {
-        return null;
-      }
-      // Convert our CodeLensEntry objects to VS Code CodeLens objects
-      const codeLenses: vscode.CodeLens[] = [];
-      for (const entry of this.latestParseResult.codeLenses) {
-        // Create a range for the CodeLens
-        const line = Math.max(0, entry.line - 1); // Convert to 0-based line number
-        const range = new vscode.Range(
-          new vscode.Position(line, entry.character),
-          new vscode.Position(line, entry.character + 1)
-        );
-
-        // Create the CodeLens with a command that opens the documentation URL
-        const lens = new vscode.CodeLens(range);
-
-        // Debug logging
-        Logger.getInstance().debug(
-          "AshCodeLensProvider",
-          `Creating code lens: ${entry.title} -> ${entry.target}`
-        );
-
-        // Assign command directly from entry
-        if (entry.command === "ash-studio.showDiagram") {
-          lens.command = {
-            title: entry.title,
-            command: entry.command,
-            arguments: [document.uri.fsPath, entry],
-            tooltip: `View diagram for ${entry.source}`,
-          };
-        } else if (entry.command === "ash-studio.openDocumentation") {
-          lens.command = {
-            title: entry.title,
-            command: entry.command,
-            arguments: [entry.target],
-            tooltip: `View documentation for ${entry.source}`,
-          };
-        } else {
-          const logger = Logger.getInstance();
-          logger.error(
-            "Code Lens Provicer",
-            `Unknown Command ${entry.command}`
-          );
-          vscode.window.showErrorMessage(`Unknown Command ${entry.command}`);
-        }
-
-        codeLenses.push(lens);
-      }
-
-      // Remove manual diagram CodeLens logic; all CodeLenses now come from parseResult.codeLenses
-
-      return codeLenses;
-    } catch (error) {
-      Logger.getInstance().error(
-        "AshCodeLensProvider",
-        `Error providing code lenses: ${error}`
-      );
-      return null;
-    }
+    return this.codeLenses;
   }
 
   /**

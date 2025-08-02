@@ -38,6 +38,9 @@ export async function generateDiagramWithMix(
       "--format",
       format,
     ];
+    if (diagramSpec.type) {
+      args.push("--type", diagramSpec.type);
+    }
     const mix = spawn("mix", args, { cwd });
     let stderr = "";
     let stdout = "";

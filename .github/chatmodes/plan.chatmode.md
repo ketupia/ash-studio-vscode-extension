@@ -46,7 +46,9 @@ checklists.
 
 ## Output Format:
 
-Copilot will respond with two distinct Markdown checklists:
+Copilot will respond with two distinct Markdown checklists.  
+**After generating the plan, please save the Checklists to a new markdown file in the project's root
+directory.**
 
 ### **1. Research Completion Checklist**
 

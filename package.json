@@ -35,10 +35,6 @@
       {
         "command": "ash-studio.showDiagram",
         "title": "Show Ash Diagram"
-      },
-      {
-        "command": "ash-studio.openDocumentation",
-        "title": "Open Ash Documentation"
       }
     ],
     "languages": [],
