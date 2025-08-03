@@ -1,4 +1,7 @@
 name: Request Copilot Review
+permissions:
+  pull-requests: write
+  contents: read
 on:
   pull_request:
     types: [opened, ready_for_review, reopened]
