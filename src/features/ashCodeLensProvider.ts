@@ -107,18 +107,6 @@ export function registerAshCodeLensProvider(
 ): vscode.Disposable {
   const provider = new AshCodeLensProvider(parserService);
 
-  // Register a test command to verify command execution works
-  const testCommand = vscode.commands.registerCommand(
-    "ash-studio.testCodeLens",
-    async (url: string) => {
-      console.log(`[CodeLens Test] Test command called with URL: ${url}`);
-      vscode.window.showInformationMessage(`Code lens clicked! URL: ${url}`);
-    }
-  );
-
-  // Add the test command to context subscriptions
-  context.subscriptions.push(testCommand);
-
   // Register the provider for Elixir files
   const providerDisposable = vscode.languages.registerCodeLensProvider(
     { language: "elixir", scheme: "file" },
@@ -127,5 +115,5 @@ export function registerAshCodeLensProvider(
 
   context.subscriptions.push(providerDisposable);
 
-  return vscode.Disposable.from(testCommand, providerDisposable);
+  return vscode.Disposable.from(providerDisposable);
 }
