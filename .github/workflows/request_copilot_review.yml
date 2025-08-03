@@ -17,6 +17,5 @@ jobs:
             await github.pulls.requestReviewers({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              pull_number: context.payload.pull_request.number,
-              reviewers: ['github-copilot[bot]']
+              pull_number: context.payload.pull_request.number
             })
