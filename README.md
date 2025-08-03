@@ -22,9 +22,11 @@ helping you quickly jump between Ash DSL blocks and understand your code structu
 
 ## 📦 Installation
 
-### From the VSCode Extensions Store
+### From the Your Extensions Store
 
-1. Search for Ash Studio
+1. Search for Ash Studio or
+   - [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=ketupia.ash-studio)
+   - [Open VSX (Windsurf/Cursor)](https://open-vsx.org/extension/ketupia/ash-studio)
 2. Click install
 
 ### From VSIX File
