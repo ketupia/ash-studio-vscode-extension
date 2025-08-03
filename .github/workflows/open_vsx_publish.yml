@@ -44,3 +44,4 @@ jobs:
         run: npx ovsx publish *.vsix -p $OPENVSX_TOKEN
         env:
           OPENVSX_TOKEN: ${{ secrets.OPENVSX_TOKEN }}
+
