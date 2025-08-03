@@ -1,4 +1,6 @@
 name: Publish Extension to OpenVSX
+permissions:
+  contents: read
 
 on:
   release:

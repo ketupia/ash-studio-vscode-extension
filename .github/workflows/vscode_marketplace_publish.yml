@@ -1,4 +1,6 @@
 name: Publish Extension to VS Code Marketplace
+permissions:
+  contents: read
 
 on:
   release:
