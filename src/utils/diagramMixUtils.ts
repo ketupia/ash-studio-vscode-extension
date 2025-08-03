@@ -53,16 +53,13 @@ export async function generateDiagramWithMix(
     }
     let stderr = "";
     let stdout = "";
-    if (mix.stdout) {
-      mix.stdout.on("data", data => {
-        stdout += data.toString();
-      });
-    }
-    if (mix.stderr) {
-      mix.stderr.on("data", data => {
-        stderr += data.toString();
-      });
-    }
+    // Node.js spawn always provides these streams unless stdio is overridden, which we do not do.
+    mix.stdout!.on("data", data => {
+      stdout += data.toString();
+    });
+    mix.stderr!.on("data", data => {
+      stderr += data.toString();
+    });
     mix.on("close", code => {
       if (code === 0) {
         resolve();
