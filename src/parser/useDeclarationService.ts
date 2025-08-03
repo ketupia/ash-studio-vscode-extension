@@ -1,5 +1,5 @@
 /**
- * @module UseDeclarationService
+ * @module parser/useDeclarationService
  *
  * Service for extracting 'use' declarations from Ash/Elixir source files.
  *
