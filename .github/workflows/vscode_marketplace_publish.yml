@@ -34,13 +34,15 @@ jobs:
       - name: Use correct tag
         id: resolved_tag
         run: |
-          echo "Using tag ${{ steps.get_latest.outputs.tag_name || steps.set_tag.outputs.tag_name }}"
+          TAG="${{ steps.get_latest.outputs.tag_name || steps.set_tag.outputs.tag_name }}"
+          echo "Using tag $TAG"
+          echo "tag_name=$TAG" >> $GITHUB_OUTPUT
 
       - name: Download VSIX from Release
         uses: robinraju/release-downloader@v1.10
         with:
           repository: ${{ github.repository }}
-          tag: ${{ steps.get_latest.outputs.tag_name || steps.set_tag.outputs.tag_name }}
+          tag: ${{ steps.resolved_tag.outputs.tag_name }}
           fileName: "*.vsix"
           out-file-path: "."
 
