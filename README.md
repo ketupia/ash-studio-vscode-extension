@@ -22,7 +22,7 @@ helping you quickly jump between Ash DSL blocks and understand your code structu
 
 ## 📦 Installation
 
-### From the Your Extensions Store
+### From Your Extensions Store
 
 1. Search for Ash Studio or
    - [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=ketupia.ash-studio)
