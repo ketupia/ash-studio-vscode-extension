@@ -41,23 +41,45 @@ export async function generateDiagramWithMix(
     if (diagramSpec.type) {
       args.push("--type", diagramSpec.type);
     }
-    const mix = spawn("mix", args, { cwd });
+    let mix: ReturnType<typeof spawn>;
+    try {
+      mix = spawn("mix", args, { cwd });
+    } catch (syncErr) {
+      vscode.window.showErrorMessage(
+        `Failed to start Mix: ${syncErr instanceof Error ? syncErr.message : String(syncErr)}`
+      );
+      reject(syncErr);
+      return;
+    }
     let stderr = "";
     let stdout = "";
-    mix.stdout.on("data", data => {
+    // Node.js spawn always provides these streams unless stdio is overridden, which we do not do.
+    mix.stdout!.on("data", data => {
       stdout += data.toString();
     });
-    mix.stderr.on("data", data => {
+    mix.stderr!.on("data", data => {
       stderr += data.toString();
     });
     mix.on("close", code => {
       if (code === 0) {
         resolve();
       } else {
+        vscode.window.showErrorMessage(
+          `Mix task failed (exit code ${code}): ${stderr || stdout}`
+        );
         reject(new Error(`Mix task failed with code ${code}: ${stderr}`));
       }
     });
-    mix.on("error", err => {
+    mix.on("error", (err: NodeJS.ErrnoException) => {
+      if (err?.code === "ENOENT") {
+        vscode.window.showErrorMessage(
+          'Could not find the "mix" command. Please ensure Elixir and Mix are installed and available in your PATH.'
+        );
+      } else {
+        vscode.window.showErrorMessage(
+          `Error running Mix: ${err instanceof Error ? err.message : String(err)}`
+        );
+      }
       reject(err);
     });
   });
