@@ -1,0 +1,46 @@
+name: Publish Extension to OpenVSX
+permissions:
+  contents: read
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag or release to publish (default: latest release)"
+        required: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set tag name
+        id: set_tag
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ ! -z "${{ github.event.inputs.tag }}" ]; then
+            echo "tag_name=${{ github.event.inputs.tag }}" >> $GITHUB_OUTPUT
+          else
+            echo "tag_name=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Download VSIX from Release
+        uses: robinraju/release-downloader@v1.10
+        with:
+          repository: ${{ github.repository }}
+          tag: ${{ steps.set_tag.outputs.tag_name }}
+          fileName: "*.vsix"
+          out-file-path: "."
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Install ovsx CLI
+        run: npm install -g ovsx
+
+      - name: Publish to OpenVSX
+        run: npx ovsx publish *.vsix -p $OPENVSX_TOKEN
+        env:
+          OPENVSX_TOKEN: ${{ secrets.OPENVSX_TOKEN }}

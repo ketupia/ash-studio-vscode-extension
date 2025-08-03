@@ -12,94 +12,49 @@ export function registerAshQuickPick(
 ) {
   const parser = parserService || AshParserService.getInstance();
 
-  // Cache the latest parse result
-  let latestParseResult: ReturnType<typeof parser.documentActivated> | null =
-    null;
-
-  // Listen for parse events to update the cache
-  parser.onDidParse(result => {
-    latestParseResult = result;
-  });
-
   const quickPickCommand = vscode.commands.registerCommand(
     "ash-studio.gotoSection",
     async () => {
-      if (!latestParseResult) {
-        vscode.window.showInformationMessage("No parse result available");
+      const activeEditor = vscode.window.activeTextEditor;
+      if (!activeEditor || activeEditor.document.languageId !== "elixir") {
+        vscode.window.showInformationMessage("No active Elixir file");
         return;
       }
+
+      // Query parser for current document
+      let parseResult = parser.getCachedResult(activeEditor.document);
+      if (!parseResult) {
+        parseResult = parser.parseElixirDocument(activeEditor.document);
+      }
+
+      if (!parseResult || parseResult.sections.length === 0) {
+        vscode.window.showInformationMessage("No Ash sections found");
+        return;
+      }
+
       // Create QuickPick items from parsed sections
-      const items: SectionQuickPickItem[] = latestParseResult.sections.map(
+      const items: SectionQuickPickItem[] = parseResult.sections.map(
         (section: ParsedSection) => ({
           label: section.section,
           description: `Lines ${section.startLine}-${section.endLine}`,
           section: section,
         })
       );
-      if (items.length === 0) {
-        vscode.window.showInformationMessage("No Ash sections found");
-        return;
-      }
+
       const pick = await vscode.window.showQuickPick(items, {
         placeHolder: "Go to Ash section...",
       });
+
       if (pick && pick.section) {
         const position = new vscode.Position(pick.section.startLine - 1, 0);
-        vscode.window.activeTextEditor!.revealRange(
+        activeEditor.revealRange(
           new vscode.Range(position, position),
           vscode.TextEditorRevealType.InCenter
         );
-        vscode.window.activeTextEditor!.selection = new vscode.Selection(
-          position,
-          position
-        );
+        activeEditor.selection = new vscode.Selection(position, position);
       }
     }
   );
+
   context.subscriptions.push(quickPickCommand);
-
-  // Track the current quick pick command registration
-  let quickPickDisposable: vscode.Disposable | undefined = quickPickCommand;
-
-  // Listen for parse events to re-register the command (ensures latest parse result)
-  parser.onDidParse(() => {
-    if (quickPickDisposable) {
-      quickPickDisposable.dispose();
-    }
-    quickPickDisposable = vscode.commands.registerCommand(
-      "ash-studio.gotoSection",
-      async () => {
-        if (!latestParseResult) {
-          vscode.window.showInformationMessage("No parse result available");
-          return;
-        }
-        const items: SectionQuickPickItem[] = latestParseResult.sections.map(
-          (section: ParsedSection) => ({
-            label: section.section,
-            description: `Lines ${section.startLine}-${section.endLine}`,
-            section: section,
-          })
-        );
-        if (items.length === 0) {
-          vscode.window.showInformationMessage("No Ash sections found");
-          return;
-        }
-        const pick = await vscode.window.showQuickPick(items, {
-          placeHolder: "Go to Ash section...",
-        });
-        if (pick && pick.section) {
-          const position = new vscode.Position(pick.section.startLine - 1, 0);
-          vscode.window.activeTextEditor!.revealRange(
-            new vscode.Range(position, position),
-            vscode.TextEditorRevealType.InCenter
-          );
-          vscode.window.activeTextEditor!.selection = new vscode.Selection(
-            position,
-            position
-          );
-        }
-      }
-    );
-    context.subscriptions.push(quickPickDisposable);
-  });
 }

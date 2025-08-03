@@ -13,6 +13,10 @@ import { CodeLensEntry } from "./types/parser";
 import { getTheoreticalDiagramFilePath } from "./utils/diagramUtils";
 import { generateDiagramWithMix } from "./utils/diagramMixUtils";
 
+// Debounce map for text change events to prevent excessive parsing
+const debounceTimers = new Map<string, NodeJS.Timeout>();
+const DEBOUNCE_DELAY_MS = 500;
+
 export function activate(context: vscode.ExtensionContext) {
   const logger = Logger.getInstance();
   logger.info("Extension", "activating...");
@@ -35,8 +39,50 @@ export function activate(context: vscode.ExtensionContext) {
       }
     };
 
+    const onDocumentChanged = (event: vscode.TextDocumentChangeEvent) => {
+      if (event.document.languageId === "elixir") {
+        const uri = event.document.uri.toString();
+
+        // Clear any existing debounce timer for this document
+        const existingTimer = debounceTimers.get(uri);
+        if (existingTimer) {
+          clearTimeout(existingTimer);
+        }
+
+        // Clear cache immediately when document changes
+        parserService.clearCache(event.document);
+
+        // Set up debounced re-parsing only if this is the active document
+        if (vscode.window.activeTextEditor?.document === event.document) {
+          const timer = setTimeout(() => {
+            parserService.documentActivated(event.document);
+            debounceTimers.delete(uri);
+          }, DEBOUNCE_DELAY_MS);
+
+          debounceTimers.set(uri, timer);
+        }
+      }
+    };
+
+    const onDocumentSaved = (document: vscode.TextDocument) => {
+      if (document.languageId === "elixir") {
+        // Clear cache and re-parse when document is saved
+        parserService.clearCache(document);
+        parserService.documentActivated(document);
+      }
+    };
+
+    const onDocumentOpened = (document: vscode.TextDocument) => {
+      if (document.languageId === "elixir") {
+        parserService.documentActivated(document);
+      }
+    };
+
     context.subscriptions.push(
-      vscode.window.onDidChangeActiveTextEditor(onActiveEditorChanged)
+      vscode.window.onDidChangeActiveTextEditor(onActiveEditorChanged),
+      vscode.workspace.onDidChangeTextDocument(onDocumentChanged),
+      vscode.workspace.onDidSaveTextDocument(onDocumentSaved),
+      vscode.workspace.onDidOpenTextDocument(onDocumentOpened)
     );
 
     // Trigger parsing for the currently active editor on startup
@@ -46,6 +92,13 @@ export function activate(context: vscode.ExtensionContext) {
     ) {
       parserService.documentActivated(vscode.window.activeTextEditor.document);
     }
+
+    // Also parse any already-open Elixir documents in tabs
+    vscode.workspace.textDocuments.forEach(document => {
+      if (document.languageId === "elixir") {
+        parserService.documentActivated(document);
+      }
+    });
 
     // Register features
     registerAshQuickPick(context, parserService);
@@ -126,4 +179,8 @@ export function activate(context: vscode.ExtensionContext) {
   }
 }
 
-export function deactivate() {}
+export function deactivate() {
+  // Clean up any pending debounce timers
+  debounceTimers.forEach(timer => clearTimeout(timer));
+  debounceTimers.clear();
+}

@@ -15,15 +15,9 @@ export class AshSidebarProvider
 
   private logger = Logger.getInstance();
 
-  // Cache the latest parse result
-  private latestParseResult: ReturnType<
-    AshParserService["documentActivated"]
-  > | null = null;
-
   constructor(private parserService: AshParserService) {
-    // Listen for parse events to refresh the sidebar and update cache
-    this.parserService.onDidParse(result => {
-      this.latestParseResult = result;
+    // Listen for parse events to refresh the sidebar UI
+    this.parserService.onDidParse(() => {
       this.refresh();
     });
   }
@@ -33,14 +27,31 @@ export class AshSidebarProvider
   }
 
   async getChildren(element?: AshSidebarItem): Promise<AshSidebarItem[]> {
-    if (!this.latestParseResult) {
+    // Query parser for current active document
+    const activeEditor = vscode.window.activeTextEditor;
+    if (!activeEditor || activeEditor.document.languageId !== "elixir") {
+      this.logger.debug(
+        "AshSidebarProvider",
+        "No active Elixir editor, returning empty sidebar"
+      );
+      return [];
+    }
+
+    // Get parse result for the active document
+    let parseResult = this.parserService.getCachedResult(activeEditor.document);
+    if (!parseResult) {
+      parseResult = this.parserService.parseElixirDocument(
+        activeEditor.document
+      );
+    }
+
+    if (!parseResult || parseResult.sections.length === 0) {
       this.logger.debug(
         "AshSidebarProvider",
         "No parse result available, returning empty sidebar"
       );
       return [];
     }
-    const parseResult = this.latestParseResult;
 
     if (!element) {
       // Top-level: show main DSL sections
