@@ -1,5 +1,23 @@
 /**
- * Service for finding 'use' declarations in Ash/Elixir source files.
+ * @module parser/useDeclarationService
+ *
+ * Service for extracting 'use' declarations from Ash/Elixir source files.
+ *
+ * # Purpose
+ * This service is responsible for identifying and extracting all `use` declarations within a given Elixir source file. In the context of the Ash Framework, `use` declarations are critical for module composition and extension, as they bring in macros and behaviors from Ash and related libraries.
+ *
+ * # Architectural Context
+ * - This class is a pure logic module and does not depend on VS Code APIs.
+ * - It is part of the parser subsystem (see `src/parser/`), which provides foundational parsing and extraction utilities for Ash-related code analysis.
+ * - The results from this service are used by higher-level features such as section navigation, code lens, and sidebar views, enabling the extension to present accurate module relationships and dependencies to the user.
+ *
+ * # Responsibilities
+ * - Accurately extract all `use` blocks, including those that span multiple lines or use bracket/argument continuations.
+ * - Provide a simple, semantic API for retrieving these blocks as raw strings for further analysis or display.
+ *
+ * # Related Modules
+ * - `blockExtractorService.ts`: For general block extraction logic.
+ *
  */
 export class UseDeclarationService {
   /**
