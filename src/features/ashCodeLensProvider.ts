@@ -25,7 +25,9 @@ export class AshCodeLensProvider implements vscode.CodeLensProvider {
   /**
    * Provides CodeLens for Ash DSL files
    */
-  async provideCodeLenses(document: vscode.TextDocument): Promise<vscode.CodeLens[]> {
+  async provideCodeLenses(
+    document: vscode.TextDocument
+  ): Promise<vscode.CodeLens[]> {
     if (!ConfigurationManager.getInstance().get("enableCodeLens")) {
       return [];
     }
@@ -69,10 +71,7 @@ export class AshCodeLensProvider implements vscode.CodeLensProvider {
         };
       } else {
         const logger = Logger.getInstance();
-        logger.error(
-          "Code Lens Provider",
-          `Unknown Command ${entry.command}`
-        );
+        logger.error("Code Lens Provider", `Unknown Command ${entry.command}`);
         vscode.window.showErrorMessage(`Unknown Command ${entry.command}`);
       }
 

@@ -9,11 +9,23 @@ helping you quickly jump between Ash DSL blocks and understand your code structu
 ## ✨ Features
 
 - **🧭 Smart Navigation** - Jump between Ash sections with document outline integration
+  <img src="screenshots/breadcrumbs.png" alt="Breadcrumbs Navigation" width="600">
+
 - **⚡ Quick Section Search** - Instantly find and navigate to any Ash section via Command Palette
+  <img src="screenshots/go_to_section.png" alt="Go To Ash Section" width="600">
+
 - **📊 Sidebar Overview** - Dedicated panel showing all Ash sections and their hierarchy
+  <img src="screenshots/sidebar.png" alt="Sidebar" width="300">
+
 - **📚 Mermaid Diagram Code Lenses** - CodeLens provides direct viewing of mermaid diagrams
+  <img src="screenshots/mermaid_diagram.png" alt="Mermaid Diagrams" width="600">
 
 ## 📦 Installation
+
+### From the VSCode Extensions Store
+
+1. Search for Ash Studio
+2. Click install
 
 ### From VSIX File
 

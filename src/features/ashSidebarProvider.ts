@@ -40,7 +40,9 @@ export class AshSidebarProvider
     // Get parse result for the active document
     let parseResult = this.parserService.getCachedResult(activeEditor.document);
     if (!parseResult) {
-      parseResult = this.parserService.parseElixirDocument(activeEditor.document);
+      parseResult = this.parserService.parseElixirDocument(
+        activeEditor.document
+      );
     }
 
     if (!parseResult || parseResult.sections.length === 0) {
