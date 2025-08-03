@@ -38,6 +38,30 @@ export function getOrCreateAshStudioWebview(
 }
 
 /**
+ * Escape HTML special characters in a string to prevent XSS.
+ * @param str The string to escape.
+ * @returns The escaped string.
+ */
+function escapeHtml(str: string): string {
+  return str.replace(/[&<>"']/g, (char) => {
+    switch (char) {
+      case "&":
+        return "&amp;";
+      case "<":
+        return "&lt;";
+      case ">":
+        return "&gt;";
+      case '"':
+        return "&quot;";
+      case "'":
+        return "&#39;";
+      default:
+        return char;
+    }
+  });
+}
+
+/**
  * Generate HTML content for the AshStudio webview based on the diagram file type.
  * @param diagramFilePath Absolute path to the diagram file.
  * @param webview The webview instance (for resource URIs).
@@ -49,7 +73,9 @@ export function generateDiagramWebviewContent(
 ): string {
   const ext = path.extname(diagramFilePath).toLowerCase();
   if (!fs.existsSync(diagramFilePath)) {
-    return `<html><body><h2>Generating diagram...</h2><p style='color:#888;font-size:0.9em;'>${diagramFilePath}</p></body></html>`;
+    return `<html><body><h2>Generating diagram...</h2><p style='color:#888;font-size:0.9em;'>${escapeHtml(
+      diagramFilePath
+    )}</p></body></html>`;
   }
 
   if ([".svg", ".png", ".jpg", ".jpeg", ".gif"].includes(ext)) {
