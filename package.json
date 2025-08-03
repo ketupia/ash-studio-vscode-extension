@@ -3,7 +3,7 @@
   "displayName": "Ash Studio",
   "description": "Ash Framework VSCode Extension",
   "publisher": "ketupia",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "engines": {
     "vscode": "^1.75.0"
   },

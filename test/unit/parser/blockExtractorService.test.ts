@@ -72,13 +72,6 @@ exampleFileTestCases.forEach(({ file, config, sections }) => {
       const blockExtractor = new BlockExtractorService();
       const result = blockExtractor.extractModules(source, [config]);
 
-      console.log(
-        "Sections found:",
-        result.map(s => s.section)
-      );
-      const attributesSection = result.find(s => s.section === "attributes");
-      console.log("Attributes section details:", attributesSection?.details);
-
       sections.forEach(({ name, detailCount, startLine, endLine }) => {
         const section = result.find(s => s.section === name);
         assert.ok(section, `Should find section: ${name}`);

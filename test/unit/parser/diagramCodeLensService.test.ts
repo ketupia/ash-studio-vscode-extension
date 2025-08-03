@@ -30,10 +30,6 @@ exampleFileTestCases.forEach(({ file, config, codeLenses }) => {
       const blocks = blockExtractor.extractModules(source, [config]);
       const service = new DiagramCodeLensService(config);
       const lenses = service.getCodeLenses(blocks, file);
-      console.log(
-        `Lenses for ${file}:`,
-        lenses.map(l => l.title)
-      );
       codeLenses.forEach(({ title }) => {
         const lens = lenses.find(l => l.title.endsWith(title));
         assert.ok(lens, `Should find code lens: ${title}`);
