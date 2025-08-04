@@ -1,11 +1,7 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
-  "entry": ["src/extension.ts", "test/runTest.ts"],
-  "project": ["src/**/*.ts", "test/**/*.ts"],
-  "ignore": [
-    //   "src/parsers/moduleParser.ts",
-    //   "src/features/ashCodeLensProvider.ts",
-    //   "src/utils/logger.ts",
-    //   "src/utils/config.ts"
-  ]
+  "entry": ["src/extension.ts"],
+  "project": ["src/**/*.ts"],
+  "ignoreDependencies": ["@types/mocha"],
+  "ignoreBinaries": ["ovsx"]
 }
