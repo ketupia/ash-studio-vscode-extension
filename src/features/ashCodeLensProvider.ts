@@ -75,7 +75,7 @@ export class AshCodeLensProvider implements vscode.CodeLensProvider {
         title: "➡️ " + entry.title,
         command: "ash-studio.gotoFileLocation",
         arguments: [document.uri.fsPath, entry],
-        tooltip: `Go to referenced section/detail (line ${entry.targetLine + 1})`,
+        tooltip: `Go to referenced section/detail (line ${entry.targetLine})`,
       };
       codeLenses.push(lens);
     }
