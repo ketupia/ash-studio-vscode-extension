@@ -2,6 +2,7 @@ import assert from "assert";
 import { BlockExtractorService } from "../../../src/parser/blockExtractorService";
 import Ash_Resource_Config from "../../../src/configurations/Ash.Resource.config";
 import Ash_Domain_Config from "../../../src/configurations/Ash.Domain.config";
+import AshGraphql_Config from "../../../src/configurations/AshGraphql.config";
 import fs from "fs";
 import path from "path";
 
@@ -37,6 +38,18 @@ const exampleFileTestCases = [
       {
         name: "policies",
         detailCount: 4,
+        startLine: undefined,
+        endLine: undefined,
+      },
+    ],
+  },
+  {
+    file: "resources/album.ex",
+    config: AshGraphql_Config,
+    sections: [
+      {
+        name: "graphql",
+        detailCount: 0,
         startLine: undefined,
         endLine: undefined,
       },
