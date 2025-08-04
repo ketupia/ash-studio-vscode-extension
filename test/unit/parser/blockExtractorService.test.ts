@@ -3,6 +3,7 @@ import { BlockExtractorService } from "../../../src/parser/blockExtractorService
 import Ash_Resource_Config from "../../../src/configurations/Ash.Resource.config";
 import Ash_Domain_Config from "../../../src/configurations/Ash.Domain.config";
 import AshGraphql_Config from "../../../src/configurations/AshGraphql.config";
+import AshJsonApi_Config from "../../../src/configurations/AshJsonApi.config";
 import fs from "fs";
 import path from "path";
 
@@ -49,6 +50,18 @@ const exampleFileTestCases = [
     sections: [
       {
         name: "graphql",
+        detailCount: 0,
+        startLine: undefined,
+        endLine: undefined,
+      },
+    ],
+  },
+  {
+    file: "resources/album.ex",
+    config: AshJsonApi_Config,
+    sections: [
+      {
+        name: "json_api",
         detailCount: 0,
         startLine: undefined,
         endLine: undefined,
