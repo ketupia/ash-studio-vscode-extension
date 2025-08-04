@@ -28,3 +28,6 @@ test-results/
 test-package.vsix
 
 examples/**
+
+
+release_plan_v*.md
