@@ -67,6 +67,10 @@ defmodule Tunez.Accounts.User do
     repo(Tunez.Repo)
   end
 
+  code_interface do
+    define(:sign_in_with_password)
+  end
+
   actions do
     defaults([:read])
 

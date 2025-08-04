@@ -58,6 +58,24 @@ const exampleFileTestCases = [
         startLine: undefined,
         endLine: undefined,
       },
+      {
+        name: "policies",
+        detailCount: 3,
+        startLine: undefined,
+        endLine: undefined,
+      },
+      {
+        name: "relationships",
+        detailCount: 2,
+        startLine: undefined,
+        endLine: undefined,
+      },
+      {
+        name: "code_interface",
+        detailCount: 1,
+        startLine: undefined,
+        endLine: undefined,
+      },
     ],
   },
 ];

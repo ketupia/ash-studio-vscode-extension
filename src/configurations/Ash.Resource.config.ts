@@ -100,6 +100,7 @@ const Ash_Resource_Config: ModuleInterface = {
       childPatterns: [
         {
           keyword: "define",
+          namePattern: "(:\\w+|\\w+)",
         },
       ],
     },
