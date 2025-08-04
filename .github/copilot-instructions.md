@@ -79,6 +79,17 @@
   - Function signatures should make the purpose and usage clear without requiring knowledge of
     internal algorithms or data structures.
 
+- **Favor pipeline-style processing with helper functions.**
+  - When implementing logic that involves filtering, mapping, or transforming collections, prefer a
+    pipeline of array methods (`filter`, `map`, `flatMap`, etc.) with small, well-named helper
+    functions for each transformation step.
+  - This style should resemble Elixir's `Enum` pipelines: break up complex logic into a series of
+    focused, composable steps.
+  - Avoid deeply nested loops or imperative code when a pipeline with helpers would be clearer.
+  - Use early returns and guard clauses in helpers to keep each step focused and readable.
+  - Example: Instead of a large nested loop, use chained array methods and extract the innermost
+    logic into a named function.
+
 ## Modularization & Interface-Driven Architecture
 
 - All logic should be organized into small, well-defined modules with clear responsibilities.

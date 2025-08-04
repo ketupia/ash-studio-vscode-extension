@@ -46,12 +46,11 @@ export function registerAshQuickPick(
       });
 
       if (pick && pick.section) {
-        const position = new vscode.Position(pick.section.startLine - 1, 0);
-        activeEditor.revealRange(
-          new vscode.Range(position, position),
-          vscode.TextEditorRevealType.InCenter
+        await vscode.commands.executeCommand(
+          "ash-studio.gotoFileLocation",
+          activeEditor.document.uri.fsPath,
+          { line: pick.section.startLine }
         );
-        activeEditor.selection = new vscode.Selection(position, position);
       }
     }
   );

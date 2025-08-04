@@ -9,9 +9,10 @@ import {
   generateDiagramWebviewContent,
   getOrCreateAshStudioWebview,
 } from "./features/ashStudioWebview";
-import { CodeLensEntry } from "./types/parser";
 import { getTheoreticalDiagramFilePath } from "./utils/diagramUtils";
 import { generateDiagramWithMix } from "./utils/diagramMixUtils";
+import { DiagramCodeLensEntry } from "./types/parser";
+import { GotoFileLocationEntry } from "./types/commands";
 
 // Debounce map for text change events to prevent excessive parsing
 const debounceTimers = new Map<string, NodeJS.Timeout>();
@@ -105,22 +106,6 @@ export function activate(context: vscode.ExtensionContext) {
     registerAshSectionNavigation(context, parserService);
     registerAshCodeLensProvider(context, parserService);
 
-    // Register the reveal command that the sidebar uses
-    context.subscriptions.push(
-      vscode.commands.registerCommand(
-        "ash-studio.revealSectionOrSubBlock",
-        (line: number) => {
-          const editor = vscode.window.activeTextEditor;
-          if (editor && typeof line === "number") {
-            const position = new vscode.Position(line, 0);
-            editor.selection = new vscode.Selection(position, position);
-            editor.revealRange(new vscode.Range(position, position));
-            vscode.window.showTextDocument(editor.document);
-          }
-        }
-      )
-    );
-
     // Register diagram commands
     context.subscriptions.push(
       vscode.commands.registerCommand(
@@ -133,7 +118,7 @@ export function activate(context: vscode.ExtensionContext) {
          * @param entry - The CodeLensEntry containing diagram metadata and resource info
          */
         "ash-studio.showDiagram",
-        async (filePath: string, entry: CodeLensEntry) => {
+        async (filePath: string, entry: DiagramCodeLensEntry) => {
           const diagramFilePath = getTheoreticalDiagramFilePath(
             entry.target,
             entry.diagramSpec
@@ -164,6 +149,33 @@ export function activate(context: vscode.ExtensionContext) {
                 }`
               );
             });
+        }
+      )
+    );
+
+    // Register generic file location navigation command
+    context.subscriptions.push(
+      vscode.commands.registerCommand(
+        /**
+         * Registers the ash-studio.gotoFileLocation command to reveal a file and line in the editor.
+         * Used by all navigation features (code lenses, QuickPick, sidebar, etc.) for unified navigation.
+         *
+         * @param filePath - The file path to open
+         * @param entry - An object containing targetLine or line (1-based)
+         */
+        "ash-studio.gotoFileLocation",
+        async (filePath: string, entry: GotoFileLocationEntry) => {
+          const doc = await vscode.workspace.openTextDocument(filePath);
+          const editor = await vscode.window.showTextDocument(doc, {
+            preview: false,
+          });
+          const line = Math.max(0, (entry.targetLine ?? entry.line ?? 1) - 1); // 0-based
+          const pos = new vscode.Position(line, 0);
+          editor.selection = new vscode.Selection(pos, pos);
+          editor.revealRange(
+            new vscode.Range(pos, pos),
+            vscode.TextEditorRevealType.InCenter
+          );
         }
       )
     );

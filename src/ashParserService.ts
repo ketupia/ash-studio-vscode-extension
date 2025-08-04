@@ -52,7 +52,7 @@ export class AshParserService {
         `Parser ${result.parserName} succeeded`,
         {
           sectionsFound: result.sections.length,
-          codeLensesFound: result.codeLenses.length,
+          diagramCodeLensesFound: result.diagramCodeLenses.length,
         }
       );
     } catch (error) {
@@ -62,8 +62,9 @@ export class AshParserService {
       // Fallback to an empty result on error
       result = {
         sections: [],
-        parserName: "ErrorFallback",
-        codeLenses: [],
+        parserName: "",
+        diagramCodeLenses: [],
+        crossReferenceCodeLenses: [],
       };
     }
 
@@ -113,7 +114,8 @@ export class AshParserService {
       return {
         sections: [],
         parserName: "LanguageFilter",
-        codeLenses: [],
+        diagramCodeLenses: [],
+        crossReferenceCodeLenses: [],
       };
     }
 

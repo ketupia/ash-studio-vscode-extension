@@ -1,5 +1,9 @@
 import { ModuleInterface } from "../types/configurationRegistry";
-import { CodeLensEntry, ICodeLensService, ParsedSection } from "../types/parser";
+import {
+  ICodeLensService,
+  ParsedSection,
+  DiagramCodeLensEntry,
+} from "../types/parser";
 
 /**
  * Provides code lenses for diagram sections in Ash modules.
@@ -21,9 +25,12 @@ export class DiagramCodeLensService implements ICodeLensService {
    * @param filePath - The file path of the resource/module.
    * @returns An array of CodeLensEntry objects, each with a full DiagramSpec.
    */
-  getCodeLenses(sections: ParsedSection[], filePath?: string): CodeLensEntry[] {
+  getCodeLenses(
+    sections: ParsedSection[],
+    filePath?: string
+  ): DiagramCodeLensEntry[] {
     if (!this.moduleConfig.diagramLenses) return [];
-    const lenses: CodeLensEntry[] = [];
+    const lenses: DiagramCodeLensEntry[] = [];
     for (const section of sections) {
       for (const spec of this.moduleConfig.diagramLenses) {
         if (section.section === spec.keyword) {
