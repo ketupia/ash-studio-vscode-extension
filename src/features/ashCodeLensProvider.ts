@@ -6,7 +6,7 @@ import { ConfigurationManager } from "../utils/config";
  * Provides CodeLens for Ash DSL files, displaying diagram links.
  * Stateless provider that queries the parser service on demand.
  */
-export class AshCodeLensProvider implements vscode.CodeLensProvider {
+class AshCodeLensProvider implements vscode.CodeLensProvider {
   // Track disposables for cleanup
   private disposables: vscode.Disposable[] = [];
 

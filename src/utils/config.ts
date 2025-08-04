@@ -5,11 +5,7 @@
 
 import * as vscode from "vscode";
 import { LogLevel } from "./logger";
-
-export interface AshStudioConfig {
-  logLevel: LogLevel;
-  enableCodeLens: boolean;
-}
+import { AshStudioConfig } from "../types/configuration";
 
 export class ConfigurationManager {
   private static instance: ConfigurationManager;

@@ -108,6 +108,8 @@ The extension also supports DSL blocks from popular Ash libraries:
 
 - **AshAdmin**: `admin`
 - **AshAuthentication**: `authentication`, `strategies`
+- **AshGraphql**: `graphql`
+- **AshJsonApi**: `json_api`
 - **AshPaperTrail**: `paper_trail`
 - **AshPostgres**: `postgres`
 
