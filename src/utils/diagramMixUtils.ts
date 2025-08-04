@@ -43,7 +43,14 @@ export async function generateDiagramWithMix(
     }
     let mix: ReturnType<typeof spawn>;
     try {
-      mix = spawn("mix", args, { cwd });
+      /**
+       * On Windows, the "mix" command is typically a batch file (mix.bat or mix.cmd).
+       * Node.js's spawn requires the "shell: true" option to resolve and execute batch files correctly.
+       * On other platforms, "mix" is usually an executable and does not require the shell option.
+       * This platform check ensures compatibility across operating systems.
+       */
+      const isWindows = process.platform === "win32";
+      mix = spawn("mix", args, { cwd, shell: isWindows });
     } catch (syncErr) {
       vscode.window.showErrorMessage(
         `Failed to start Mix: ${syncErr instanceof Error ? syncErr.message : String(syncErr)}`
