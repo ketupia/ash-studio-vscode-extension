@@ -82,29 +82,55 @@ export class CrossReferenceCodeLensService {
     sections: ParsedSection[],
     matchedModules: ModuleInterface[]
   ): CrossReferenceCodeLensEntry[] {
+    // Pipeline-style processing for clarity
     return this.filterModulesWithCrossReferences(matchedModules).flatMap(
       moduleConfig =>
-        this.getBlocksWithCrossReferences(moduleConfig).flatMap(dslBlock =>
-          dslBlock
-            .childPatterns!.filter(pattern => pattern.crossReference)
-            .flatMap(pattern => {
-              const section = sections.find(
-                s => s.section === dslBlock.blockName
-              );
-              if (!section) return [];
-              return section.details
-                .filter(detail => detail.name)
-                .map(detail =>
-                  this.createCrossReferenceCodeLens(
-                    sections,
-                    dslBlock,
-                    pattern,
-                    detail
-                  )
-                )
-                .filter(Boolean) as CrossReferenceCodeLensEntry[];
-            })
-        )
+        this.getCrossReferenceLensesForModule(sections, moduleConfig)
     );
+  }
+
+  /**
+   * Get all cross-reference code lens entries for a single module.
+   */
+  private getCrossReferenceLensesForModule(
+    sections: ParsedSection[],
+    moduleConfig: ModuleInterface
+  ): CrossReferenceCodeLensEntry[] {
+    return this.getBlocksWithCrossReferences(moduleConfig).flatMap(dslBlock =>
+      this.getCrossReferenceLensesForBlock(sections, dslBlock)
+    );
+  }
+
+  /**
+   * Get all cross-reference code lens entries for a single DSL block.
+   */
+  private getCrossReferenceLensesForBlock(
+    sections: ParsedSection[],
+    dslBlock: DslBlock
+  ): CrossReferenceCodeLensEntry[] {
+    if (!dslBlock.childPatterns) return [];
+    return dslBlock.childPatterns
+      .filter(pattern => pattern.crossReference)
+      .flatMap(pattern =>
+        this.getCrossReferenceLensesForPattern(sections, dslBlock, pattern)
+      );
+  }
+
+  /**
+   * Get all cross-reference code lens entries for a single child pattern.
+   */
+  private getCrossReferenceLensesForPattern(
+    sections: ParsedSection[],
+    dslBlock: DslBlock,
+    pattern: ChildPattern
+  ): CrossReferenceCodeLensEntry[] {
+    const section = sections.find(s => s.section === dslBlock.blockName);
+    if (!section) return [];
+    return section.details
+      .filter(detail => detail.name)
+      .map(detail =>
+        this.createCrossReferenceCodeLens(sections, dslBlock, pattern, detail)
+      )
+      .filter(Boolean) as CrossReferenceCodeLensEntry[];
   }
 }
