@@ -43,7 +43,9 @@ export async function generateDiagramWithMix(
     }
     let mix: ReturnType<typeof spawn>;
     try {
-      mix = spawn("mix", args, { cwd });
+      // On Windows, use shell: true so that mix.bat/cmd is resolved correctly
+      const isWindows = process.platform === "win32";
+      mix = spawn("mix", args, { cwd, shell: isWindows });
     } catch (syncErr) {
       vscode.window.showErrorMessage(
         `Failed to start Mix: ${syncErr instanceof Error ? syncErr.message : String(syncErr)}`
