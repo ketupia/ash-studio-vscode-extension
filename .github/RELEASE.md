@@ -18,6 +18,7 @@ Refer to this file for the canonical release workflow and checklist template.
 - [ ] Update the version number in `package.json` (semantic versioning, e.g., `X.Y.Z`)
 - [ ] Commit all changes
 - [ ] Push all changes
+- [ ] Create a pull request from the release branch to main
 - [ ] Review, approve, and merge the pull request into the main branch (human)
 - [ ] Create and push a new git tag (format: `vX.Y.Z`, matches `package.json`)
 
