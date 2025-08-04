@@ -8,12 +8,13 @@
  * Usage: Use the exported singleton `moduleParser` for all parsing tasks.
  */
 
-import { CodeLensEntry, Parser, ParseResult } from "../types/parser";
+import { DiagramCodeLensEntry, Parser, ParseResult } from "../types/parser";
 import { configurationRegistry } from "../configurations/registry";
 import { UseDeclarationService } from "./useDeclarationService";
 import { ModuleMatcherService } from "./moduleMatcherService";
 import { BlockExtractorService } from "./blockExtractorService";
 import { DiagramCodeLensService } from "./diagramCodeLensService";
+import { CrossReferenceCodeLensService } from "./crossReferenceCodeLensService";
 
 /**
  * A Parser implementation that uses ModuleInterface configurations
@@ -41,7 +42,7 @@ export class ModuleParser implements Parser {
   /**
    * Parses the source code and returns a ParseResult.
    * @param source The source code to parse
-   * @param filePath The file path of the document (required for diagram CodeLenses)
+   * @param filePath The file path of the document (required for diagram code lenses)
    */
   parse(source: string, filePath?: string): ParseResult {
     const availableConfigs = configurationRegistry.getAll();
@@ -52,7 +53,8 @@ export class ModuleParser implements Parser {
       return {
         sections: [],
         parserName: "ModuleParser",
-        codeLenses: [],
+        diagramCodeLenses: [],
+        crossReferenceCodeLenses: [],
       };
     }
     // Identify which modules are present
@@ -64,7 +66,8 @@ export class ModuleParser implements Parser {
       return {
         sections: [],
         parserName: "ModuleParser",
-        codeLenses: [],
+        diagramCodeLenses: [],
+        crossReferenceCodeLenses: [],
       };
     }
     // Extract DSL modules and their blocks
@@ -73,17 +76,25 @@ export class ModuleParser implements Parser {
       matchedModules
     );
     // Use new code lens services per module config
-    let codeLenses: CodeLensEntry[] = [];
+    let diagramCodeLenses: DiagramCodeLensEntry[] = [];
     for (const module of matchedModules) {
       const diagramLensService = new DiagramCodeLensService(module);
-      codeLenses = codeLenses.concat(
+      diagramCodeLenses = diagramCodeLenses.concat(
         diagramLensService.getCodeLenses(sections, filePath)
       );
     }
+    // Cross-reference code lenses
+    const crossReferenceCodeLensService = new CrossReferenceCodeLensService();
+    const crossReferenceCodeLenses =
+      crossReferenceCodeLensService.getCrossReferenceCodeLenses(
+        sections,
+        matchedModules
+      );
     return {
       sections,
       parserName: "ModuleParser",
-      codeLenses,
+      diagramCodeLenses,
+      crossReferenceCodeLenses,
     };
   }
 }

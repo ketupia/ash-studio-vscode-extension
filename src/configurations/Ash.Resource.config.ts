@@ -101,6 +101,9 @@ const Ash_Resource_Config: ModuleInterface = {
         {
           keyword: "define",
           namePattern: "(:\\w+|\\w+)",
+          crossReference: {
+            blockName: "actions",
+          },
         },
       ],
     },

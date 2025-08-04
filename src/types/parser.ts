@@ -30,7 +30,7 @@ export interface ParsedSection {
   rawContent?: string;
 }
 
-export interface CodeLensEntry {
+export interface DiagramCodeLensEntry {
   /** The line number where this code lens should appear (1-based) */
   line: number;
   /** The character position where this code lens should appear (0-based) */
@@ -48,16 +48,34 @@ export interface CodeLensEntry {
   /**
    * The diagram specification associated with this code lens.
    * This property provides all metadata needed by the showDiagram handler
-   * to locate and display the diagram. Required for all CodeLensEntry objects.
+   * to locate and display the diagram. Required for all DiagramCodeLensEntry objects.
    */
   diagramSpec: import("./configurationRegistry").DiagramSpec;
+}
+
+/**
+ * Represents a code lens entry for cross-references between Ash DSL blocks/details.
+ * Used for navigation from one block/detail to a related target (e.g., from a code_interface define to an action).
+ */
+export interface CrossReferenceCodeLensEntry {
+  /** The line number where this code lens should appear (1-based) */
+  line: number;
+  /** The character position where this code lens should appear (0-based) */
+  character: number;
+  /** The title/label to display in the code lens */
+  title: string;
+  /** The line number of the navigation target (1-based) */
+  targetLine: number;
+  /** The range of text this code lens applies to (start and end lines, 1-based) */
+  range?: { startLine: number; endLine: number };
 }
 
 export interface ParseResult {
   sections: ParsedSection[];
   moduleName?: string; // extracted module name if available
   parserName: string; // name of the parser that was used
-  codeLenses: CodeLensEntry[]; // code lens entries to display in the editor
+  diagramCodeLenses: DiagramCodeLensEntry[]; // diagram code lens entries to display in the editor
+  crossReferenceCodeLenses: CrossReferenceCodeLensEntry[]; // cross-reference code lenses
 }
 
 export interface Parser {
@@ -71,5 +89,8 @@ export interface Parser {
 }
 
 export interface ICodeLensService {
-  getCodeLenses(sections: ParsedSection[], filePath?: string): CodeLensEntry[];
+  getCodeLenses(
+    sections: ParsedSection[],
+    filePath?: string
+  ): DiagramCodeLensEntry[];
 }

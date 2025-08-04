@@ -1,6 +1,5 @@
 import * as vscode from "vscode";
 import { AshParserService } from "../ashParserService";
-import { Logger } from "../utils/logger";
 import { ConfigurationManager } from "../utils/config";
 
 /**
@@ -38,30 +37,20 @@ export class AshCodeLensProvider implements vscode.CodeLensProvider {
       parseResult = this.parserService.parseElixirDocument(document);
     }
 
-    if (!parseResult || parseResult.codeLenses.length === 0) {
+    if (!parseResult) {
       return [];
     }
 
     // Convert parser results to VS Code CodeLens objects
     const codeLenses: vscode.CodeLens[] = [];
-    for (const entry of parseResult.codeLenses) {
-      // Create a range for the CodeLens
+    // Handle diagram code lenses
+    for (const entry of parseResult.diagramCodeLenses || []) {
       const line = Math.max(0, entry.line - 1); // Convert to 0-based line number
       const range = new vscode.Range(
         new vscode.Position(line, entry.character),
         new vscode.Position(line, entry.character + 1)
       );
-
-      // Create the CodeLens with a command that opens the diagram
       const lens = new vscode.CodeLens(range);
-
-      // Debug logging
-      Logger.getInstance().debug(
-        "AshCodeLensProvider",
-        `Creating code lens: ${entry.title} -> ${entry.target}`
-      );
-
-      // Assign command directly from entry
       if (entry.command === "ash-studio.showDiagram") {
         lens.command = {
           title: entry.title,
@@ -70,14 +59,26 @@ export class AshCodeLensProvider implements vscode.CodeLensProvider {
           tooltip: `View diagram for ${entry.source}`,
         };
       } else {
-        const logger = Logger.getInstance();
-        logger.error("Code Lens Provider", `Unknown Command ${entry.command}`);
         vscode.window.showErrorMessage(`Unknown Command ${entry.command}`);
       }
-
       codeLenses.push(lens);
     }
-
+    // Handle cross-reference code lenses
+    for (const entry of parseResult.crossReferenceCodeLenses || []) {
+      const line = Math.max(0, entry.line - 1); // Convert to 0-based line number
+      const range = new vscode.Range(
+        new vscode.Position(line, entry.character),
+        new vscode.Position(line, entry.character + 1)
+      );
+      const lens = new vscode.CodeLens(range);
+      lens.command = {
+        title: "➡️ " + entry.title,
+        command: "ash-studio.gotoFileLocation",
+        arguments: [document.uri.fsPath, entry],
+        tooltip: `Go to referenced section/detail (line ${entry.targetLine})`,
+      };
+      codeLenses.push(lens);
+    }
     return codeLenses;
   }
 

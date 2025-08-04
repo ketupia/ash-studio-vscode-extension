@@ -84,6 +84,10 @@ export interface ChildPattern {
    * - For functions without names, omit this property
    */
   namePattern?: string;
+
+  crossReference?: {
+    blockName: string;
+  };
 }
 
 /**

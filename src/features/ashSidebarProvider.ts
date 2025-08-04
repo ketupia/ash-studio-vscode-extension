@@ -36,6 +36,7 @@ export class AshSidebarProvider
       );
       return [];
     }
+    const filePath = activeEditor.document.uri.fsPath;
 
     // Get parse result for the active document
     let parseResult = this.parserService.getCachedResult(activeEditor.document);
@@ -65,9 +66,9 @@ export class AshSidebarProvider
             section.startLine, // Use startLine instead of line
             undefined,
             {
-              command: "ash-studio.revealSectionOrSubBlock",
+              command: "ash-studio.gotoFileLocation",
               title: "Go to Section",
-              arguments: [section.startLine],
+              arguments: [filePath, { targetLine: section.startLine }],
             },
             undefined,
             true // Mark as section
@@ -82,7 +83,7 @@ export class AshSidebarProvider
         return [];
 
       return section.details.map((detail: ParsedDetail) =>
-        this.createDetailTreeItem(detail)
+        this.createDetailTreeItem(detail, filePath)
       );
     } else if (
       element.detail &&
@@ -91,7 +92,7 @@ export class AshSidebarProvider
     ) {
       // Level 2+: Show nested details (recursive handling)
       return element.detail.childDetails.map((childDetail: ParsedDetail) =>
-        this.createDetailTreeItem(childDetail)
+        this.createDetailTreeItem(childDetail, filePath)
       );
     }
 
@@ -101,7 +102,10 @@ export class AshSidebarProvider
   /**
    * Helper method to create a tree item for a detail, handling nested details recursively
    */
-  private createDetailTreeItem(detail: ParsedDetail): AshSidebarItem {
+  private createDetailTreeItem(
+    detail: ParsedDetail,
+    filePath?: string
+  ): AshSidebarItem {
     const hasChildren = detail.childDetails && detail.childDetails.length > 0;
 
     // Create a label that shows both block type and name (if available)
@@ -117,11 +121,13 @@ export class AshSidebarProvider
         : vscode.TreeItemCollapsibleState.None,
       detail.line,
       undefined, // Remove parent section display
-      {
-        command: "ash-studio.revealSectionOrSubBlock",
-        title: "Go to Detail",
-        arguments: [detail.line],
-      },
+      filePath
+        ? {
+            command: "ash-studio.gotoFileLocation",
+            title: "Go to Detail",
+            arguments: [filePath, { targetLine: detail.line }],
+          }
+        : undefined,
       detail, // Pass the detail for recursive nesting
       false // Not a section
     );
@@ -148,13 +154,7 @@ class AshSidebarItem extends vscode.TreeItem {
     isSection: boolean = false
   ) {
     super(label, collapsibleState);
-    if (sectionLine !== undefined) {
-      this.command = {
-        command: "ash-studio.revealSectionOrSubBlock",
-        title: "Go to block",
-        arguments: [sectionLine],
-      };
-    }
+    // Remove legacy command assignment here; now passed in explicitly
     if (parentSection) {
       this.description = parentSection;
     }
