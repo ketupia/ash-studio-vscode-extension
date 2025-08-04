@@ -10,6 +10,8 @@ on:
       tag:
         description: "Tag or release to publish (default: latest release)"
         required: false
+  repository_dispatch:
+    types: [publish-openvsx]
 
 jobs:
   publish:
