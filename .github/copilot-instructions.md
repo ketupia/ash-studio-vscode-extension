@@ -1,5 +1,18 @@
 # Copilot Instructions for ash-studio VS Code Extension
 
+## Quick Reference & Table of Contents
+
+- [Project Overview](#project-overview)
+- [Architecture & Patterns](#architecture--patterns)
+- [Developer Workflows](#developer-workflows)
+- [Project Conventions](#project-conventions)
+- [Integration Points](#integration-points)
+- [AI Coding Preferences](#ai-coding-preferences)
+- [Modularization & Interface-Driven Architecture](#modularization--interface-driven-architecture)
+- [Build & Test After Each Change](#build--test-after-each-change)
+- [Release Process](RELEASE.md)
+- [Contributing Guidelines](CONTRIBUTING.md)
+
 ## Project Overview
 
 - This is a VS Code extension to enhance development for the Ash Framework (Elixir).
@@ -55,40 +68,10 @@
 - No external APIs or services; all logic is local to the extension.
 - Relies on VS Code extension API and Elixir language configuration.
 
-## Examples
-
-- See `src/ashSidebarProvider.ts` for sidebar logic and section detail display.
-- See `src/ashSectionUtils.ts` and `src/ashSectionDetailUtils.ts` for block and section detail
-  parsing.
-- See `feature-plan.md` for current and planned features.
-
 ## AI Coding Preferences
 
-- **Prefer declarative approaches over inferred/heuristic logic.**
-  - For example, always use explicit fields (like a `command` property) in configuration and data
-    structures, rather than inferring intent from names, titles, or other heuristics.
-  - This ensures maintainability, clarity, and reduces ambiguity for both humans and AI agents.
-
-- **Design semantic APIs and service interfaces.**
-  - Method names and parameters should express the caller's intent, not implementation details.
-  - For example, use `getBlockStartLineNumber()` and `getBlockEndLineNumber()` instead of
-    `getLineNumber()` and `getLineNumberFromRegexMatch()`.
-  - The caller should not need to understand internal implementation quirks (like regex match
-    positions including newlines) to use the API correctly.
-  - Service boundaries should be based on domain concepts, not technical implementation details.
-  - Function signatures should make the purpose and usage clear without requiring knowledge of
-    internal algorithms or data structures.
-
-- **Favor pipeline-style processing with helper functions.**
-  - When implementing logic that involves filtering, mapping, or transforming collections, prefer a
-    pipeline of array methods (`filter`, `map`, `flatMap`, etc.) with small, well-named helper
-    functions for each transformation step.
-  - This style should resemble Elixir's `Enum` pipelines: break up complex logic into a series of
-    focused, composable steps.
-  - Avoid deeply nested loops or imperative code when a pipeline with helpers would be clearer.
-  - Use early returns and guard clauses in helpers to keep each step focused and readable.
-  - Example: Instead of a large nested loop, use chained array methods and extract the innermost
-    logic into a named function.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for AI coding preferences and detailed development
+guidelines.
 
 ## Modularization & Interface-Driven Architecture
 
@@ -101,37 +84,6 @@
   private.
 - When adding new features, first define the interface and types, then implement the logic.
 
-## Commenting and Documentation Guidance
-
-- **Prefer comprehensive source code documentation over separate markdown files.**
-  - Write detailed JSDoc comments for all public classes, methods, and interfaces.
-  - Focus on explaining WHAT the code does and HOW it works in its current state.
-  - Document the purpose, responsibilities, and behavior of each component.
-  - Include architectural patterns and design decisions that are currently in use.
-  - Document complex algorithms, business logic, and non-obvious implementation details inline.
-
-- **Source code should be self-documenting:**
-  - Comments should explain the "what" and "how" of current functionality.
-  - Include examples of usage in JSDoc when helpful.
-  - Document parameters, return types, and thrown exceptions thoroughly.
-  - Add comments explaining any non-trivial regex patterns, algorithms, or workarounds.
-  - Reference related methods/classes in comments when there are important relationships.
-  - Explain the architecture and responsibilities of each service/class.
-
-- **Avoid redundant external documentation:**
-  - Don't create separate markdown files that duplicate information better captured in code
-    comments.
-  - Keep README files focused on setup, overview, and getting started.
-  - Use inline documentation for implementation details, API usage, and architectural notes.
-
-- **Maintenance guidelines for comments:**
-  - Do not leave comments about obsolete or deprecated functionality in the codebase.
-  - Avoid lengthy refactoring history or "before/after" comparisons in comments.
-  - Always update or rewrite comments to reflect the current, intended functionality and usage.
-  - Remove files that are no longer needed, rather than leaving placeholders or deprecation notes.
-  - Documentation and comments should help future maintainers understand the present state and
-    current architecture.
-
 ## Build & Test After Each Change
 
 - After making any code change (especially refactors or type/interface moves), always:
@@ -142,37 +94,5 @@
 - When a test fails and the cause is unclear, ask for clarification. Sometimes the source is wrong,
   sometimes the test is wrong—ask for help to determine which.
 
-## General Development Guidelines
-
-- **Use Class-Based Registries and Singletons:**  
-  For shared registries or service-like modules, define a class with clear public methods and export
-  a singleton instance. This approach improves testability, extensibility, and aligns with familiar
-  patterns from C# and Elixir.
-
-- **Centralize Shared Types and Interfaces:**  
-  Move all shared interfaces and types to a dedicated types file (e.g., `src/types/ash.ts`). Update
-  all imports to use these centralized definitions, and ensure only the shared types module exports
-  them.
-
-- **Separate Pure Logic from VS Code Integration:**  
-  Keep parsing, data modeling, and utility logic free of VS Code API dependencies. Place all VS
-  Code-dependent code (such as providers, commands, and UI) in a dedicated directory (e.g.,
-  `src/features/`).
-
-- **Define Clear Public and Private APIs:**  
-  Only export public interfaces and functions. Mark helpers and internal functions as private or
-  leave them unexported.
-
-- **Document Module Boundaries and APIs:**  
-  Add module-level comments describing the public API and intended usage for each module.
-
-- **Maintain and Expand Tests:**  
-  Ensure tests import only public APIs. Add or expand unit tests for pure logic modules, especially
-  when extracting or refactoring types and interfaces.
-
-- **Keep Documentation Up to Date:**  
-  Revise documentation files to reflect the current structure and conventions after any significant
-  change.
-
-- **Build and Test After Every Change:**  
-  Run all tests (`npm test`) after any code change. Fix all errors and warnings before proceeding.
+For the full release workflow, see [RELEASE.md](RELEASE.md). For detailed contribution and
+documentation guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md).
