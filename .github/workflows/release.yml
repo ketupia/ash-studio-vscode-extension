@@ -48,7 +48,7 @@ jobs:
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.reason != ''
         run: |
           echo "Manual release reason: ${{ github.event.inputs.reason }}"
-# Removed redundant npm cache step as caching is already handled by setup-node with 'cache: "npm"'.
+      # Removed redundant npm cache step as caching is already handled by setup-node with 'cache: "npm"'.
       - name: Install dependencies
         run: npm ci
       - name: Run quality checks
@@ -76,3 +76,24 @@ jobs:
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup GitHub CLI
+        uses: gh-cli/setup-gh@v3
+
+      - name: Trigger VS Code Marketplace Publish
+        if: success()
+        run: |
+          gh api repos/${{ github.repository }}/dispatches \
+            -f event_type=publish-vscode-marketplace \
+            -F client_payload='{"tag":"${{ github.ref_name }}"}'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Trigger OpenVSX Publish
+        if: success()
+        run: |
+          gh api repos/${{ github.repository }}/dispatches \
+            -f event_type=publish-openvsx \
+            -F client_payload='{"tag":"${{ github.ref_name }}"}'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
