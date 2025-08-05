@@ -1,18 +1,5 @@
 # Copilot Instructions for ash-studio VS Code Extension
 
-## Quick Reference & Table of Contents
-
-- [Project Overview](#project-overview)
-- [Architecture & Patterns](#architecture--patterns)
-- [Developer Workflows](#developer-workflows)
-- [Project Conventions](#project-conventions)
-- [Integration Points](#integration-points)
-- [AI Coding Preferences](#ai-coding-preferences)
-- [Modularization & Interface-Driven Architecture](#modularization--interface-driven-architecture)
-- [Build & Test After Each Change](#build--test-after-each-change)
-- [Release Process](RELEASE.md)
-- [Contributing Guidelines](CONTRIBUTING.md)
-
 ## Project Overview
 
 - This is a VS Code extension to enhance development for the Ash Framework (Elixir).
@@ -29,7 +16,7 @@
   - `feature-plan.md` (feature roadmap)
   - `package.json` (contributions, commands, sidebar registration)
 
-## Architecture & Patterns
+## Architecture and Patterns
 
 - **Section Navigation:**
   - Top-level Ash blocks are detected using `getTopLevelAshBlocks` (`ashSectionUtils.ts`).
@@ -73,7 +60,7 @@
 See [CONTRIBUTING.md](CONTRIBUTING.md) for AI coding preferences and detailed development
 guidelines.
 
-## Modularization & Interface-Driven Architecture
+## Modularization and Interface-Driven Architecture
 
 - All logic should be organized into small, well-defined modules with clear responsibilities.
 - Public APIs must be defined using TypeScript interfaces and types, placed in a shared `types/` or
@@ -84,7 +71,7 @@ guidelines.
   private.
 - When adding new features, first define the interface and types, then implement the logic.
 
-## Build & Test After Each Change
+## Build and Test After Each Change
 
 - After making any code change (especially refactors or type/interface moves), always:
   1. Run a full build (`npm test`).
@@ -96,3 +83,8 @@ guidelines.
 
 For the full release workflow, see [RELEASE.md](RELEASE.md). For detailed contribution and
 documentation guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## See Also
+
+- RELEASE.md (Release Process)
+- CONTRIBUTING.md (Contributing Guidelines)
