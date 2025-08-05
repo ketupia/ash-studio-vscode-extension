@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.0.9] - 2025-08-05
+
+### Features
+- feat: add Jason, Outstanding, Neo4j configuration and update registry
+
+
 ## [0.0.8] - 2025-08-04
 
 ### Features

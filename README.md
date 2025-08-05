@@ -104,7 +104,7 @@ The extension recognizes and navigates these core Ash DSL blocks:
 
 #### Ash Ecosystem Libraries
 
-The extension also supports DSL blocks from popular Ash libraries:
+The extension also supports DSL blocks from selected core and community Ash libraries:
 
 - **AshAdmin**: `admin`
 - **AshAuthentication**: `authentication`, `strategies`
@@ -112,6 +112,9 @@ The extension also supports DSL blocks from popular Ash libraries:
 - **AshJsonApi**: `json_api`
 - **AshPaperTrail**: `paper_trail`
 - **AshPostgres**: `postgres`
+- **AshJason**: `jason`
+- **AshOutstanding**: `outstanding`
+- **AshNeo4j**: `neo4j`
 
 ## 🐛 Troubleshooting
 
