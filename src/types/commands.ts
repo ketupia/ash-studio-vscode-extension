@@ -5,6 +5,6 @@
 export interface GotoFileLocationEntry {
   /** 1-based line number to navigate to (preferred) */
   targetLine?: number;
-  /** 1-based line number (legacy, fallback) */
+  /** 1-based line number (for legacy/fallback support; prefer startLine/endLine in new code) */
   line?: number;
 }

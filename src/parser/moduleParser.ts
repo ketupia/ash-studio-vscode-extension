@@ -20,7 +20,7 @@ import { CrossReferenceCodeLensService } from "./crossReferenceCodeLensService";
  * A Parser implementation that uses ModuleConfiguration configurations
  * to parse Ash DSL blocks in a structured way.
  */
-export class ModuleParser implements Parser {
+class ModuleParser implements Parser {
   private static instance: ModuleParser;
   private useDeclarationService: UseDeclarationService;
   private moduleMatcherService: ModuleMatcherService;
@@ -99,4 +99,5 @@ export class ModuleParser implements Parser {
   }
 }
 
+// Only export the singleton instance, not the static getInstance method
 export const moduleParser = ModuleParser.getInstance();

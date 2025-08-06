@@ -43,7 +43,7 @@ export function getOrCreateAshStudioWebview(
  * @returns The escaped string.
  */
 function escapeHtml(str: string): string {
-  return str.replace(/[&<>"']/g, (char) => {
+  return str.replace(/[&<>"']/g, char => {
     switch (char) {
       case "&":
         return "&amp;";

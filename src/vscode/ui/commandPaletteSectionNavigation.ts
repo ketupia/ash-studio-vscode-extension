@@ -1,17 +1,25 @@
 import * as vscode from "vscode";
-import { AshParserService } from "../ashParserService";
-import { ParsedSection } from "../types/parser";
+import { ParsedDataProvider } from "../../parsedDataProvider";
+import { ParsedSection } from "../../types/parser";
+
+/**
+ * Registers the QuickPick command for fast Ash section navigation in Elixir files.
+ * This feature adds the "Go to Ash section..." command to the command palette (Cmd+Shift+P),
+ * allowing users to quickly jump to Ash DSL sections in the current document.
+ *
+ * Usage:
+ *   registerCommandPaletteSectionNavigation(context, ParsedDataProvider.getInstance());
+ *   // Command: ash-studio.gotoSection
+ */
 
 interface SectionQuickPickItem extends vscode.QuickPickItem {
   section: ParsedSection;
 }
 
-export function registerAshQuickPick(
+export function registerCommandPaletteSectionNavigation(
   context: vscode.ExtensionContext,
-  parserService?: AshParserService
+  parsedDataProvider: ParsedDataProvider
 ) {
-  const parser = parserService || AshParserService.getInstance();
-
   const quickPickCommand = vscode.commands.registerCommand(
     "ash-studio.gotoSection",
     async () => {
@@ -22,13 +30,11 @@ export function registerAshQuickPick(
       }
 
       // Query parser for current document
-      let parseResult = parser.getCachedResult(activeEditor.document);
-      if (!parseResult) {
-        parseResult = parser.parseElixirDocument(activeEditor.document);
-      }
+      const parseResult = parsedDataProvider.getParseResult(
+        activeEditor.document
+      );
 
       if (!parseResult || parseResult.sections.length === 0) {
-        vscode.window.showInformationMessage("No Ash sections found");
         return;
       }
 

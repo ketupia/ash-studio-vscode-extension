@@ -1,14 +1,14 @@
 import * as vscode from "vscode";
-import { AshSidebarProvider } from "./features/ashSidebarProvider";
-import { registerAshQuickPick } from "./features/ashQuickPick";
-import { registerAshSectionNavigation } from "./features/ashSectionNavigation";
-import { registerAshCodeLensProvider } from "./features/ashCodeLensProvider";
-import { AshParserService } from "./ashParserService";
+import { SidebarTreeProvider } from "./vscode/ui/sidebarTreeProvider";
+import { registerCommandPaletteSectionNavigation } from "./vscode/ui/commandPaletteSectionNavigation";
+import { registerDocumentSymbolProvider } from "./vscode/providers/documentSymbolProvider";
+import { registerCodeLensProvider } from "./vscode/providers/codeLensProvider";
+import { ParsedDataProvider } from "./parsedDataProvider";
 import { Logger } from "./utils/logger";
 import {
   generateDiagramWebviewContent,
   getOrCreateAshStudioWebview,
-} from "./features/ashStudioWebview";
+} from "./vscode/ui/webview";
 import { getTheoreticalDiagramFilePath } from "./utils/diagramUtils";
 import { generateDiagramWithMix } from "./utils/diagramMixUtils";
 import { DiagramCodeLensEntry } from "./types/parser";
@@ -24,9 +24,9 @@ export function activate(context: vscode.ExtensionContext) {
 
   try {
     // Initialize the parser service
-    const parserService = AshParserService.getInstance();
+    const parserService = ParsedDataProvider.getInstance();
     // Initialize sidebar
-    const sidebarProvider = new AshSidebarProvider(parserService);
+    const sidebarProvider = new SidebarTreeProvider(parserService);
     const treeView = vscode.window.createTreeView("ashSidebar", {
       treeDataProvider: sidebarProvider,
       showCollapseAll: true,
@@ -102,9 +102,9 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
     // Register features
-    registerAshQuickPick(context, parserService);
-    registerAshSectionNavigation(context, parserService);
-    registerAshCodeLensProvider(context, parserService);
+    registerCommandPaletteSectionNavigation(context, parserService);
+    registerDocumentSymbolProvider(context, parserService);
+    registerCodeLensProvider(context, parserService);
 
     // Register diagram commands
     context.subscriptions.push(
