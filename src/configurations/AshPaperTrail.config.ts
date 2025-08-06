@@ -1,6 +1,6 @@
-import { ModuleInterface } from "../types/configurationRegistry";
+import { ModuleConfiguration } from "../types/configurationRegistry";
 
-const AshPaperTrail_Config: ModuleInterface = {
+const AshPaperTrail_Config: ModuleConfiguration = {
   displayName: "Ash Paper Trail",
   declarationPattern: "AshPaperTrail.Resource",
   dslBlocks: [

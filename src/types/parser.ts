@@ -88,7 +88,7 @@ export interface Parser {
   parse(source: string, filePath?: string): ParseResult;
 }
 
-export interface ICodeLensService {
+export interface CodeLensService {
   getCodeLenses(
     sections: ParsedSection[],
     filePath?: string

@@ -1,7 +1,7 @@
-import { ModuleInterface } from "../types/configurationRegistry";
+import { ModuleConfiguration } from "../types/configurationRegistry";
 // Using explicit path to avoid TypeScript resolution issues
 
-const AshJason_Config: ModuleInterface = {
+const AshJason_Config: ModuleConfiguration = {
   displayName: "Jason",
   declarationPattern: "AshJason.Resource",
   dslBlocks: [

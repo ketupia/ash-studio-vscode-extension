@@ -1,7 +1,7 @@
-import { ModuleInterface } from "../types/configurationRegistry";
+import { ModuleConfiguration } from "../types/configurationRegistry";
 // Using explicit path to avoid TypeScript resolution issues
 
-const AshPostgres_Config: ModuleInterface = {
+const AshPostgres_Config: ModuleConfiguration = {
   displayName: "Postgres",
   declarationPattern: "AshPostgres.DataLayer",
   dslBlocks: [

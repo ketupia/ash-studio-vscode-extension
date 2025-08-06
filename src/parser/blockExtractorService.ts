@@ -1,4 +1,4 @@
-import { ModuleInterface, DslBlock } from "../types/configurationRegistry";
+import { ModuleConfiguration, DslBlock } from "../types/configurationRegistry";
 import { ParsedSection } from "../types/parser";
 import { BlockIdentifierService } from "./blockIdentifierService";
 import { BlockContentExtractor } from "./blockContentExtractor";
@@ -53,7 +53,7 @@ export class BlockExtractorService {
    */
   extractModules(
     source: string,
-    matchedModules: ModuleInterface[]
+    matchedModules: ModuleConfiguration[]
   ): ParsedSection[] {
     const blockNameToConfig = this.buildBlockNameMapping(matchedModules);
     const blockNames = Object.keys(blockNameToConfig);
@@ -71,7 +71,7 @@ export class BlockExtractorService {
    * DslBlock configurations, which contain parsing rules and child block definitions.
    */
   private buildBlockNameMapping(
-    matchedModules: ModuleInterface[]
+    matchedModules: ModuleConfiguration[]
   ): Record<string, DslBlock> {
     const blockNameToConfig: Record<string, DslBlock> = {};
 

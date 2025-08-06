@@ -4,7 +4,7 @@ import {
   CrossReferenceCodeLensEntry,
 } from "../types/parser";
 import {
-  ModuleInterface,
+  ModuleConfiguration,
   DslBlock,
   ChildPattern,
 } from "../types/configurationRegistry";
@@ -18,8 +18,8 @@ export class CrossReferenceCodeLensService {
    * Filter modules to only those with at least one crossReference child pattern.
    */
   private filterModulesWithCrossReferences(
-    modules: ModuleInterface[]
-  ): ModuleInterface[] {
+    modules: ModuleConfiguration[]
+  ): ModuleConfiguration[] {
     return modules.filter(m =>
       m.dslBlocks.some(
         b => b.childPatterns && b.childPatterns.some(p => p.crossReference)
@@ -43,7 +43,9 @@ export class CrossReferenceCodeLensService {
   /**
    * Get all DslBlocks in a module that have at least one crossReference child pattern.
    */
-  private getBlocksWithCrossReferences(module: ModuleInterface): DslBlock[] {
+  private getBlocksWithCrossReferences(
+    module: ModuleConfiguration
+  ): DslBlock[] {
     return module.dslBlocks.filter(
       b => b.childPatterns && b.childPatterns.some(p => p.crossReference)
     );
@@ -80,7 +82,7 @@ export class CrossReferenceCodeLensService {
    */
   public getCrossReferenceCodeLenses(
     sections: ParsedSection[],
-    matchedModules: ModuleInterface[]
+    matchedModules: ModuleConfiguration[]
   ): CrossReferenceCodeLensEntry[] {
     // Pipeline-style processing for clarity
     return this.filterModulesWithCrossReferences(matchedModules).flatMap(
@@ -94,7 +96,7 @@ export class CrossReferenceCodeLensService {
    */
   private getCrossReferenceLensesForModule(
     sections: ParsedSection[],
-    moduleConfig: ModuleInterface
+    moduleConfig: ModuleConfiguration
   ): CrossReferenceCodeLensEntry[] {
     return this.getBlocksWithCrossReferences(moduleConfig).flatMap(dslBlock =>
       this.getCrossReferenceLensesForBlock(sections, dslBlock)

@@ -1,6 +1,6 @@
-import { ModuleInterface } from "../types/configurationRegistry";
+import { ModuleConfiguration } from "../types/configurationRegistry";
 
-const AshAdmin_Resource_Config: ModuleInterface = {
+const AshAdmin_Resource_Config: ModuleConfiguration = {
   displayName: "Ash Admin",
   declarationPattern: "AshAdmin.Resource",
   dslBlocks: [

@@ -1,6 +1,6 @@
-import { ModuleInterface } from "../types/configurationRegistry";
+import { ModuleConfiguration } from "../types/configurationRegistry";
 
-const AshJsonApi_Config: ModuleInterface = {
+const AshJsonApi_Config: ModuleConfiguration = {
   displayName: "JSON Api",
   declarationPattern: "AshJsonApi.Resource",
   dslBlocks: [

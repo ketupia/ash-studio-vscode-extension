@@ -1,6 +1,6 @@
-import { ModuleInterface } from "../types/configurationRegistry";
+import { ModuleConfiguration } from "../types/configurationRegistry";
 
-const AshAdmin_Domain_Config: ModuleInterface = {
+const AshAdmin_Domain_Config: ModuleConfiguration = {
   displayName: "Ash Admin",
   declarationPattern: "AshAdmin.Domain",
   dslBlocks: [

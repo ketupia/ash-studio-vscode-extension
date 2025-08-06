@@ -1,6 +1,6 @@
-import { ModuleInterface } from "../types/configurationRegistry";
+import { ModuleConfiguration } from "../types/configurationRegistry";
 
-const Ash_PubSub_Config: ModuleInterface = {
+const Ash_PubSub_Config: ModuleConfiguration = {
   displayName: "Ash PubSub",
   declarationPattern: "Ash.Notifier.PubSub",
   dslBlocks: [

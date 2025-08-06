@@ -1,7 +1,7 @@
-import { ModuleInterface } from "../types/configurationRegistry";
+import { ModuleConfiguration } from "../types/configurationRegistry";
 
 /**
- * Service for identifying which ModuleInterface configurations are present in use declarations.
+ * Service for identifying which ModuleConfiguration configurations are present in use declarations.
  */
 export class ModuleMatcherService {
   /**
@@ -9,9 +9,9 @@ export class ModuleMatcherService {
    */
   identifyConfiguredModules(
     useDeclarations: string[],
-    availableConfigs: ModuleInterface[]
-  ): ModuleInterface[] {
-    const matchedConfigs: ModuleInterface[] = [];
+    availableConfigs: ModuleConfiguration[]
+  ): ModuleConfiguration[] {
+    const matchedConfigs: ModuleConfiguration[] = [];
     for (const useDeclaration of useDeclarations) {
       for (const config of availableConfigs) {
         if (useDeclaration.includes(config.declarationPattern)) {
