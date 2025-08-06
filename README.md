@@ -89,6 +89,7 @@ lib/**/*.md
 
 - Click on CodeLens links to open the mermaid diagram in a webview. Diagrams will be created using
   mix tasks.
+  > ⚠️ **Note:** Your project needs to compile to generate diagrams.
 - Choose the diagram format in settings.
 
 ### Supported Ash Constructs
