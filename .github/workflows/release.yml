@@ -77,9 +77,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Setup GitHub CLI
-        uses: gh-cli/setup-gh@v3
-
       - name: Trigger VS Code Marketplace Publish
         if: success()
         run: |
