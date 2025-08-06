@@ -40,4 +40,4 @@ class ConfigurationRegistryImpl implements ConfigurationRegistry {
   }
 }
 
-export default ConfigurationRegistryImpl;
+export default new ConfigurationRegistryImpl();
