@@ -12,15 +12,15 @@ import AshJsonApi_Config from "./AshJsonApi.config";
 import AshPaperTrail_Config from "./AshPaperTrail.config";
 import AshPostgres_Config from "./AshPostgres.config";
 import {
-  ModuleInterface,
-  ConfigurationRegistryInterface,
+  ModuleConfiguration,
+  ConfigurationRegistry,
 } from "../types/configurationRegistry";
 import AshJason_Config from "./AshJason.config";
 import AshNeo4j_Config from "./AshNeo4j.config";
 import AshOutstanding_Config from "./AshOutstanding.config";
 
-class ConfigurationRegistry implements ConfigurationRegistryInterface {
-  getAll(): ModuleInterface[] {
+class ConfigurationRegistryImpl implements ConfigurationRegistry {
+  getAll(): ModuleConfiguration[] {
     return [
       AshAdmin_Domain_Config,
       AshAdmin_Resource_Config,
@@ -40,4 +40,4 @@ class ConfigurationRegistry implements ConfigurationRegistryInterface {
   }
 }
 
-export const configurationRegistry = new ConfigurationRegistry();
+export default new ConfigurationRegistryImpl();

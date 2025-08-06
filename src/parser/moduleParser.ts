@@ -9,7 +9,7 @@
  */
 
 import { DiagramCodeLensEntry, Parser, ParseResult } from "../types/parser";
-import { configurationRegistry } from "../configurations/registry";
+import registry from "../configurations/registry";
 import { UseDeclarationService } from "./useDeclarationService";
 import { ModuleMatcherService } from "./moduleMatcherService";
 import { BlockExtractorService } from "./blockExtractorService";
@@ -17,7 +17,7 @@ import { DiagramCodeLensService } from "./diagramCodeLensService";
 import { CrossReferenceCodeLensService } from "./crossReferenceCodeLensService";
 
 /**
- * A Parser implementation that uses ModuleInterface configurations
+ * A Parser implementation that uses ModuleConfiguration configurations
  * to parse Ash DSL blocks in a structured way.
  */
 export class ModuleParser implements Parser {
@@ -45,7 +45,7 @@ export class ModuleParser implements Parser {
    * @param filePath The file path of the document (required for diagram code lenses)
    */
   parse(source: string, filePath?: string): ParseResult {
-    const availableConfigs = configurationRegistry.getAll();
+    const availableConfigs = registry.getAll();
     // Pass 1: Find all use declarations
     const useDeclarations =
       this.useDeclarationService.findUseDeclarations(source);

@@ -119,7 +119,7 @@ export interface ChildPattern {
  * 3. Parse nested content within each block (via children definitions)
  * 4. Generate  diagrams (via lens configurations)
  */
-export interface ModuleInterface {
+export interface ModuleConfiguration {
   /**
    * Human-friendly name for the module (e.g., "Ash Resource", "Ash Domain", "AshPostgres Repo")
    * Used in UI displays, error messages, and diagrams.
@@ -184,6 +184,6 @@ export interface DiagramSpec {
  * Interface for the configuration registry class.
  * Allows for easier mocking and future extensibility.
  */
-export interface ConfigurationRegistryInterface {
-  getAll(): ModuleInterface[];
+export interface ConfigurationRegistry {
+  getAll(): ModuleConfiguration[];
 }

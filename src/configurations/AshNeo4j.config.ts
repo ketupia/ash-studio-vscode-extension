@@ -1,7 +1,7 @@
-import { ModuleInterface } from "../types/configurationRegistry";
+import { ModuleConfiguration } from "../types/configurationRegistry";
 // Using explicit path to avoid TypeScript resolution issues
 
-const AshNeo4j_Config: ModuleInterface = {
+const AshNeo4j_Config: ModuleConfiguration = {
   displayName: "Neo4j",
   declarationPattern: "AshNeo4j.DataLayer",
   dslBlocks: [

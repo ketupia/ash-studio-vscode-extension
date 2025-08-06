@@ -5,7 +5,7 @@
 
 import * as vscode from "vscode";
 import { LogLevel } from "./logger";
-import { AshStudioConfig } from "../types/configuration";
+import { AshStudioConfig } from "../types/extensionConfiguration";
 
 export class ConfigurationManager {
   private static instance: ConfigurationManager;

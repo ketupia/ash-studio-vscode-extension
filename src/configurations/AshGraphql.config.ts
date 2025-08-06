@@ -1,6 +1,6 @@
-import { ModuleInterface } from "../types/configurationRegistry";
+import { ModuleConfiguration } from "../types/configurationRegistry";
 
-const AshGraphql_Config: ModuleInterface = {
+const AshGraphql_Config: ModuleConfiguration = {
   displayName: "GraphQL",
   declarationPattern: "AshGraphql.Resource",
   dslBlocks: [

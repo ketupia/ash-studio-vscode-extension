@@ -5,7 +5,7 @@ import Ash_Domain_Config from "../../../src/configurations/Ash.Domain.config";
 import { BlockExtractorService } from "../../../src/parser/blockExtractorService";
 import fs from "fs";
 import path from "path";
-import { ModuleInterface } from "../../../src/types/configurationRegistry";
+import { ModuleConfiguration } from "../../../src/types/configurationRegistry";
 
 const userSource = fs.readFileSync(
   path.join(process.cwd(), "test/example_files/resources/user.ex"),
@@ -21,7 +21,7 @@ type ExpectedLens = {
 type Scenario = {
   name: string;
   source: string;
-  configs: ModuleInterface[];
+  configs: ModuleConfiguration[];
   expected: ExpectedLens[];
 };
 

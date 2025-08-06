@@ -1,6 +1,6 @@
-import { ModuleInterface } from "../types/configurationRegistry";
+import { ModuleConfiguration } from "../types/configurationRegistry";
 
-const AshAuthentication_Config: ModuleInterface = {
+const AshAuthentication_Config: ModuleConfiguration = {
   displayName: "Ash Authentication",
   declarationPattern: "AshAuthentication",
   dslBlocks: [

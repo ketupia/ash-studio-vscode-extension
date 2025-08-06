@@ -1,6 +1,6 @@
-import { ModuleInterface } from "../types/configurationRegistry";
+import { ModuleConfiguration } from "../types/configurationRegistry";
 import {
-  ICodeLensService,
+  CodeLensService,
   ParsedSection,
   DiagramCodeLensEntry,
 } from "../types/parser";
@@ -15,8 +15,8 @@ import {
  *
  * @param moduleConfig - The module configuration containing diagramLenses.
  */
-export class DiagramCodeLensService implements ICodeLensService {
-  constructor(private moduleConfig: ModuleInterface) {}
+export class DiagramCodeLensService implements CodeLensService {
+  constructor(private moduleConfig: ModuleConfiguration) {}
 
   /**
    * Generate CodeLensEntry objects for all diagram-enabled sections in the given sections list.
