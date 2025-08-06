@@ -62,7 +62,6 @@ export class ParsedDataProvider {
       return cached.result;
     }
 
-    // Parsing logic is now delegated to moduleParser; ParsedDataProvider only manages cache and document versioning.
     const source = document.getText();
     const logger = Logger.getInstance();
     let result: ParseResult;
@@ -108,9 +107,7 @@ export class ParsedDataProvider {
   /**
    * Called when a document is activated. Parses and emits results, using cache if available.
    */
-  public documentActivated(
-    document: vscode.TextDocument
-  ): ParseResult {
+  public documentActivated(document: vscode.TextDocument): ParseResult {
     const result = this.getParseResult(document);
     return result;
   }

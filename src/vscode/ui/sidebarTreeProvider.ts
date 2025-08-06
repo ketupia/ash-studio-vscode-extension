@@ -39,12 +39,12 @@ export class SidebarTreeProvider
   private logger = Logger.getInstance();
   private _disposables: vscode.Disposable[] = [];
 
-  private debounce<T extends (...args: any[]) => void>(
+  private debounce<T extends (...args: unknown[]) => void>(
     fn: T,
     delay: number
   ): T {
     let timer: NodeJS.Timeout | undefined;
-    return ((...args: any[]) => {
+    return ((...args: Parameters<T>) => {
       if (timer) clearTimeout(timer);
       timer = setTimeout(() => fn(...args), delay);
     }) as T;
