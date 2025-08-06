@@ -1,16 +1,16 @@
 import * as vscode from "vscode";
-import { AshParserService } from "../ashParserService";
-import { ConfigurationManager } from "../utils/config";
+import { ParsedDataProvider } from "../../parsedDataProvider";
+import { ConfigurationManager } from "../../utils/config";
 
 /**
  * Provides CodeLens for Ash DSL files, displaying diagram links.
  * Stateless provider that queries the parser service on demand.
  */
-class AshCodeLensProvider implements vscode.CodeLensProvider {
+class CodeLensProvider implements vscode.CodeLensProvider {
   // Track disposables for cleanup
   private disposables: vscode.Disposable[] = [];
 
-  constructor(private readonly parserService: AshParserService) {
+  constructor(private readonly parsedDataProvider: ParsedDataProvider) {
     // Listen for configuration changes that might affect code lens display
     this.disposables.push(
       vscode.workspace.onDidChangeConfiguration(event => {
@@ -32,14 +32,7 @@ class AshCodeLensProvider implements vscode.CodeLensProvider {
     }
 
     // Query parser for current document
-    let parseResult = this.parserService.getCachedResult(document);
-    if (!parseResult) {
-      parseResult = this.parserService.parseElixirDocument(document);
-    }
-
-    if (!parseResult) {
-      return [];
-    }
+    const parseResult = this.parsedDataProvider.getParseResult(document);
 
     // Convert parser results to VS Code CodeLens objects
     const codeLenses: vscode.CodeLens[] = [];
@@ -102,11 +95,11 @@ class AshCodeLensProvider implements vscode.CodeLensProvider {
 /**
  * Register the CodeLens provider with VS Code
  */
-export function registerAshCodeLensProvider(
+export function registerCodeLensProvider(
   context: vscode.ExtensionContext,
-  parserService: AshParserService
+  parsedDataProvider: ParsedDataProvider
 ): vscode.Disposable {
-  const provider = new AshCodeLensProvider(parserService);
+  const provider = new CodeLensProvider(parsedDataProvider);
 
   // Register the provider for Elixir files
   const providerDisposable = vscode.languages.registerCodeLensProvider(

@@ -1,18 +1,16 @@
 import * as vscode from "vscode";
-import { AshParserService } from "../ashParserService";
-import { ParsedSection } from "../types/parser";
-import { Logger } from "../utils/logger";
+import { ParsedDataProvider } from "../../parsedDataProvider";
+import { ParsedSection } from "../../types/parser";
+import { Logger } from "../../utils/logger";
 
 /**
  * Registers a single Ash Studio DocumentSymbolProvider for Elixir files.
- * The provider uses cached parse results when available, ensuring fresh symbols for each document.
+ * This provider allows users to navigate Ash DSL sections using the breadcrumbs feature.
  */
-export function registerAshSectionNavigation(
+export function registerDocumentSymbolProvider(
   context: vscode.ExtensionContext,
-  parserService?: AshParserService
+  parsedDataProvider: ParsedDataProvider
 ) {
-  const parser = parserService || AshParserService.getInstance();
-
   // DocumentSelector for Elixir files
   const ashSelector: vscode.DocumentSelector = [
     { language: "elixir", pattern: "**/*.ex" },
@@ -26,27 +24,7 @@ export function registerAshSectionNavigation(
         `Providing symbols for ${document.fileName}`
       );
 
-      // Try to get cached result first
-      let parseResult = parser.getCachedResult(document);
-
-      // If no cached result, parse the document
-      if (!parseResult) {
-        logger.debug(
-          "DocumentSymbolProvider",
-          "No cached result, parsing document"
-        );
-        parseResult = parser.parseElixirDocument(document);
-      } else {
-        logger.debug("DocumentSymbolProvider", "Using cached result");
-      }
-
-      if (!parseResult || parseResult.sections.length === 0) {
-        logger.debug(
-          "DocumentSymbolProvider",
-          "No sections found, returning empty array"
-        );
-        return [];
-      }
+      const parseResult = parsedDataProvider.getParseResult(document);
 
       logger.debug(
         "DocumentSymbolProvider",

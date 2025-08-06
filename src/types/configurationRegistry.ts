@@ -174,7 +174,7 @@ export interface DiagramSpec {
   keyword: string;
   /** The Mix command to run (e.g., "ash.generate_policy_charts") */
   mixCommand: string;
-  /** The expected diagram file naming pattern (e.g., ".*-policy-flowchart.(mmd|svg|png|pdf)") */
+  /** The expected diagram file pattern (e.g., ".*-policy-flowchart.(mmd|svg|png|pdf)") */
   filePattern: string;
   /** For commands that support a type option (e.g., "class", "entity") */
   type?: string;

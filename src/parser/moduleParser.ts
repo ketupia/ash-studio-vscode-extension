@@ -99,4 +99,5 @@ export class ModuleParser implements Parser {
   }
 }
 
+// Only export the singleton instance, not the static getInstance method
 export const moduleParser = ModuleParser.getInstance();
