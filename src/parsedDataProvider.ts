@@ -44,10 +44,15 @@ export class ParsedDataProvider {
   /**
    * Get parse result for a document, using cache if available
    */
-  public getParseResult(
-    document: vscode.TextDocument
-  ): ParseResult | undefined {
-    if (document.languageId !== "elixir") return undefined;
+  public getParseResult(document: vscode.TextDocument): ParseResult {
+    if (document.languageId !== "elixir") {
+      return {
+        sections: [],
+        parserName: "LanguageFilter",
+        diagramCodeLenses: [],
+        crossReferenceCodeLenses: [],
+      };
+    }
     const uri = document.uri.toString();
     const version = document.version;
 

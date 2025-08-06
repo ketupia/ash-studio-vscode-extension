@@ -33,9 +33,6 @@ class CodeLensProvider implements vscode.CodeLensProvider {
 
     // Query parser for current document
     const parseResult = this.parsedDataProvider.getParseResult(document);
-    if (!parseResult) {
-      return [];
-    }
 
     // Convert parser results to VS Code CodeLens objects
     const codeLenses: vscode.CodeLens[] = [];

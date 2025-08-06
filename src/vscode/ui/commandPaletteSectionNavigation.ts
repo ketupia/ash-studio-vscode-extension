@@ -34,7 +34,7 @@ export function registerCommandPaletteSectionNavigation(
         activeEditor.document
       );
 
-      if (!parseResult || parseResult.sections.length === 0) {
+      if (parseResult.sections.length === 0) {
         vscode.window.showInformationMessage(
           "No Ash sections found in this file."
         );

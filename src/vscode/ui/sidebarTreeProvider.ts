@@ -64,14 +64,6 @@ export class SidebarTreeProvider
       activeEditor.document
     );
 
-    if (!parseResult || parseResult.sections.length === 0) {
-      this.logger.debug(
-        "SidebarTreeProvider",
-        "No parse result available, returning empty sidebar"
-      );
-      return [];
-    }
-
     if (!element) {
       // Top-level: show main DSL sections
       return parseResult.sections.map(

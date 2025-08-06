@@ -26,14 +26,6 @@ export function registerDocumentSymbolProvider(
 
       const parseResult = parsedDataProvider.getParseResult(document);
 
-      if (!parseResult || parseResult.sections.length === 0) {
-        logger.debug(
-          "DocumentSymbolProvider",
-          "No sections found, returning empty array"
-        );
-        return [];
-      }
-
       logger.debug(
         "DocumentSymbolProvider",
         `Found ${parseResult.sections.length} sections: ${parseResult.sections.map(s => s.section).join(", ")}`
