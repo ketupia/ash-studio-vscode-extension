@@ -8,22 +8,21 @@ const AshNeo4j_Config: ModuleInterface = {
     {
       blockName: "neo4j",
       childPatterns: [
-        {
-          keyword: "label",
-        },
-        {
-          keyword: "relate",
-        },
-        {
-          keyword: "guard",
-        },
-        {
-          keyword: "translate",
-        },
-        {
-          keyword: "skip",
-        },
-
+        // {
+        //   keyword: "label",
+        // },
+        // {
+        //   keyword: "relate",
+        // },
+        // {
+        //   keyword: "guard",
+        // },
+        // {
+        //   keyword: "translate",
+        // },
+        // {
+        //   keyword: "skip",
+        // },
       ],
     },
   ],

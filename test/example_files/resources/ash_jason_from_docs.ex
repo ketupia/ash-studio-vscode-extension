@@ -1,0 +1,51 @@
+defmodule Ash.Jason do
+  use Ash.Resource,
+    otp_app: :ash_jason,
+    domain: Tunez.Music,
+    extensions: [AshJason.Resource]
+
+  jason do
+    # Pick only those listed keys
+    pick([:only_some_field])
+
+    # Pick non-sensitive fields
+    pick(%{private?: true})
+
+    # Pick non-private fields
+    pick(%{sensitive?: true})
+
+    # Pick all fields
+    pick(%{private?: true, sensitive?: true})
+
+    # Pick usual but include and exclude some specific keys
+    pick(%{include: [:ok_private_field], exclude: [:irrelevant_public_field]})
+
+    # Merge with map
+    merge(%{key: "value"})
+
+    # Merge with list
+    merge(key: "value")
+
+    # Rename with map
+    rename(%{from_key: "to_key"})
+
+    # Rename with list
+    rename(from_key: "to_key")
+
+    # Rename with a function
+    rename(fn name -> String.capitalize(to_string(name)) end)
+
+    # Order with standard `Enum.sort`
+    order(true)
+
+    # Order with a custom sort function
+    order(fn keys -> Enum.sort(keys, :desc) end)
+
+    # Order in accordance with a list
+    order([:only, :these, :keys, :in, :that, "order"])
+
+    customize(fn result, _record ->
+      result |> List.keystore(:custom_key, 0, {:custom_key, "custom_value"})
+    end)
+  end
+end
