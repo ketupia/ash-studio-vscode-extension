@@ -37,10 +37,39 @@ export class SidebarTreeProvider
     this._onDidChangeTreeData.event;
 
   private logger = Logger.getInstance();
+  private _disposables: vscode.Disposable[] = [];
+
+  private debounce<T extends (...args: any[]) => void>(
+    fn: T,
+    delay: number
+  ): T {
+    let timer: NodeJS.Timeout | undefined;
+    return ((...args: any[]) => {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => fn(...args), delay);
+    }) as T;
+  }
 
   constructor(private readonly parsedDataProvider: ParsedDataProvider) {
-    vscode.window.onDidChangeActiveTextEditor(() => this.refresh());
-    vscode.workspace.onDidChangeTextDocument(() => this.refresh());
+    this._disposables.push(
+      vscode.window.onDidChangeActiveTextEditor(() => this.refresh())
+    );
+    // Debounced refresh for text document changes
+    const debouncedRefresh = this.debounce(() => this.refresh(), 200);
+    this._disposables.push(
+      vscode.workspace.onDidChangeTextDocument(event => {
+        const activeEditor = vscode.window.activeTextEditor;
+        if (
+          activeEditor &&
+          event.document === activeEditor.document &&
+          (activeEditor.document.languageId === "elixir" ||
+            activeEditor.document.fileName.endsWith(".ex") ||
+            activeEditor.document.fileName.endsWith(".exs"))
+        ) {
+          debouncedRefresh();
+        }
+      })
+    );
   }
 
   getTreeItem(element: SidebarItem): vscode.TreeItem {
@@ -145,6 +174,11 @@ export class SidebarTreeProvider
 
   refresh(): void {
     this._onDidChangeTreeData.fire();
+  }
+
+  dispose(): void {
+    this._disposables.forEach(d => d.dispose());
+    this._disposables = [];
   }
 }
 
