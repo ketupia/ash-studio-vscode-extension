@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import { ParseResult } from "./types/parser";
 import { moduleParser } from "./parser/moduleParser";
 import { Logger } from "./utils/logger";
+import { isElixirFile } from "./utils/fileUtils";
 
 /**
  * ParsedDataProvider
@@ -45,7 +46,13 @@ export class ParsedDataProvider {
    * Get parse result for a document, using cache if available
    */
   public getParseResult(document: vscode.TextDocument): ParseResult {
-    if (document.languageId !== "elixir") {
+    const logger = Logger.getInstance();
+
+    if (!isElixirFile(document)) {
+      logger.debug(
+        "ParsedDataProvider",
+        "Document is not an Elixir file, returning empty parse result"
+      );
       return {
         sections: [],
         parserName: "LanguageFilter",
@@ -53,6 +60,7 @@ export class ParsedDataProvider {
         crossReferenceCodeLenses: [],
       };
     }
+
     const uri = document.uri.toString();
     const version = document.version;
 
@@ -63,7 +71,6 @@ export class ParsedDataProvider {
     }
 
     const source = document.getText();
-    const logger = Logger.getInstance();
     let result: ParseResult;
 
     try {

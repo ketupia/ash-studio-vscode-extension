@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import { ParsedDataProvider } from "../../parsedDataProvider";
 import { ParsedDetail, ParsedSection } from "../../types/parser";
 import { Logger } from "../../utils/logger";
+import { isElixirFile } from "../../utils/fileUtils";
 
 /**
  * SidebarTreeProvider
@@ -27,9 +28,43 @@ import { Logger } from "../../utils/logger";
  * See CONTRIBUTING.md for commenting and architecture guidelines.
  */
 
+// Configurable debounce delay for sidebar refresh (ms)
+const SIDEBAR_DEBOUNCE_DELAY = 200;
+
 export class SidebarTreeProvider
   implements vscode.TreeDataProvider<SidebarItem>
 {
+  constructor(
+    private readonly parsedDataProvider: ParsedDataProvider
+  ) {
+    // Debounced refresh for text document changes
+    const debouncedRefresh = this.debounce(
+      () => this.refresh(),
+      SIDEBAR_DEBOUNCE_DELAY,
+      "textDocumentChange"
+    );
+    this._disposables.push(
+      vscode.workspace.onDidChangeTextDocument(event => {
+        const activeEditor = vscode.window.activeTextEditor;
+        if (
+          activeEditor &&
+          event.document === activeEditor.document &&
+          isElixirFile(activeEditor.document)
+        ) {
+          debouncedRefresh();
+        }
+      })
+    );
+    // Refresh sidebar when active editor changes
+    this._disposables.push(
+      vscode.window.onDidChangeActiveTextEditor(editor => {
+        if (editor && isElixirFile(editor.document)) {
+          this.refresh();
+        }
+      })
+    );
+  }
+
   private _onDidChangeTreeData: vscode.EventEmitter<
     SidebarItem | undefined | void
   > = new vscode.EventEmitter<SidebarItem | undefined | void>();
@@ -37,39 +72,20 @@ export class SidebarTreeProvider
     this._onDidChangeTreeData.event;
 
   private logger = Logger.getInstance();
+  private _debounceTimers: Map<string, NodeJS.Timeout> = new Map();
   private _disposables: vscode.Disposable[] = [];
 
   private debounce<T extends (...args: unknown[]) => void>(
     fn: T,
-    delay: number
+    delay: number,
+    key: string = "default"
   ): T {
-    let timer: NodeJS.Timeout | undefined;
     return ((...args: Parameters<T>) => {
+      const timer = this._debounceTimers.get(key);
       if (timer) clearTimeout(timer);
-      timer = setTimeout(() => fn(...args), delay);
+      const newTimer = setTimeout(() => fn(...args), delay);
+      this._debounceTimers.set(key, newTimer);
     }) as T;
-  }
-
-  constructor(private readonly parsedDataProvider: ParsedDataProvider) {
-    this._disposables.push(
-      vscode.window.onDidChangeActiveTextEditor(() => this.refresh())
-    );
-    // Debounced refresh for text document changes
-    const debouncedRefresh = this.debounce(() => this.refresh(), 200);
-    this._disposables.push(
-      vscode.workspace.onDidChangeTextDocument(event => {
-        const activeEditor = vscode.window.activeTextEditor;
-        if (
-          activeEditor &&
-          event.document === activeEditor.document &&
-          (activeEditor.document.languageId === "elixir" ||
-            activeEditor.document.fileName.endsWith(".ex") ||
-            activeEditor.document.fileName.endsWith(".exs"))
-        ) {
-          debouncedRefresh();
-        }
-      })
-    );
   }
 
   getTreeItem(element: SidebarItem): vscode.TreeItem {
@@ -177,6 +193,8 @@ export class SidebarTreeProvider
   }
 
   dispose(): void {
+    this._debounceTimers.forEach(timer => clearTimeout(timer));
+    this._debounceTimers.clear();
     this._disposables.forEach(d => d.dispose());
     this._disposables = [];
   }
