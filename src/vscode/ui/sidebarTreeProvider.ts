@@ -50,10 +50,10 @@ export class SidebarTreeProvider
   async getChildren(element?: SidebarItem): Promise<SidebarItem[]> {
     // Query parser for current active document
     const activeEditor = vscode.window.activeTextEditor;
-    if (!activeEditor || activeEditor.document.languageId !== "elixir") {
+    if (!activeEditor) {
       this.logger.debug(
         "SidebarTreeProvider",
-        "No active Elixir editor, returning empty sidebar"
+        "No active editor, returning empty sidebar"
       );
       return [];
     }

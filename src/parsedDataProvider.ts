@@ -44,7 +44,10 @@ export class ParsedDataProvider {
   /**
    * Get parse result for a document, using cache if available
    */
-  public getParseResult(document: vscode.TextDocument): ParseResult {
+  public getParseResult(
+    document: vscode.TextDocument
+  ): ParseResult | undefined {
+    if (document.languageId !== "elixir") return undefined;
     const uri = document.uri.toString();
     const version = document.version;
 
@@ -100,7 +103,9 @@ export class ParsedDataProvider {
   /**
    * Called when a document is activated. Parses and emits results, using cache if available.
    */
-  public documentActivated(document: vscode.TextDocument): ParseResult {
+  public documentActivated(
+    document: vscode.TextDocument
+  ): ParseResult | undefined {
     const result = this.getParseResult(document);
     return result;
   }
