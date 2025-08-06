@@ -19,7 +19,7 @@ Refer to this file for the canonical release workflow and checklist template.
   - [ ] Include PR titles, numbers, and brief user-facing descriptions
   - [ ] Group changes by type (Features, Fixes, Refactors) if possible
 - [ ] Review and approve the changelog (human)
-- [ ] Update the version number in `package.json` (semantic versioning, e.g., `X.Y.Z`)
+- [ ] Update the version number(`npm version patch`)
 - [ ] Commit all changes
 - [ ] Push all changes
 - [ ] Create a pull request from the release branch to main

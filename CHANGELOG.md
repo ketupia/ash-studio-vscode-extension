@@ -3,8 +3,15 @@
 ## [0.0.9] - 2025-08-05
 
 ### Features
-- feat: add Jason, Outstanding, Neo4j configuration and update registry
 
+- feat: add Jason, Outstanding, Neo4j configurations
+
+### Refactors
+
+- refactor: remove children from AshJason, AshOutstanding, and AshNeo4j configuration modules
+  ([#40](https://github.com/ketupia/ash-studio-vscode-extension/pull/40))
+  - Simplifies configuration structure by removing unnecessary children properties from these
+    modules.
 
 ## [0.0.8] - 2025-08-04
 
