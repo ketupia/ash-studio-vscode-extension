@@ -8,12 +8,12 @@ const AshOutstanding_Config: ModuleInterface = {
     {
       blockName: "outstanding",
       childPatterns: [
-        {
-          keyword: "expect",
-        },
-        {
-          keyword: "customize",
-        },
+        // {
+        //   keyword: "expect",
+        // },
+        // {
+        //   keyword: "customize",
+        // },
       ],
     },
   ],

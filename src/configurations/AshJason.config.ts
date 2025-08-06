@@ -8,21 +8,21 @@ const AshJason_Config: ModuleInterface = {
     {
       blockName: "jason",
       childPatterns: [
-        {
-          keyword: "pick",
-        },
-        {
-          keyword: "merge",
-        },
-        {
-          keyword: "rename",
-        },
-        {
-          keyword: "order",
-        },
-        {
-          keyword: "customize",
-        },
+        // {
+        //   keyword: "pick",
+        // },
+        // {
+        //   keyword: "merge",
+        // },
+        // {
+        //   keyword: "rename",
+        // },
+        // {
+        //   keyword: "order",
+        // },
+        // {
+        //   keyword: "customize",
+        // },
       ],
     },
   ],
