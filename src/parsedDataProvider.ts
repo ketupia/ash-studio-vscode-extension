@@ -110,7 +110,7 @@ export class ParsedDataProvider {
    */
   public documentActivated(
     document: vscode.TextDocument
-  ): ParseResult | undefined {
+  ): ParseResult {
     const result = this.getParseResult(document);
     return result;
   }
