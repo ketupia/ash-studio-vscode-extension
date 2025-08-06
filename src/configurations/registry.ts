@@ -15,6 +15,9 @@ import {
   ModuleInterface,
   ConfigurationRegistryInterface,
 } from "../types/configurationRegistry";
+import AshJason_Config from "./AshJason.config";
+import AshNeo4j_Config from "./AshNeo4j.config";
+import AshOutstanding_Config from "./AshOutstanding.config";
 
 class ConfigurationRegistry implements ConfigurationRegistryInterface {
   getAll(): ModuleInterface[] {
@@ -29,6 +32,9 @@ class ConfigurationRegistry implements ConfigurationRegistryInterface {
       AshJsonApi_Config,
       AshPaperTrail_Config,
       AshPostgres_Config,
+      AshJason_Config,
+      AshNeo4j_Config,
+      AshOutstanding_Config,
       // Add new configurations here as they are created
     ];
   }
