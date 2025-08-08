@@ -5,7 +5,7 @@ root.
 
 # Release plan for vX.Y.Z
 
-[ai] Check off each item as you complete them.
+[ai] Check off the items as you complete them.
 
 ## Branch Preparation
 
