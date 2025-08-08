@@ -6,18 +6,16 @@ import { DefinitionEntry } from "../../types/parser";
  * DefinitionProvider for Ash Framework cross-references.
  * Enables Ctrl+Click (Go to Definition) for cross-referenced sections/details.
  */
-export class DefinitionProvider implements vscode.DefinitionProvider {
+class DefinitionProvider implements vscode.DefinitionProvider {
   /**
    * Provide the definition for the symbol at the given position.
    * @param document The text document.
    * @param position The position in the document.
-   * @param _token Cancellation token.
    * @returns Location(s) of the definition, or undefined if not found.
    */
   public provideDefinition(
     document: vscode.TextDocument,
-    position: vscode.Position,
-    _token: vscode.CancellationToken
+    position: vscode.Position
   ): vscode.ProviderResult<vscode.Definition> {
     Logger.getInstance().debug(
       "DefinitionProvider",

@@ -10,9 +10,10 @@ Refer to this file for the canonical release workflow and checklist template.
 - [ ] Verify code quality
   - [ ] Copilot Code Review completed (human) - button in the changes header of source control
   - [ ] Project builds successfully
+  - [ ] No knip findings reported (`npx knip`)
+    - [ ] fix all findings before proceeding (human)
   - [ ] All tests pass (`npm test`)
-  - [ ] No unused code detected (`npx knip`)
-  - [ ] Comments are comprehensive and accurate (see CONTRIBUTING.md)
+- [ ] Review all AI instructions in the .github folder for accuracy and completeness
 - [ ] Update `CHANGELOG.md` (add a new section at the top for this release)
   - [ ] Organize changelog by release version (newest to oldest)
   - [ ] Only update the newest (topmost) section

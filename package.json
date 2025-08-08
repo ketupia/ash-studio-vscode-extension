@@ -4,7 +4,7 @@
   "description": "Ash Studio enhances your workflow by enabling quick navigation between Ash sections and visualizing your Ash code with mermaid diagrams.",
   "shortDescription": "Navigate and visualize Ash DSL files in VS Code.",
   "publisher": "ketupia",
-  "version": "0.0.9",
+  "version": "0.1.0",
   "engines": {
     "vscode": "^1.75.0"
   },
@@ -118,7 +118,6 @@
     "knip": "^5.62.0",
     "prettier": "^3.6.2",
     "ts-jest": "^29.4.1",
-    "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   }
 }
