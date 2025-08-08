@@ -80,7 +80,7 @@ export class DefinitionProvider implements vscode.DefinitionProvider {
     const defEntries = parseResult.definitionEntries.filter(
       entry =>
         candidates.includes(entry.name) &&
-        entry.startingLocation.line - 1 !== currentLine
+        entry.startingLocation.line !== currentLine + 1
     );
     Logger.getInstance().debug(
       "DefinitionProvider",
