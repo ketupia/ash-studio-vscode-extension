@@ -8,7 +8,7 @@ Refer to this file for the canonical release workflow and checklist template.
 ```
 - [ ] Create and check out a release branch (`git checkout -b release/vX.Y.Z`)
 - [ ] Verify code quality
-  - [ ] Copilot Code Review completed (human)
+  - [ ] Copilot Code Review completed (human) - button in the changes header of source control
   - [ ] Project builds successfully
   - [ ] All tests pass (`npm test`)
   - [ ] No unused code detected (`npx knip`)

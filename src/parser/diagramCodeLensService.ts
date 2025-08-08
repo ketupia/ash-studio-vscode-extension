@@ -13,7 +13,7 @@ import {
  * This service is used by the ModuleParser to generate CodeLensEntry objects for each
  * diagram-enabled section in a module, enabling quick navigation and diagram preview.
  *
- * @param moduleConfig - The module configuration containing diagramLenses.
+ * @param moduleConfig - The module configuration containing diagramSpecs.
  */
 export class DiagramCodeLensService implements CodeLensService {
   constructor(private moduleConfig: ModuleConfiguration) {}
@@ -29,21 +29,23 @@ export class DiagramCodeLensService implements CodeLensService {
     sections: ParsedSection[],
     filePath?: string
   ): DiagramCodeLensEntry[] {
-    if (!this.moduleConfig.diagramLenses) return [];
+    if (!this.moduleConfig.diagramSpecs) return [];
     const lenses: DiagramCodeLensEntry[] = [];
     for (const section of sections) {
-      for (const spec of this.moduleConfig.diagramLenses) {
-        if (section.section === spec.keyword) {
-          lenses.push({
-            line: section.startLine,
-            character: 0,
+      for (const spec of this.moduleConfig.diagramSpecs) {
+        if (section.name === spec.keyword) {
+          const entry: DiagramCodeLensEntry = {
+            startingLocation: {
+              line: section.startingLocation.line,
+              column: 0,
+            },
             title: `🖼️ ${spec.name}`,
             command: "ash-studio.showDiagram",
             target: filePath || "",
             source: this.moduleConfig.displayName,
-            range: { startLine: section.startLine, endLine: section.endLine },
             diagramSpec: spec,
-          });
+          };
+          lenses.push(entry);
         }
       }
     }

@@ -4,9 +4,9 @@ import { ModuleConfiguration } from "../types/configurationRegistry";
 const AshJason_Config: ModuleConfiguration = {
   displayName: "Jason",
   declarationPattern: "AshJason.Resource",
-  dslBlocks: [
+  dslSections: [
     {
-      blockName: "jason",
+      name: "jason",
       childPatterns: [
         // {
         //   keyword: "pick",
@@ -26,7 +26,7 @@ const AshJason_Config: ModuleConfiguration = {
       ],
     },
   ],
-  diagramLenses: [],
+  diagramSpecs: [],
 };
 
 export default AshJason_Config;

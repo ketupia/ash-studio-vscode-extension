@@ -1,11 +1,28 @@
+export const namePatterns = {
+  // Pattern for boolean names (e.g., attribute :someCondition?)
+  // This captures atoms and with optional leading colon. Must end in a question mark
+  boolean_name: "(:\\w+\\?|\\w+\\?)", // All forms must end with ?
+
+  // Pattern for primitive names (e.g., attribute :name, :name?, name?)
+  // This captures atoms and with optional leading colon and with optional question mark
+  primitive_name: "(:\\w+\\?|:\\w+|\\w+\\?)",
+
+  // Pattern for names that can't be booleans (e.g., has_many :relationship)
+  // This captures atoms and with optional leading colon
+  not_boolean_name: "(:\\w+|\\w+)",
+
+  // Pattern for everything between keyword and 'do' (for policies, bypass, etc)
+  everything_up_to_do: "([^\\s].*?)\\s+do",
+};
+
 /**
- * Describes the structure of a DSL block in Ash code.
+ * Describes the structure of a DSL section in Ash code.
  *
  * SIMPLIFIED DSL PROCESSING:
  * - ROOT LEVEL: Always follows the pattern `<name> do ... end` (e.g., "attributes do ... end")
- * - CHILD PATTERNS: Simple keyword/name pattern searches within root block content
+ * - CHILD PATTERNS: Simple keyword/name pattern searches within root section content
  *
- * ROOT DSL BLOCKS:
+ * ROOT DSL SECTIONS:
  * These are the top-level sections in Ash modules, always with do...end structure:
  * ```elixir
  * attributes do
@@ -21,13 +38,13 @@
  *
  * CHILD PATTERN MATCHING:
  * Instead of complex hierarchical parsing, we search for simple patterns within
- * root block content:
+ * root section content:
  * ```elixir
- * # In attributes block, search for:
+ * # In attributes section, search for:
  * attribute :name, :string    # pattern: "attribute" + namePattern: "(:\w+)"
  * uuid_primary_key(:id)       # pattern: "uuid_primary_key"
  *
- * # In actions block, search for:
+ * # In actions section, search for:
  * create :user               # pattern: "create" + namePattern: "(:\w+)"
  * read :list_users           # pattern: "read" + namePattern: "(:\w+)"
  * ```
@@ -35,26 +52,26 @@
  * This approach handles all syntactic forms (do...end, do:, comma-separated, single-line)
  * without requiring complex nested parsing logic.
  */
-export interface DslBlock {
+export interface DslSection {
   /**
-   * Name of the root DSL block (e.g., "attributes", "actions", "policies")
+   * Name of the root DSL section (e.g., "attributes", "actions", "policies")
    *
-   * ROOT BLOCKS: Always section names that appear as `<blockName> do ... end`
+   * ROOT SECTIONS: Always section names that appear as `<sectionName> do ... end`
    */
-  blockName: string;
+  name: string;
 
   /**
-   * Array of child patterns to search for within this root block's content
+   * Array of child patterns to search for within this root section's content
    *
    * PATTERN MATCHING:
    * - Each child pattern represents a keyword to find (like "attribute", "create")
-   * - Patterns are searched as simple text matches within the root block
+   * - Patterns are searched as simple text matches within the root section
    * - No complex nesting - just keyword + optional name extraction
    *
    * EXAMPLE:
    * ```typescript
    * {
-   *   blockName: "attributes",
+   *   name: "attributes",
    *   childPatterns: [
    *     { keyword: "attribute", namePattern: "(:\w+)" },
    *     { keyword: "uuid_primary_key" },
@@ -67,7 +84,7 @@ export interface DslBlock {
 }
 
 /**
- * Describes a simple pattern to search for within a root DSL block
+ * Describes a simple pattern to search for within a root DSL section
  */
 export interface ChildPattern {
   /**
@@ -85,9 +102,11 @@ export interface ChildPattern {
    */
   namePattern?: string;
 
-  crossReference?: {
-    blockName: string;
-  };
+  /**
+   * Indicates if this child pattern represents a definition (not just a reference).
+   * If true, matches will be collected as definitions for navigation.
+   */
+  isDefinition?: boolean;
 }
 
 /**
@@ -95,28 +114,28 @@ export interface ChildPattern {
  *
  * MODULE CONFIGURATION PURPOSE:
  * Each Ash module (like Ash.Resource, Ash.Domain) or library (like AshPostgres, AshAuthentication)
- * defines its own set of DSL blocks that can appear in Elixir files using that module.
+ * defines its own set of DSL sections that can appear in Elixir files using that module.
  *
  * CONFIGURATION STRUCTURE:
  * ```elixir
  * defmodule MyApp.User do
  *   use Ash.Resource  # ← declarationPattern matches this
  *
- *   # Root DSL blocks defined in dslBlocks:
- *   attributes do     # ← Root block: always do...end
- *     # child blocks here
+ *   # Root DSL sections defined in dslSections:
+ *   attributes do     # ← Root section: always do...end
+ *     # child sections here
  *   end
  *
- *   actions do        # ← Another root block
- *     # child blocks here
+ *   actions do        # ← Another root section
+ *     # child sections here
  *   end
  * end
  * ```
  *
  * The parser uses this configuration to:
  * 1. Match files that use this module (via declarationPattern)
- * 2. Find root-level DSL blocks (via dslBlocks array)
- * 3. Parse nested content within each block (via children definitions)
+ * 2. Find root-level DSL sections (via dslSections array)
+ * 3. Parse nested content within each section (via children definitions)
  * 4. Generate  diagrams (via lens configurations)
  */
 export interface ModuleConfiguration {
@@ -135,17 +154,17 @@ export interface ModuleConfiguration {
    * - "AshPostgres.Repo" matches `use AshPostgres.Repo`
    *
    * When this pattern is found in a file's use declarations, the file becomes
-   * eligible for parsing with this module's DSL block definitions.
+   * eligible for parsing with this module's DSL section definitions.
    */
   declarationPattern: string;
 
   /**
    * Array of root-level DSL sections available in this module
    *
-   * ROOT BLOCK CHARACTERISTICS:
-   * - Always follow `<blockName> do ... end` structure
-   * - Can contain nested child blocks with various syntactic forms
-   * - Appear at the module level (not nested within other blocks)
+   * ROOT SECTION CHARACTERISTICS:
+   * - Always follow `<sectionName> do ... end` structure
+   * - Can contain nested child sections with various syntactic forms
+   * - Appear at the module level (not nested within other sections)
    * - Each represents a major functional area (attributes, actions, policies, etc.)
    *
    * EXAMPLE FOR ASH.RESOURCE:
@@ -155,13 +174,13 @@ export interface ModuleConfiguration {
    * - relationships (for associations)
    * - etc.
    */
-  dslBlocks: DslBlock[];
+  dslSections: DslSection[];
 
   /**
    * Array of diagram generation specifications for this module
    * Enables automatic diagram generation from DSL content (flowcharts, ERDs, etc.)
    */
-  diagramLenses?: DiagramSpec[];
+  diagramSpecs?: DiagramSpec[];
 }
 
 /**

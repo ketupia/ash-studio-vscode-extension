@@ -3,13 +3,13 @@ import { ModuleConfiguration } from "../types/configurationRegistry";
 const AshJsonApi_Config: ModuleConfiguration = {
   displayName: "JSON Api",
   declarationPattern: "AshJsonApi.Resource",
-  dslBlocks: [
+  dslSections: [
     {
-      blockName: "json_api",
+      name: "json_api",
       childPatterns: [],
     },
   ],
-  diagramLenses: [],
+  diagramSpecs: [],
 };
 
 export default AshJsonApi_Config;

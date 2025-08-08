@@ -3,9 +3,9 @@ import { ModuleConfiguration } from "../types/configurationRegistry";
 const Ash_Domain_Config: ModuleConfiguration = {
   displayName: "Ash Domain",
   declarationPattern: "Ash.Domain",
-  dslBlocks: [
+  dslSections: [
     {
-      blockName: "resources",
+      name: "resources",
       childPatterns: [
         {
           keyword: "resource",
@@ -15,7 +15,7 @@ const Ash_Domain_Config: ModuleConfiguration = {
       ],
     },
   ],
-  diagramLenses: [
+  diagramSpecs: [
     {
       name: "Class",
       keyword: "resources",

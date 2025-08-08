@@ -28,15 +28,22 @@ export function registerDocumentSymbolProvider(
 
       logger.debug(
         "DocumentSymbolProvider",
-        `Found ${parseResult.sections.length} sections: ${parseResult.sections.map(s => s.section).join(", ")}`
+        `Found ${parseResult.sections.length} sections: ${parseResult.sections.map(s => s.name).join(", ")}`
       );
 
       // Return only main DSL sections for breadcrumbs - no nested details
       const symbols = parseResult.sections.map((section: ParsedSection) => {
-        const startPos = new vscode.Position(section.startLine - 1, 0); // Convert to 0-based
-        const endPos = new vscode.Position(section.endLine - 1, 0); // Convert to 0-based
+        const startPos = new vscode.Position(
+          section.startingLocation.line - 1,
+          section.startingLocation.column - 1
+        ); // Convert to 0-based
+        // Use the actual section ending location for end position
+        const endPos = new vscode.Position(
+          section.endingLocation.line - 1,
+          section.endingLocation.column - 1
+        ); // Convert to 0-based
         return new vscode.DocumentSymbol(
-          section.section, // Use the actual section name (e.g., "attributes")
+          section.name, // Use the actual section name (e.g., "attributes")
           "",
           vscode.SymbolKind.Class,
           new vscode.Range(startPos, endPos),

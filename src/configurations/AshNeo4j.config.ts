@@ -4,9 +4,9 @@ import { ModuleConfiguration } from "../types/configurationRegistry";
 const AshNeo4j_Config: ModuleConfiguration = {
   displayName: "Neo4j",
   declarationPattern: "AshNeo4j.DataLayer",
-  dslBlocks: [
+  dslSections: [
     {
-      blockName: "neo4j",
+      name: "neo4j",
       childPatterns: [
         // {
         //   keyword: "label",
@@ -26,7 +26,7 @@ const AshNeo4j_Config: ModuleConfiguration = {
       ],
     },
   ],
-  diagramLenses: [],
+  diagramSpecs: [],
 };
 
 export default AshNeo4j_Config;

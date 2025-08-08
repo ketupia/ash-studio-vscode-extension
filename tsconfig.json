@@ -5,7 +5,6 @@
     "moduleResolution": "node",
     "lib": ["ES2022"],
     "outDir": "dist",
-    "rootDirs": ["src", "test"],
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,

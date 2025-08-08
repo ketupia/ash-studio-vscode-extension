@@ -4,9 +4,9 @@ import { ModuleConfiguration } from "../types/configurationRegistry";
 const AshOutstanding_Config: ModuleConfiguration = {
   displayName: "Outstanding",
   declarationPattern: "AshOutstanding.Resource",
-  dslBlocks: [
+  dslSections: [
     {
-      blockName: "outstanding",
+      name: "outstanding",
       childPatterns: [
         // {
         //   keyword: "expect",
@@ -17,7 +17,7 @@ const AshOutstanding_Config: ModuleConfiguration = {
       ],
     },
   ],
-  diagramLenses: [],
+  diagramSpecs: [],
 };
 
 export default AshOutstanding_Config;

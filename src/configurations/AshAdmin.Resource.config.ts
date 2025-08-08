@@ -3,13 +3,13 @@ import { ModuleConfiguration } from "../types/configurationRegistry";
 const AshAdmin_Resource_Config: ModuleConfiguration = {
   displayName: "Ash Admin",
   declarationPattern: "AshAdmin.Resource",
-  dslBlocks: [
+  dslSections: [
     {
-      blockName: "admin",
+      name: "admin_resource",
       childPatterns: [],
     },
   ],
-  diagramLenses: [],
+  diagramSpecs: [],
 };
 
 export default AshAdmin_Resource_Config;

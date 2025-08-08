@@ -1,68 +1,84 @@
-import { ModuleConfiguration } from "../types/configurationRegistry";
+import {
+  ModuleConfiguration,
+  namePatterns,
+} from "../types/configurationRegistry";
 
 const Ash_Resource_Config: ModuleConfiguration = {
   displayName: "Ash.Resource",
   declarationPattern: "Ash.Resource",
-  dslBlocks: [
+  dslSections: [
     {
-      blockName: "actions",
+      name: "actions",
       childPatterns: [
         {
           keyword: "create",
-          namePattern: "(:\\w+|\\w+)",
+          namePattern: namePatterns.primitive_name,
+          isDefinition: true,
         },
         {
           keyword: "read",
-          namePattern: "(:\\w+|\\w+)",
+          namePattern: namePatterns.primitive_name,
+          isDefinition: true,
         },
         {
           keyword: "update",
-          namePattern: "(:\\w+|\\w+)",
+          namePattern: namePatterns.primitive_name,
+          isDefinition: true,
         },
         {
           keyword: "destroy",
-          namePattern: "(:\\w+|\\w+)",
+          namePattern: namePatterns.primitive_name,
+          isDefinition: true,
         },
         {
           keyword: "action",
-          namePattern: "(:\\w+|\\w+)",
+          namePattern: namePatterns.primitive_name,
+          isDefinition: true,
         },
       ],
     },
     {
-      blockName: "aggregates",
+      name: "aggregates",
       childPatterns: [
         {
           keyword: "count",
-          namePattern: "(:\\w+|\\w+)",
+          namePattern: namePatterns.not_boolean_name,
+          isDefinition: true,
         },
         {
           keyword: "exists",
-          namePattern: "(:\\w+|\\w+)",
+          namePattern: namePatterns.boolean_name,
+          isDefinition: true,
         },
         {
-          keyword: "fist",
-          namePattern: "(:\\w+|\\w+)",
+          keyword: "first",
+          namePattern: namePatterns.not_boolean_name,
+          isDefinition: true,
         },
         {
           keyword: "sum",
-          namePattern: "(:\\w+|\\w+)",
+          namePattern: namePatterns.not_boolean_name,
+          isDefinition: true,
         },
         {
           keyword: "list",
-          namePattern: "(:\\w+|\\w+)",
+          namePattern: namePatterns.not_boolean_name,
+          isDefinition: true,
         },
         {
           keyword: "max",
-          namePattern: "(:\\w+|\\w+)",
+          namePattern: namePatterns.not_boolean_name,
+          isDefinition: true,
         },
         {
           keyword: "min",
-          namePattern: "(:\\w+|\\w+)",
+          namePattern: namePatterns.not_boolean_name,
+          isDefinition: true,
         },
         {
           keyword: "avg",
-          namePattern: "(:\\w+|\\w+)",
+          namePattern: namePatterns.not_boolean_name,
+          isDefinition: true,
         },
         {
           keyword: "custom",
@@ -70,25 +86,27 @@ const Ash_Resource_Config: ModuleConfiguration = {
       ],
     },
     {
-      blockName: "attributes",
+      name: "attributes",
       childPatterns: [
         {
           keyword: "attribute",
-          namePattern: "(:\\w+|\\w+)",
+          namePattern: namePatterns.primitive_name,
+          isDefinition: true,
         },
       ],
     },
     {
-      blockName: "calculations",
+      name: "calculations",
       childPatterns: [
         {
           keyword: "calculate",
-          namePattern: "(:\\w+|\\w+)",
+          namePattern: namePatterns.primitive_name,
+          isDefinition: true,
         },
       ],
     },
     {
-      blockName: "changes",
+      name: "changes",
       childPatterns: [
         {
           keyword: "change",
@@ -96,43 +114,38 @@ const Ash_Resource_Config: ModuleConfiguration = {
       ],
     },
     {
-      blockName: "code_interface",
+      name: "code_interface",
       childPatterns: [
         {
           keyword: "define",
-          namePattern: "(:\\w+|\\w+)",
-          crossReference: {
-            blockName: "actions",
-          },
+          namePattern: namePatterns.primitive_name,
         },
       ],
     },
     {
-      blockName: "identities",
+      name: "identities",
       childPatterns: [
         {
           keyword: "identity",
-          namePattern: "(:\\w+|\\w+)",
+          namePattern: namePatterns.primitive_name,
         },
       ],
     },
     {
-      blockName: "policies",
+      name: "policies",
       childPatterns: [
         {
           keyword: "bypass",
-          namePattern:
-            "([^\\s]+(?:\\([^\\)]*\\))?(?:\\s+[^\\s]+)*?)(?:\\s+do)?",
+          namePattern: namePatterns.everything_up_to_do,
         },
         {
           keyword: "policy",
-          namePattern:
-            "([^\\s]+(?:\\([^\\)]*\\))?(?:\\s+[^\\s]+)*?)(?:\\s+do)?",
+          namePattern: namePatterns.everything_up_to_do,
         },
       ],
     },
     {
-      blockName: "preparations",
+      name: "preparations",
       childPatterns: [
         {
           keyword: "prepare",
@@ -140,41 +153,45 @@ const Ash_Resource_Config: ModuleConfiguration = {
       ],
     },
     {
-      blockName: "relationships",
+      name: "relationships",
       childPatterns: [
         {
           keyword: "belongs_to",
-          namePattern: "(:\\w+|\\w+)",
+          namePattern: namePatterns.primitive_name,
+          isDefinition: true,
         },
         {
           keyword: "has_many",
-          namePattern: "(:\\w+|\\w+)",
+          namePattern: namePatterns.primitive_name,
+          isDefinition: true,
         },
         {
           keyword: "has_one",
-          namePattern: "(:\\w+|\\w+)",
+          namePattern: namePatterns.primitive_name,
+          isDefinition: true,
         },
         {
           keyword: "many_to_many",
-          namePattern: "(:\\w+|\\w+)",
+          namePattern: namePatterns.primitive_name,
+          isDefinition: true,
         },
       ],
     },
     {
-      blockName: "resource",
+      name: "resource",
       childPatterns: [],
     },
     {
-      blockName: "validations",
+      name: "validations",
       childPatterns: [
         {
           keyword: "validate",
-          namePattern: "(:\\w+|\\w+)",
+          namePattern: namePatterns.primitive_name,
         },
       ],
     },
   ],
-  diagramLenses: [
+  diagramSpecs: [
     {
       name: "Policy Flowchart",
       keyword: "policies",

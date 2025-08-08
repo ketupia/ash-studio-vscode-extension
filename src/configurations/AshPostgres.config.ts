@@ -4,13 +4,13 @@ import { ModuleConfiguration } from "../types/configurationRegistry";
 const AshPostgres_Config: ModuleConfiguration = {
   displayName: "Postgres",
   declarationPattern: "AshPostgres.DataLayer",
-  dslBlocks: [
+  dslSections: [
     {
-      blockName: "postgres",
+      name: "postgres",
       childPatterns: [],
     },
   ],
-  diagramLenses: [],
+  diagramSpecs: [],
 };
 
 export default AshPostgres_Config;

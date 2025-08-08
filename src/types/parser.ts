@@ -1,81 +1,64 @@
 // Centralized Ash parser types and interfaces for use across the extension
 // Only export public APIs. Document each interface/type clearly.
 
-export interface ParsedDetail {
-  section: string; // parent section name
-  detail: string; // detail type (e.g., "attribute", "action")
-  name?: string; // detail name if available
-  /** Line number where this detail starts (1-based) */
+import { DiagramSpec } from "./configurationRegistry";
+
+/**
+ * ParsedLocation - Represents a single point in source code.
+ *
+ * This interface is used for all parser output that needs a line/column position.
+ * It is editor-agnostic and does not depend on VS Code types.
+ */
+export interface ParsedLocation {
+  /** Line number where the location is (1-based) */
   line: number;
-  /** Column where this detail starts (1-based) */
+  /** Column where the location is (1-based) */
   column: number;
-  /** Line number where this detail ends (1-based) */
-  endLine: number;
-  /** Raw content of the detail */
-  rawContent?: string;
-  /** Additional properties parsed from the detail */
-  properties?: Map<string, unknown>;
-  /** Child details for nested structures (recursive) */
-  childDetails?: ParsedDetail[];
+}
+
+/**
+ * ParsedChild - Represents a parsed child keyword within an Ash DSL section.
+ *
+ * This interface describes a single child element (e.g., attribute, action) found within a parent section.
+ * It includes metadata about the child's keyword, name, and starting location.
+ */
+export interface ParsedChild {
+  keyword: string; // keyword type (e.g., "attribute", "action")
+  name?: string; // child name if available
+  startingLocation: ParsedLocation; // starting location info for this child
 }
 
 export interface ParsedSection {
-  section: string; // section name (e.g., "attributes", "actions")
-  details: ParsedDetail[]; // parsed details within this section
-  /** Line number where this section starts (1-based) */
-  startLine: number;
-  /** Line number where this section ends (1-based) */
-  endLine: number;
-  /** Raw content of the entire section */
-  rawContent?: string;
+  name: string; // section name (e.g., "attributes", "actions")
+  children: ParsedChild[]; // parsed children within this section (renamed from details)
+  startingLocation: ParsedLocation; // starting location info for this section
+  endingLocation: ParsedLocation; // ending location info for this section
 }
 
 export interface DiagramCodeLensEntry {
-  /** The line number where this code lens should appear (1-based) */
-  line: number;
-  /** The character position where this code lens should appear (0-based) */
-  character: number;
+  /** The starting location where this code lens should appear */
+  startingLocation: ParsedLocation;
   /** The title/label to display in the code lens */
   title: string;
   /** The command to execute when the code lens is clicked */
   command: string;
   /** The URL or data to pass as an argument to the command */
   target: string;
-  /** The source of this code lens (module name, block type, etc.) */
+  /** The source of this code lens (module name, section type, etc.) */
   source: string;
-  /** The range of text this code lens applies to (start and end lines, 1-based) */
-  range?: { startLine: number; endLine: number };
   /**
    * The diagram specification associated with this code lens.
    * This property provides all metadata needed by the showDiagram handler
    * to locate and display the diagram. Required for all DiagramCodeLensEntry objects.
    */
-  diagramSpec: import("./configurationRegistry").DiagramSpec;
-}
-
-/**
- * Represents a code lens entry for cross-references between Ash DSL blocks/details.
- * Used for navigation from one block/detail to a related target (e.g., from a code_interface define to an action).
- */
-export interface CrossReferenceCodeLensEntry {
-  /** The line number where this code lens should appear (1-based) */
-  line: number;
-  /** The character position where this code lens should appear (0-based) */
-  character: number;
-  /** The title/label to display in the code lens */
-  title: string;
-  /** The line number of the navigation target (1-based) */
-  targetLine: number;
-  /** The range of text this code lens applies to (start and end lines, 1-based) */
-  range?: { startLine: number; endLine: number };
+  diagramSpec: DiagramSpec;
 }
 
 export interface ParseResult {
   sections: ParsedSection[];
   moduleName?: string; // extracted module name if available
-  parserName: string; // name of the parser that was used
   diagramCodeLenses: DiagramCodeLensEntry[]; // diagram code lens entries to display in the editor
-  crossReferenceCodeLenses: CrossReferenceCodeLensEntry[]; // cross-reference code lenses
+  definitionEntries: DefinitionEntry[]; // definition locations for Go to Definition (default: [])
 }
 
 export interface Parser {
@@ -93,4 +76,19 @@ export interface CodeLensService {
     sections: ParsedSection[],
     filePath?: string
   ): DiagramCodeLensEntry[];
+}
+
+/**
+ * Represents a definition location for Ash DSL symbols.
+ * Used for Go to Definition navigation.
+ */
+export interface DefinitionEntry {
+  /** The name of the symbol being defined (e.g., :sign_in_with_password) */
+  name: string;
+  /** The starting location of the definition in the file */
+  startingLocation: ParsedLocation;
+  /** Semantics for the definition, e.g. section name ("actions", "attributes") */
+  semantics: {
+    sectionName: string;
+  };
 }

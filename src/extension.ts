@@ -3,6 +3,7 @@ import { SidebarTreeProvider } from "./vscode/ui/sidebarTreeProvider";
 import { registerCommandPaletteSectionNavigation } from "./vscode/ui/commandPaletteSectionNavigation";
 import { registerDocumentSymbolProvider } from "./vscode/providers/documentSymbolProvider";
 import { registerCodeLensProvider } from "./vscode/providers/codeLensProvider";
+import { registerDefinitionProvider } from "./vscode/providers/definitionProvider";
 import { ParsedDataProvider } from "./parsedDataProvider";
 import { Logger } from "./utils/logger";
 import {
@@ -105,6 +106,7 @@ export function activate(context: vscode.ExtensionContext) {
     registerCommandPaletteSectionNavigation(context, parserService);
     registerDocumentSymbolProvider(context, parserService);
     registerCodeLensProvider(context, parserService);
+    registerDefinitionProvider(context);
 
     // Register diagram commands
     context.subscriptions.push(

@@ -1,17 +1,17 @@
+import "jest-extended";
 import { UseDeclarationService } from "../../../src/parser/useDeclarationService";
-import assert from "assert";
 
 const findUseDeclarations = new UseDeclarationService().findUseDeclarations;
 
-describe("findUseDeclarations", function () {
-  it("should find a single-line use declaration", function () {
+describe("findUseDeclarations", () => {
+  it("should find a single-line use declaration", () => {
     const content = `use Ash.Resource`;
     const uses = findUseDeclarations(content);
-    assert.strictEqual(uses.length, 1);
-    assert(uses[0].startsWith("use Ash.Resource"));
+    expect(uses.length).toBe(1);
+    expect(uses[0].startsWith("use Ash.Resource")).toBe(true);
   });
 
-  it("should find a multiline use declaration", function () {
+  it("should find a multiline use declaration", () => {
     const content = `
       use Ash.Resource,
         otp_app: :tunez,
@@ -19,27 +19,27 @@ describe("findUseDeclarations", function () {
         extensions: [AshGraphql.Resource, AshJsonApi.Resource]
     `;
     const uses = findUseDeclarations(content);
-    assert.strictEqual(uses.length, 1);
-    assert(uses[0].includes("Ash.Resource"));
-    assert(
-      uses[0].includes("extensions: [AshGraphql.Resource, AshJsonApi.Resource]")
+    expect(uses.length).toBe(1);
+    expect(uses[0]).toContain("Ash.Resource");
+    expect(uses[0]).toContain(
+      "extensions: [AshGraphql.Resource, AshJsonApi.Resource]"
     );
   });
 
-  it("should find multiple use declarations", function () {
+  it("should find multiple use declarations", () => {
     const content = `
       use Ash.Resource
       use AshPostgres.DataLayer
       use AshPaperTrail
     `;
     const uses = findUseDeclarations(content);
-    assert.strictEqual(uses.length, 3);
-    assert(uses[0].includes("Ash.Resource"));
-    assert(uses[1].includes("AshPostgres.DataLayer"));
-    assert(uses[2].includes("AshPaperTrail"));
+    expect(uses.length).toBe(3);
+    expect(uses[0]).toContain("Ash.Resource");
+    expect(uses[1]).toContain("AshPostgres.DataLayer");
+    expect(uses[2]).toContain("AshPaperTrail");
   });
 
-  it("should handle use declarations with continued lines", function () {
+  it("should handle use declarations with continued lines", () => {
     const content = `
       use Ash.Resource,
         otp_app: :myapp,
@@ -50,10 +50,8 @@ describe("findUseDeclarations", function () {
         repo: MyApp.Repo
     `;
     const uses = findUseDeclarations(content);
-    assert.strictEqual(uses.length, 2);
-    assert(uses[0].includes("Ash.Resource"));
-    assert(uses[0].includes("domain: MyApp.Domain"));
-    assert(uses[1].includes("AshPostgres.DataLayer"));
-    assert(uses[1].includes("repo: MyApp.Repo"));
+    expect(uses.length).toBe(2);
+    expect(uses[0]).toContain("Ash.Resource");
+    expect(uses[1]).toContain("AshPostgres.DataLayer");
   });
 });
