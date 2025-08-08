@@ -90,7 +90,7 @@ jobs:
       - name: Trigger OpenVSX Publish
         if: success()
         run: |
-          payload=$(printf '{"tag":"%s"}' "${{ github.ref_name }}")
+          payload=$(jq -n --arg tag "${{ github.ref_name }}" '{tag: $tag}')
           gh api repos/${{ github.repository }}/dispatches \
             -f event_type=publish-openvsx \
             -F client_payload="$payload"
