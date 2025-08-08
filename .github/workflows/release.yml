@@ -81,8 +81,8 @@ jobs:
         if: success()
         run: |
           gh api repos/${{ github.repository }}/dispatches \
-            -f event_type=publish-vscode-marketplace \
-            -F client_payload={"tag":"${{ github.ref_name }}"}
+              -f event_type=publish-vscode-marketplace \
+              -F client_payload='{"tag":"${{ github.ref_name }}"}'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -90,7 +90,7 @@ jobs:
         if: success()
         run: |
           gh api repos/${{ github.repository }}/dispatches \
-            -f event_type=publish-openvsx \
-            -F client_payload={"tag":"${{ github.ref_name }}"}
+              -f event_type=publish-openvsx \
+              -F client_payload='{"tag":"${{ github.ref_name }}"}'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
