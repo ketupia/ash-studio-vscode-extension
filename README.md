@@ -67,6 +67,8 @@ lib/**/*.md
 
 ### Navigation and Diagram Features
 
+> ⚠️ **Note:** Unusual behavior might occur on malformed source. A full Elixir parser has not been implemented, and testing has been performed on well-formed files.
+
 **Sidebar Navigation**
 
 - View all Ash sections organized by type (attributes, actions, relationships, etc.)
