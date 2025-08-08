@@ -80,17 +80,19 @@ jobs:
       - name: Trigger VS Code Marketplace Publish
         if: success()
         run: |
+          payload=$(printf '{"tag":"%s"}' "${{ github.ref_name }}")
           gh api repos/${{ github.repository }}/dispatches \
-              -f event_type=publish-vscode-marketplace \
-              -F client_payload='{"tag":"${{ github.ref_name }}"}'
+            -f event_type=publish-vscode-marketplace \
+            -F client_payload="$payload"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Trigger OpenVSX Publish
         if: success()
         run: |
+          payload=$(printf '{"tag":"%s"}' "${{ github.ref_name }}")
           gh api repos/${{ github.repository }}/dispatches \
-              -f event_type=publish-openvsx \
-              -F client_payload='{"tag":"${{ github.ref_name }}"}'
+            -f event_type=publish-openvsx \
+            -F client_payload="$payload"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
