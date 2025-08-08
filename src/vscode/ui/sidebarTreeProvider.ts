@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { ParsedDataProvider } from "../../parsedDataProvider";
-import { ParsedDetail, ParsedSection } from "../../types/parser";
+import { ParsedChild, ParsedSection } from "../../types/parser";
 import { Logger } from "../../utils/logger";
 import { isElixirFile } from "../../utils/fileUtils";
 
@@ -10,9 +10,9 @@ import { isElixirFile } from "../../utils/fileUtils";
  * VS Code TreeDataProvider for the Ash Framework sidebar view.
  *
  * Responsibilities:
- * - Displays parsed Ash DSL sections and details for the active Elixir document.
+ * - Displays parsed Ash DSL sections and children for the active Elixir document.
  * - Listens for parse events from ParsedDataProvider and refreshes the sidebar UI.
- * - Handles recursive display of nested section details.
+ * - Handles recursive display of nested section children.
  * - Provides navigation commands to jump to section/detail locations in the source file.
  *
  * Architectural Notes:
@@ -34,9 +34,7 @@ const SIDEBAR_DEBOUNCE_DELAY = 200;
 export class SidebarTreeProvider
   implements vscode.TreeDataProvider<SidebarItem>
 {
-  constructor(
-    private readonly parsedDataProvider: ParsedDataProvider
-  ) {
+  constructor(private readonly parsedDataProvider: ParsedDataProvider) {
     // Debounced refresh for text document changes
     const debouncedRefresh = this.debounce(
       () => this.refresh(),
@@ -114,16 +112,19 @@ export class SidebarTreeProvider
       return parseResult.sections.map(
         (section: ParsedSection) =>
           new SidebarItem(
-            section.section, // Use section.section instead of section.name
-            section.details && section.details.length > 0
+            section.name, // Use section.name instead of section.section
+            section.children && section.children.length > 0
               ? vscode.TreeItemCollapsibleState.Collapsed
               : vscode.TreeItemCollapsibleState.None,
-            section.startLine, // Use startLine instead of line
+            section.startingLocation.line, // Use startLine instead of line
             undefined,
             {
               command: "ash-studio.gotoFileLocation",
               title: "Go to Section",
-              arguments: [filePath, { targetLine: section.startLine }],
+              arguments: [
+                filePath,
+                { targetLine: section.startingLocation.line },
+              ],
             },
             undefined,
             true // Mark as section
@@ -132,22 +133,13 @@ export class SidebarTreeProvider
     } else if (element.isSection && element.sectionLine !== undefined) {
       // Level 1: Show details within a section
       const section = parseResult.sections.find(
-        (s: ParsedSection) => s.startLine === element.sectionLine
+        (s: ParsedSection) => s.startingLocation.line === element.sectionLine
       );
-      if (!section || !section.details || section.details.length === 0)
+      if (!section || !section.children || section.children.length === 0)
         return [];
 
-      return section.details.map((detail: ParsedDetail) =>
-        this.createDetailTreeItem(detail, filePath)
-      );
-    } else if (
-      element.detail &&
-      element.detail.childDetails &&
-      element.detail.childDetails.length > 0
-    ) {
-      // Level 2+: Show nested details (recursive handling)
-      return element.detail.childDetails.map((childDetail: ParsedDetail) =>
-        this.createDetailTreeItem(childDetail, filePath)
+      return section.children.map((child: ParsedChild) =>
+        this.createDetailTreeItem(child, filePath)
       );
     }
 
@@ -155,35 +147,31 @@ export class SidebarTreeProvider
   }
 
   /**
-   * Helper method to create a tree item for a detail, handling nested details recursively
+   * Helper method to create a tree item for a child, handling nested children recursively
    */
   private createDetailTreeItem(
-    detail: ParsedDetail,
+    child: ParsedChild,
     filePath?: string
   ): SidebarItem {
-    const hasChildren = detail.childDetails && detail.childDetails.length > 0;
-
-    // Create a label that shows both block type and name (if available)
-    let label = detail.detail; // Default to just the block type
-    if (detail.name && detail.name !== detail.detail) {
-      label = `${detail.detail} ${detail.name}`; // Show both type and name
+    // Create a label that shows both keyword and name (if available)
+    let label = child.keyword; // Default to just the keyword
+    if (child.name && child.name !== child.keyword) {
+      label = `${child.keyword} ${child.name}`; // Show both type and name
     }
 
     return new SidebarItem(
       label,
-      hasChildren
-        ? vscode.TreeItemCollapsibleState.Collapsed
-        : vscode.TreeItemCollapsibleState.None,
-      detail.line,
+      vscode.TreeItemCollapsibleState.None,
+      child.startingLocation.line,
       undefined, // Remove parent section display
       filePath
         ? {
             command: "ash-studio.gotoFileLocation",
             title: "Go to Detail",
-            arguments: [filePath, { targetLine: detail.line }],
+            arguments: [filePath, { targetLine: child.startingLocation.line }],
           }
         : undefined,
-      detail, // Pass the detail for recursive nesting
+      child, // Pass the detail for recursive nesting
       false // Not a section
     );
   }
@@ -202,7 +190,7 @@ export class SidebarTreeProvider
 
 class SidebarItem extends vscode.TreeItem {
   // Add a property to store the detail for recursive nesting
-  public readonly detail?: ParsedDetail;
+  public readonly detail?: ParsedChild;
   // Add a property to track if this is a section item
   public readonly isSection?: boolean;
 
@@ -212,7 +200,7 @@ class SidebarItem extends vscode.TreeItem {
     public readonly sectionLine?: number,
     public readonly parentSection?: string,
     public readonly command?: vscode.Command,
-    detail?: ParsedDetail,
+    detail?: ParsedChild,
     isSection: boolean = false
   ) {
     super(label, collapsibleState);

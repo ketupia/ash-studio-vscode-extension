@@ -44,8 +44,7 @@ export function registerCommandPaletteSectionNavigation(
       // Create QuickPick items from parsed sections
       const items: SectionQuickPickItem[] = parseResult.sections.map(
         (section: ParsedSection) => ({
-          label: section.section,
-          description: `Lines ${section.startLine}-${section.endLine}`,
+          label: section.name,
           section: section,
         })
       );
@@ -58,7 +57,7 @@ export function registerCommandPaletteSectionNavigation(
         await vscode.commands.executeCommand(
           "ash-studio.gotoFileLocation",
           activeEditor.document.uri.fsPath,
-          { line: pick.section.startLine }
+          { line: pick.section.startingLocation.line }
         );
       }
     }

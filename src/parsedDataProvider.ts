@@ -55,9 +55,8 @@ export class ParsedDataProvider {
       );
       return {
         sections: [],
-        parserName: "LanguageFilter",
         diagramCodeLenses: [],
-        crossReferenceCodeLenses: [],
+        definitionEntries: [],
       };
     }
 
@@ -75,15 +74,11 @@ export class ParsedDataProvider {
 
     try {
       // Pass file path to parser for diagram CodeLens support
-      result = moduleParser.parse(source, document.fileName);
-      logger.debug(
-        "ParsedDataProvider",
-        `Parser ${result.parserName} succeeded`,
-        {
-          sectionsFound: result.sections.length,
-          diagramCodeLensesFound: result.diagramCodeLenses.length,
-        }
-      );
+      result = moduleParser.parse(source);
+      logger.debug("ParsedDataProvider", `Parser succeeded`, {
+        sectionsFound: result.sections.length,
+        diagramCodeLensesFound: result.diagramCodeLenses.length,
+      });
     } catch (error) {
       logger.error("ParsedDataProvider", "Parser failed with an error", {
         error: error instanceof Error ? error.message : String(error),
@@ -91,9 +86,8 @@ export class ParsedDataProvider {
       // Fallback to an empty result on error
       result = {
         sections: [],
-        parserName: "",
         diagramCodeLenses: [],
-        crossReferenceCodeLenses: [],
+        definitionEntries: [],
       };
     }
 

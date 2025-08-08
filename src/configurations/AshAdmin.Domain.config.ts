@@ -3,13 +3,13 @@ import { ModuleConfiguration } from "../types/configurationRegistry";
 const AshAdmin_Domain_Config: ModuleConfiguration = {
   displayName: "Ash Admin",
   declarationPattern: "AshAdmin.Domain",
-  dslBlocks: [
+  dslSections: [
     {
-      blockName: "admin",
+      name: "admin_domain",
       childPatterns: [],
     },
   ],
-  diagramLenses: [],
+  diagramSpecs: [],
 };
 
 export default AshAdmin_Domain_Config;

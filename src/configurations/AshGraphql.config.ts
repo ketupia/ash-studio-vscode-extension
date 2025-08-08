@@ -3,13 +3,13 @@ import { ModuleConfiguration } from "../types/configurationRegistry";
 const AshGraphql_Config: ModuleConfiguration = {
   displayName: "GraphQL",
   declarationPattern: "AshGraphql.Resource",
-  dslBlocks: [
+  dslSections: [
     {
-      blockName: "graphql",
+      name: "graphql",
       childPatterns: [],
     },
   ],
-  diagramLenses: [],
+  diagramSpecs: [],
 };
 
 export default AshGraphql_Config;

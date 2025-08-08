@@ -1,35 +1,33 @@
 /**
- * Main configuration-driven parser for Ash DSL blocks.
+ * Main configuration-driven parser for DSL section.
  *
  * This file contains:
  * - ModuleParser: The core parser implementation using configuration-driven logic.
- * - All parsing logic, configuration management, and helpers for Ash DSL parsing.
+ * - All parsing logic, configuration management, and helpers for DSL parsing.
  *
  * Usage: Use the exported singleton `moduleParser` for all parsing tasks.
  */
 
-import { DiagramCodeLensEntry, Parser, ParseResult } from "../types/parser";
+import { Parser, ParseResult } from "../types/parser";
 import registry from "../configurations/registry";
 import { UseDeclarationService } from "./useDeclarationService";
 import { ModuleMatcherService } from "./moduleMatcherService";
-import { BlockExtractorService } from "./blockExtractorService";
+import { DefinitionEntryService } from "./definitionEntryService";
+import { SectionParser } from "./sectionParser";
 import { DiagramCodeLensService } from "./diagramCodeLensService";
-import { CrossReferenceCodeLensService } from "./crossReferenceCodeLensService";
 
 /**
  * A Parser implementation that uses ModuleConfiguration configurations
- * to parse Ash DSL blocks in a structured way.
+ * to parse DSL sections in a structured way.
  */
 export class ModuleParser implements Parser {
   private static instance: ModuleParser;
   private useDeclarationService: UseDeclarationService;
   private moduleMatcherService: ModuleMatcherService;
-  private blockExtractorService: BlockExtractorService;
 
   private constructor() {
     this.useDeclarationService = new UseDeclarationService();
     this.moduleMatcherService = new ModuleMatcherService();
-    this.blockExtractorService = new BlockExtractorService();
   }
 
   static getInstance(): ModuleParser {
@@ -42,9 +40,8 @@ export class ModuleParser implements Parser {
   /**
    * Parses the source code and returns a ParseResult.
    * @param source The source code to parse
-   * @param filePath The file path of the document (required for diagram code lenses)
    */
-  parse(source: string, filePath?: string): ParseResult {
+  parse(source: string): ParseResult {
     const availableConfigs = registry.getAll();
     // Pass 1: Find all use declarations
     const useDeclarations =
@@ -52,9 +49,8 @@ export class ModuleParser implements Parser {
     if (useDeclarations.length === 0) {
       return {
         sections: [],
-        parserName: "ModuleParser",
         diagramCodeLenses: [],
-        crossReferenceCodeLenses: [],
+        definitionEntries: [],
       };
     }
     // Identify which modules are present
@@ -65,36 +61,29 @@ export class ModuleParser implements Parser {
     if (matchedModules.length === 0) {
       return {
         sections: [],
-        parserName: "ModuleParser",
         diagramCodeLenses: [],
-        crossReferenceCodeLenses: [],
+        definitionEntries: [],
       };
     }
-    // Extract DSL modules and their blocks
-    const sections = this.blockExtractorService.extractModules(
-      source,
+
+    const sections = new SectionParser().parseSections(source, matchedModules);
+
+    // Definition entries
+    const definitionEntries = DefinitionEntryService.getDefinitionEntries(
+      sections,
       matchedModules
     );
-    // Use new code lens services per module config
-    let diagramCodeLenses: DiagramCodeLensEntry[] = [];
-    for (const module of matchedModules) {
-      const diagramLensService = new DiagramCodeLensService(module);
-      diagramCodeLenses = diagramCodeLenses.concat(
-        diagramLensService.getCodeLenses(sections, filePath)
-      );
-    }
-    // Cross-reference code lenses
-    const crossReferenceCodeLensService = new CrossReferenceCodeLensService();
-    const crossReferenceCodeLenses =
-      crossReferenceCodeLensService.getCrossReferenceCodeLenses(
-        sections,
-        matchedModules
-      );
+
+    const diagramCodeLenses = matchedModules
+      .map(moduleConfig =>
+        new DiagramCodeLensService(moduleConfig).getCodeLenses(sections)
+      )
+      .flatMap(diagramCodeLenses => diagramCodeLenses);
+
     return {
       sections,
-      parserName: "ModuleParser",
       diagramCodeLenses,
-      crossReferenceCodeLenses,
+      definitionEntries,
     };
   }
 }

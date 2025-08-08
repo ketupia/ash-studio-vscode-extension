@@ -1,90 +1,82 @@
 # Copilot Instructions for ash-studio VS Code Extension
 
-## Project Overview
+## Project Purpose
 
-- This is a VS Code extension to enhance development for the Ash Framework (Elixir).
-- Main features: Ash section navigation, Quick Pick, custom sidebar with section details, and
-  (planned) CodeLens, hover, diagnostics, and code actions.
-- All TypeScript source files are in `src/`. Build output is in `dist/`.
-- Key files:
-  - `src/extension.ts` (activation, registration, wiring)
-  - `src/ashSidebarProvider.ts` (sidebar logic)
-  - `src/ashQuickPick.ts` (Quick Pick navigation)
-  - `src/ashSectionNavigation.ts` (DocumentSymbolProvider)
-  - `src/ashSectionUtils.ts` (top-level block extraction)
-  - `src/ashSectionDetailUtils.ts` (section detail parsing)
-  - `feature-plan.md` (feature roadmap)
-  - `package.json` (contributions, commands, sidebar registration)
+This extension enhances VS Code for Ash Framework (Elixir) development. It provides:
 
-## Architecture and Patterns
+- Section navigation (Quick Pick, breadcrumbs)
+- Custom sidebar with grouped section details
+- CodeLens for diagrams
+- Definition provider
+## Key Architecture
+
+- **Modular Design:**
+  - All features are implemented as independent modules in `src/`, imported in `extension.ts`.
+  - Pure logic (parsing, data models) is isolated from VS Code APIs.
+  - VS Code integration (providers, commands, UI) is in dedicated modules.
+
+- **Types & Interfaces:**
+  - All public APIs, types, and interfaces are centralized in `src/types/ash.ts`.
+  - Modules export only their public API; helpers/internals remain private.
 
 - **Section Navigation:**
-  - Top-level Ash blocks are detected using `getTopLevelAshBlocks` (`ashSectionUtils.ts`).
-  - Section details are parsed with `findAshSectionDetails` (`ashSectionDetailUtils.ts`).
-    - Note: The parser identifies Elixir function definitions, so the pattern is more accurately
-      `<function> <arg1>, <optional args> do ...` rather than `<type> <name> ...`.
-  - Sidebar (`AshSidebarProvider`) shows both sections and section details, grouped by type and
-    name.
+  - Top-level blocks: `getTopLevelSections` (pure logic)
+  - Section details: `findSectionDetails` (pure logic)
+  - Sidebar: `AshSidebarProvider` (VS Code integration)
+  - Quick Pick: `ashQuickPick` (VS Code integration)
+
+- **CodeLens for Diagrams:**
+  - Implemented in `diagramCodeLensService.ts` and registered in
+    `src/vscode/providers/codeLensProvider.ts`.
+
+- **Definition Provider:**
+  - Implemented in `definitionProvider.ts` and registered in
+    `src/vscode/providers/registerDefinitionProvider.ts`.
+
 - **Commands:**
-  - `ash-studio.gotoSection`: Quick Pick navigation to top-level Ash blocks.
-  - `ash-studio.revealSectionOrDetail`: Sidebar navigation to any block or section detail.
+  - `ash-studio.gotoSection`: Quick Pick navigation
+  - `ash-studio.revealSectionOrDetail`: Sidebar navigation
+
 - **Language Support:**
-  - Custom Elixir language configuration in `elixir.language-configuration.json` ensures `.ex` files
-    are recognized for symbol providers.
-- **Feature Tracking:**
-  - `feature-plan.md` documents completed and planned features. Check here for project priorities
-    and conventions.
+  - Custom Elixir configuration in `elixir.language-configuration.json` ensures `.ex` files are
+    recognized.
 
-## Developer Workflows
+## Development Workflow
 
-- **Build:** `npm test` (TypeScript, outputs to `dist/`)
-- **Debug:** Use VS Code's extension debugging tools. Reload window after build changes.
+- **Build & Test:**
+  - Run `npm test` after every change.
+  - All logic modules must have/expand unit tests.
+  - Fix all errors/warnings before proceeding.
+
+- **Debug:**
+  - Use VS Code extension debugging tools.
+  - Reload window after build changes.
+
 - **Sidebar Registration:**
-  - Sidebar view is registered in `package.json` under `contributes.views.explorer` with id
-    `ashSidebar`.
-  - The extension registers the TreeDataProvider with the same id in `extension.ts`.
+  - Registered in `package.json` under `contributes.views.explorer` (id: `ashSidebar`)
+  - TreeDataProvider registered in `extension.ts`
 
-## Project Conventions
+## Coding Conventions
 
-- All new features should be implemented as separate modules in `src/` and imported in
-  `extension.ts`.
-- Only `dist/extension.js` should be referenced as the extension entry point.
+- **Declarative APIs:**
+  - Prefer explicit fields (e.g., `command` property) over inferred logic.
+  - Method names and parameters should express intent, not implementation details.
 
-## Integration Points
+- **Pipeline Processing:**
+  - Use array pipelines (`filter`, `map`, etc.) with small, named helpers.
+  - Avoid deeply nested loops; use early returns and guard clauses.
 
-- No external APIs or services; all logic is local to the extension.
-- Relies on VS Code extension API and Elixir language configuration.
+- **Documentation:**
+  - Comprehensive JSDoc for all public classes, methods, interfaces.
+  - Document module boundaries, responsibilities, and design decisions inline.
+  - Keep README focused on setup/overview; remove obsolete comments/files.
 
-## AI Coding Preferences
+## Feature Tracking
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for AI coding preferences and detailed development
-guidelines.
+- See `feature-plan.md` for roadmap and priorities.
+- All new features must follow modularization and interface-driven patterns.
 
-## Modularization and Interface-Driven Architecture
+## Release & Contribution
 
-- All logic should be organized into small, well-defined modules with clear responsibilities.
-- Public APIs must be defined using TypeScript interfaces and types, placed in a shared `types/` or
-  `interfaces/` directory.
-- Pure logic (e.g., parsing, data models) must not depend on VS Code APIs.
-- VS Code integration (providers, commands, UI) should be isolated in dedicated modules.
-- All modules should explicitly export only their public API; helpers and internals should remain
-  private.
-- When adding new features, first define the interface and types, then implement the logic.
-
-## Build and Test After Each Change
-
-- After making any code change (especially refactors or type/interface moves), always:
-  1. Run a full build (`npm test`).
-  2. Run all available tests.
-  3. Fix any errors or warnings before proceeding.
-- Do not consider a refactor or feature complete until the build and tests pass.
-- When a test fails and the cause is unclear, ask for clarification. Sometimes the source is wrong,
-  sometimes the test is wrong—ask for help to determine which.
-
-For the full release workflow, see [RELEASE.md](RELEASE.md). For detailed contribution and
-documentation guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md).
-
-## See Also
-
-- RELEASE.md (Release Process)
-- CONTRIBUTING.md (Contributing Guidelines)
+- Follow the release workflow in `RELEASE.md`.
+- See `CONTRIBUTING.md` for detailed development guidelines and AI coding preferences.

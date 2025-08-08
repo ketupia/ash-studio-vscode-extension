@@ -12,17 +12,13 @@
  * - The results from this service are used by higher-level features such as section navigation, code lens, and sidebar views, enabling the extension to present accurate module relationships and dependencies to the user.
  *
  * # Responsibilities
- * - Accurately extract all `use` blocks, including those that span multiple lines or use bracket/argument continuations.
- * - Provide a simple, semantic API for retrieving these blocks as raw strings for further analysis or display.
- *
- * # Related Modules
- * - `blockExtractorService.ts`: For general block extraction logic.
- *
+ * - Accurately extract all `use` statements, including those that span multiple lines or use bracket/argument continuations.
+ * - Provide a simple, semantic API for retrieving these statements as raw strings for further analysis or display.
  */
 export class UseDeclarationService {
   /**
    * Finds all 'use' declarations in the source file.
-   * Returns an array of raw use declaration blocks (may be multiline).
+   * Returns an array of raw use declaration statements (may be multiline).
    * Handles comma-continuation and bracket-continuation properly.
    */
   findUseDeclarations(source: string): string[] {

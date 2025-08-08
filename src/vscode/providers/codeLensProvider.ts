@@ -38,12 +38,13 @@ class CodeLensProvider implements vscode.CodeLensProvider {
     const codeLenses: vscode.CodeLens[] = [];
     // Handle diagram code lenses
     for (const entry of parseResult.diagramCodeLenses || []) {
-      const line = Math.max(0, entry.line - 1); // Convert to 0-based line number
-      const range = new vscode.Range(
-        new vscode.Position(line, entry.character),
-        new vscode.Position(line, entry.character + 1)
+      const line = Math.max(0, entry.startingLocation.line - 1); // Convert to 0-based line number
+      const lens = new vscode.CodeLens(
+        new vscode.Range(
+          new vscode.Position(line, entry.startingLocation.column),
+          new vscode.Position(line, entry.startingLocation.column + 1)
+        )
       );
-      const lens = new vscode.CodeLens(range);
       if (entry.command === "ash-studio.showDiagram") {
         lens.command = {
           title: entry.title,
@@ -54,22 +55,6 @@ class CodeLensProvider implements vscode.CodeLensProvider {
       } else {
         vscode.window.showErrorMessage(`Unknown Command ${entry.command}`);
       }
-      codeLenses.push(lens);
-    }
-    // Handle cross-reference code lenses
-    for (const entry of parseResult.crossReferenceCodeLenses || []) {
-      const line = Math.max(0, entry.line - 1); // Convert to 0-based line number
-      const range = new vscode.Range(
-        new vscode.Position(line, entry.character),
-        new vscode.Position(line, entry.character + 1)
-      );
-      const lens = new vscode.CodeLens(range);
-      lens.command = {
-        title: "➡️ " + entry.title,
-        command: "ash-studio.gotoFileLocation",
-        arguments: [document.uri.fsPath, entry],
-        tooltip: `Go to referenced section/detail (line ${entry.targetLine})`,
-      };
       codeLenses.push(lens);
     }
     return codeLenses;

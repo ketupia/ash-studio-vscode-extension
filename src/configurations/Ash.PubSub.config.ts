@@ -3,22 +3,13 @@ import { ModuleConfiguration } from "../types/configurationRegistry";
 const Ash_PubSub_Config: ModuleConfiguration = {
   displayName: "Ash PubSub",
   declarationPattern: "Ash.Notifier.PubSub",
-  dslBlocks: [
+  dslSections: [
     {
-      blockName: "pub_sub",
-      childPatterns: [
-        // {
-        //   keyword: "publish",
-        //   namePattern: "(:\\w+|\\w+)",
-        // },
-        // {
-        //   keyword: "publish_all",
-        //   namePattern: "(:\\w+|\\w+)",
-        // },
-      ],
+      name: "pub_sub",
+      childPatterns: [],
     },
   ],
-  diagramLenses: [
+  diagramSpecs: [
     // ...existing code...
   ],
 };

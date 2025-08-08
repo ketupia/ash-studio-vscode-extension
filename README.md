@@ -4,7 +4,7 @@ Working with Ash Framework projects often means dealing with long resource files
 find and navigate between sections.
 
 Ash Studio is a VS Code extension that solves this by providing navigation and code insight tools,
-helping you quickly jump between Ash DSL blocks and understand your code structure at a glance.
+helping you quickly jump between Ash DSL sections and understand your code structure at a glance.
 
 ## ✨ Features
 
@@ -96,7 +96,7 @@ lib/**/*.md
 
 #### Core Ash Framework
 
-The extension recognizes and navigates these core Ash DSL blocks:
+The extension recognizes and navigates these core Ash DSL sections:
 
 - **Resources**: `resource`, `attributes`, `actions`, `relationships`, `calculations`, `aggregates`,
   `policies`, `code_interface`
@@ -105,7 +105,7 @@ The extension recognizes and navigates these core Ash DSL blocks:
 
 #### Ash Ecosystem Libraries
 
-The extension also supports DSL blocks from selected core and community Ash libraries:
+The extension also supports DSL sections from selected core and community Ash libraries:
 
 - **AshAdmin**: `admin`
 - **AshAuthentication**: `authentication`, `strategies`
