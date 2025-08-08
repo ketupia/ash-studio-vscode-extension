@@ -158,7 +158,7 @@ export interface ChildPattern {
 
   /**
    * Optional regex pattern to capture the name/identifier from the match
-   * use defined namePatterns when possible
+   * Use defined namePatterns when possible.
    */
   namePattern?: string;
 
