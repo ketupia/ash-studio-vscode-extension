@@ -87,7 +87,7 @@ jobs:
         run: |
           gh api repos/${{ github.repository }}/dispatches \
             -f event_type=publish-vscode-marketplace \
-            -f client_payload='{"tag": "${{ env.RELEASE_TAG }}"}'
+            -F client_payload='{"tag": "${{ env.RELEASE_TAG }}"}'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -96,6 +96,6 @@ jobs:
         run: |
           gh api repos/${{ github.repository }}/dispatches \
             -f event_type=publish-openvsx \
-            -f client_payload='{"tag": "${{ env.RELEASE_TAG }}"}'
+            -F client_payload='{"tag": "${{ env.RELEASE_TAG }}"}'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
