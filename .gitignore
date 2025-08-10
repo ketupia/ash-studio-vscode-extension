@@ -30,6 +30,6 @@ test-package.vsix
 examples/**
 
 
-release_plan_v*.md
+release_*_v*.md
 
 marketplace_listings.md
