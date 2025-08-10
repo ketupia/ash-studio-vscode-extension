@@ -15,7 +15,7 @@
 - fix: section content ranges were off by 1 ([#56])
   - Corrects section content range calculations.
 - fix: improved child pattern parsing ([#56])
-  - more children matched.
+  - More children matched.
 
 ## [0.1.0] - 2025-08-08
 
