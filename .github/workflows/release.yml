@@ -22,6 +22,9 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
+    env:
+      # Resolve the release tag for both push (tag) and manual dispatch runs
+      RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.tag || github.ref_name }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -74,13 +77,15 @@ jobs:
         with:
           files: "*.vsix"
           generate_release_notes: true
+          # Explicitly set the tag for manual dispatch runs where GITHUB_REF isn't a tag
+          tag_name: ${{ env.RELEASE_TAG }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Trigger VS Code Marketplace Publish
         if: success()
         run: |
-          payload=$(jq -n --arg tag "${{ github.ref_name }}" "{\"tag\": \$tag}")
+          payload=$(jq -n --arg tag "${{ env.RELEASE_TAG }}" "{\"tag\": $tag}")
           gh api repos/${{ github.repository }}/dispatches \
             -f event_type=publish-vscode-marketplace \
             -F client_payload="$payload"
@@ -90,7 +95,7 @@ jobs:
       - name: Trigger OpenVSX Publish
         if: success()
         run: |
-          payload=$(jq -n --arg tag "${{ github.ref_name }}" "{\"tag\": \$tag}")
+          payload=$(jq -n --arg tag "${{ env.RELEASE_TAG }}" "{\"tag\": $tag}")
           gh api repos/${{ github.repository }}/dispatches \
             -f event_type=publish-openvsx \
             -F client_payload="$payload"
