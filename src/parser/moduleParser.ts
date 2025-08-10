@@ -41,7 +41,7 @@ export class ModuleParser implements Parser {
    * Parses the source code and returns a ParseResult.
    * @param source The source code to parse
    */
-  parse(source: string): ParseResult {
+  parse(source: string, filePath?: string): ParseResult {
     const availableConfigs = registry.getAll();
     // Pass 1: Find all use declarations
     const useDeclarations =
@@ -76,7 +76,10 @@ export class ModuleParser implements Parser {
 
     const diagramCodeLenses = matchedModules
       .map(moduleConfig =>
-        new DiagramCodeLensService(moduleConfig).getCodeLenses(sections)
+        new DiagramCodeLensService(moduleConfig).getCodeLenses(
+          sections,
+          filePath
+        )
       )
       .flatMap(diagramCodeLenses => diagramCodeLenses);
 
