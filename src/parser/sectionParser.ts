@@ -4,6 +4,7 @@ import {
 } from "../types/configurationRegistry";
 import { ParsedSection } from "../types/parser";
 import { ChildParser } from "./childParser";
+import { getContent } from "../utils/parsedSectionUtils";
 
 /**
  * SectionParser identifies top-level DSL sections in Elixir source code by finding lines
@@ -150,13 +151,13 @@ export class SectionParser {
       if (!sectionConfig.childPatterns) {
         continue; // No child patterns defined for this section
       }
-      const startLine = parsedSection.startingLocation.line;
-      const endLine = parsedSection.endingLocation.line - 1;
-      const sectionLines = lines.slice(startLine, endLine);
+
+      const content = getContent(parsedSection, lines);
+
       parsedSection.children = new ChildParser().findChildren(
-        sectionLines,
+        content,
         sectionConfig.childPatterns,
-        startLine + 1 // Adjust for 1-based line numbers
+        parsedSection.startingLocation.line
       );
     }
   }

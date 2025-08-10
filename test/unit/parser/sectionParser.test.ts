@@ -8,6 +8,7 @@ import artistTestCase from "./test_cases/resources/artistTestCase";
 import ashJasonTestCase from "./test_cases/resources/ashJasonTestCase";
 import ashNeo4jTestCase from "./test_cases/resources/ashNeo4jTestCase";
 import ashOutstandingTestCase from "./test_cases/resources/ashOutstandingTestCase";
+import ashObanTestCase from "./test_cases/resources/ashObanTestCase";
 
 describe("SectionParser", () => {
   const testCases = [
@@ -16,7 +17,8 @@ describe("SectionParser", () => {
     artistTestCase,
     ashJasonTestCase,
     ashNeo4jTestCase,
-    ashOutstandingTestCase
+    ashOutstandingTestCase,
+    ashObanTestCase,
   ];
 
   testCases.forEach(testCase => {
@@ -51,10 +53,14 @@ describe("SectionParser", () => {
           }
           if (expectedSection.children) {
             const expectedSet = new Set(
-              expectedSection.children.map(d => `${d.keyword} ${d.name}`)
+              expectedSection.children.map(
+                d => `${expectedSection.name} ${d.keyword} ${d.name}`
+              )
             );
             const actualSet = new Set(
-              (parsedSection.children || []).map(d => `${d.keyword} ${d.name}`)
+              (parsedSection.children || []).map(
+                d => `${parsedSection.name} ${d.keyword} ${d.name}`
+              )
             );
             const missing = [...expectedSet].filter(x => !actualSet.has(x));
             const extra = [...actualSet].filter(x => !expectedSet.has(x));

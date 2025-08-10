@@ -1,0 +1,18 @@
+defmodule MyApp.Resource do
+  use Ash.Resource, domain: MyDomain, extensions: [AshOban]
+
+  oban do
+    triggers do
+      # add a trigger called `:process`
+      trigger :process do
+        # this trigger calls the `process` action
+        action :process
+        # for any record that has `processed != true`
+        where expr(processed != true)
+        # checking for matches every minute
+        scheduler_cron "* * * * *"
+        on_error :errored
+      end
+    end
+  end
+end

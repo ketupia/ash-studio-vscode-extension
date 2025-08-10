@@ -168,19 +168,28 @@ export interface ChildPattern {
   isDefinition?: boolean;
 }
 
+const optionalOpeningParen = "\\(?";
+const optionalClosingParen = "\\)?";
+const atom = ":\\w+";
+const atomWithQ = ":\\w+\\?";
+const bare = "\\w+";
+const bareWithQ = "\\w+\\?";
+const captureStart = "(";
+const captureEnd = ")";
+
 export const namePatterns = {
   // Pattern for boolean names (e.g., attribute :someCondition?)
   // This captures atoms and with optional leading colon. Must end in a question mark
-  boolean_name: "(:\\w+\\?|\\w+\\?)", // All forms must end with ?
+  boolean_name: `${optionalOpeningParen}${captureStart}${atomWithQ}|${bareWithQ}${captureEnd}${optionalClosingParen}`,
 
   // Pattern for primitive names (e.g., attribute :name, :name?, name?)
   // This captures atoms and with optional leading colon and with optional question mark
-  primitive_name: "(:\\w+\\?|:\\w+|\\w+\\?)",
+  primitive_name: `${optionalOpeningParen}${captureStart}${atomWithQ}|${atom}|${bareWithQ}|${bare}${captureEnd}${optionalClosingParen}`,
 
   // Pattern for names that can't be booleans (e.g., has_many :relationship)
   // This captures atoms and with optional leading colon
-  not_boolean_name: "(:\\w+|\\w+)",
+  not_boolean_name: `${optionalOpeningParen}${captureStart}${atom}|${bare}${captureEnd}${optionalClosingParen}`,
 
   // Pattern for everything between keyword and 'do' (for policies, bypass, etc)
-  everything_up_to_do: "([^\\s].*?)\\s+do",
+  everything_up_to_do: "(.*?)(?=\\sdo$|,$|$)",
 };
