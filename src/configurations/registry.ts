@@ -18,6 +18,7 @@ import {
 import AshJason_Config from "./AshJason.config";
 import AshNeo4j_Config from "./AshNeo4j.config";
 import AshOutstanding_Config from "./AshOutstanding.config";
+import AshOban_Config from "./AshOban.config";
 
 class ConfigurationRegistryImpl implements ConfigurationRegistry {
   getAll(): ModuleConfiguration[] {
@@ -30,6 +31,7 @@ class ConfigurationRegistryImpl implements ConfigurationRegistry {
       Ash_Resource_Config,
       AshGraphql_Config,
       AshJsonApi_Config,
+      AshOban_Config,
       AshPaperTrail_Config,
       AshPostgres_Config,
       AshJason_Config,

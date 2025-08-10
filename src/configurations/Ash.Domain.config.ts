@@ -1,4 +1,7 @@
-import { ModuleConfiguration } from "../types/configurationRegistry";
+import {
+  ModuleConfiguration,
+  namePatterns,
+} from "../types/configurationRegistry";
 
 const Ash_Domain_Config: ModuleConfiguration = {
   displayName: "Ash Domain",
@@ -9,8 +12,7 @@ const Ash_Domain_Config: ModuleConfiguration = {
       childPatterns: [
         {
           keyword: "resource",
-          namePattern:
-            "([^\\s]+(?:\\([^\\)]*\\))?(?:\\s+[^\\s]+)*?)(?:\\s+do)?",
+          namePattern: namePatterns.everything_up_to_do,
         },
       ],
     },

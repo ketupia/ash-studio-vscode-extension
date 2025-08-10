@@ -1,5 +1,6 @@
 import { ChildPattern } from "../types/configurationRegistry";
 import { ParsedChild, ParsedLocation } from "../types/parser";
+import { findPatternInLine } from "../utils/childPatternUtils";
 
 /**
  * ChildParser is responsible for extracting child elements (such as attributes, actions, etc.)
@@ -40,10 +41,11 @@ export class ChildParser {
       if (!trimmedLine) continue;
 
       for (const pattern of patterns) {
-        const match = this.findPatternInLine(trimmedLine, pattern);
+        const match = findPatternInLine(pattern, trimmedLine);
+
         if (match) {
           const startingLocation: ParsedLocation = {
-            line: parentStartLine + i,
+            line: parentStartLine + i + 1,
             column: line.indexOf(trimmedLine) + 1,
           };
           children.push({
@@ -56,38 +58,5 @@ export class ChildParser {
     }
 
     return children;
-  }
-
-  /**
-   * Check if a line matches a specific pattern and extract relevant information
-   *
-   * @param line - The line to check
-   * @param pattern - The pattern to match against
-   * @returns Match information if found, null otherwise
-   */
-  private findPatternInLine(
-    line: string,
-    pattern: ChildPattern
-  ): { name: string } | null {
-    // Simple keyword matching - check if line starts with the keyword
-    if (!line.startsWith(pattern.keyword)) {
-      return null;
-    }
-
-    // Extract the content (everything after the keyword)
-    const content = line.substring(pattern.keyword.length).trim();
-
-    // Extract name if pattern is provided
-    let name = "";
-    if (pattern.namePattern && content) {
-      const nameMatch = content.match(new RegExp(pattern.namePattern));
-      if (nameMatch && nameMatch[1]) {
-        name = nameMatch[1].trim();
-      }
-    }
-
-    return {
-      name,
-    };
   }
 }

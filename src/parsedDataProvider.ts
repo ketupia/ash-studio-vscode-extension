@@ -74,7 +74,7 @@ export class ParsedDataProvider {
 
     try {
       // Pass file path to parser for diagram CodeLens support
-      result = moduleParser.parse(source);
+      result = moduleParser.parse(source, document.uri.fsPath);
       logger.debug("ParsedDataProvider", `Parser succeeded`, {
         sectionsFound: result.sections.length,
         diagramCodeLensesFound: result.diagramCodeLenses.length,
