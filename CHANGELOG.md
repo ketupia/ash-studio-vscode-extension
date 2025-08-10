@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.1.1] - 2025-08-10
+
+### Features
+
+- feat: added AshOban configuration
+  ([#56](https://github.com/ketupia/ash-studio-vscode-extension/pull/56))
+  - Adds support for AshOban configuration module.
+
+### Fixes
+
+- fix: pass diagram source file to code lens ([#56])
+  - Resolves missing source file issue for diagram CodeLens.
+- fix: section content ranges were off by 1 ([#56])
+  - Corrects section content range calculations.
+- fix: improved child pattern parsing ([#56])
+  - more children matched.
+
 ## [0.1.0] - 2025-08-08
 
 ### Features
