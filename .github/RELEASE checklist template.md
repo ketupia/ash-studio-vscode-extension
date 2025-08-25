@@ -1,11 +1,23 @@
 # Release Checklist Template
 
-For each release, copy the checklist below to a new file (e.g., `release_plan_vX.Y.Z.md`) in the project
-root.
+For each release, copy the checklist below to a new file (e.g., `release_plan_vX.Y.Z.md`) in the
+project root.
 
 # Release plan for vX.Y.Z
 
-[ai] Check off the items as you complete them.
+## Instructions:
+
+### Task assignment
+
+Tasks starting with:
+
+- [bot] — Tasks for GitHub Copilot or other AI agents to perform automatically.
+- [human] — Tasks that require manual review or approval by a human contributor.
+- if neither, ai or the human can perform the task
+
+### Workflow
+
+[bot] Check off the items as you complete them.
 
 ## Branch Preparation
 
@@ -27,12 +39,10 @@ release.
 
 Goal: Ensure the changelog accurately summarizes all user-facing changes since the last release.
 
-- [ ] Update `CHANGELOG.md` (add a new section at the top for this release)
-  - Organize changelog by release version (newest to oldest)
-  - Only update the newest (topmost) section
-  - Add a summary of all merged PRs since the last release
-  - Include PR titles, numbers, and brief user-facing descriptions
-  - Group changes by type (Features, Fixes, Refactors)
+- [ ] Update `CHANGELOG.md`: Add a new section at the top for this release, organize changelog by
+      release version (newest to oldest), only update the newest (topmost) section, add a summary of
+      all merged PRs since the last release, include PR titles, numbers, and brief user-facing
+      descriptions, and group changes by type (Features, Fixes, Refactors).
 - [ ] [human] Review and approve the changelog
 
 ## AI documentation
@@ -57,3 +67,5 @@ Goal: Complete all final steps to publish the release, merge changes, and tag th
 - [ ] Create a pull request from the release branch to main
 - [ ] [human] Review, approve, and merge the pull request into the main branch
 - [ ] Create and push a new git tag (prepend 'v' to the version in package.json, e.g. "vX.Y.Z")
+- [ ] Confirm that the new release is marked as the latest release
+- [ ] Run the workflows to publish to the extension stores
