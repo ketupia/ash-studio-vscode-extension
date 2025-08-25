@@ -196,7 +196,7 @@ const Ash_Resource_Config: ModuleConfiguration = {
       name: "Policy Flowchart",
       keyword: "policies",
       mixCommand: "ash.generate_policy_charts",
-      filePattern: "-policy-flowchart.(mmd|svg|png|pdf)",
+      filePattern: "-policy-flowchart.mmd",
     },
   ],
 };

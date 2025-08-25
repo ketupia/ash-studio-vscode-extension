@@ -49,7 +49,7 @@ class CodeLensProvider implements vscode.CodeLensProvider {
         lens.command = {
           title: entry.title,
           command: entry.command,
-          arguments: [document.uri.fsPath, entry],
+          arguments: [entry],
           tooltip: `View diagram for ${entry.source}`,
         };
       } else {
