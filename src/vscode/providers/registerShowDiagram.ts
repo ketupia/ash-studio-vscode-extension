@@ -12,6 +12,8 @@ import {
 import { DiagramCodeLensEntry } from "../../types/parser";
 import { escapeHtml } from "../../utils/htmlUtils";
 
+const MISSING_WEBVIEW_ASSETS_ERROR = `Ash Studio: required webview assets not found. Expected files in media/: mermaid.min.js and svg-pan-zoom.min.js. Please run "npm run build" to copy assets, or reinstall the extension.`;
+
 // Compute a friendly, concise title for the webview using the diagram spec name and the target
 function computeWebviewTitle(entry: DiagramCodeLensEntry): string {
   const specName = entry.diagramSpec?.name ?? "Diagram";
@@ -61,8 +63,7 @@ export function registerShowDiagram(context: vscode.ExtensionContext) {
         await vscode.workspace.fs.stat(mermaidUri);
         await vscode.workspace.fs.stat(svgPanZoomUri);
       } catch {
-        const msg = `Ash Studio: required webview assets not found. Expected files in media/: mermaid.min.js and svg-pan-zoom.min.js. Please run \"npm run build\" to copy assets, or reinstall the extension.`;
-        vscode.window.showErrorMessage(msg);
+        vscode.window.showErrorMessage(MISSING_WEBVIEW_ASSETS_ERROR);
         panel.webview.html = `<html><body style="font-family: system-ui; color:#ddd; background:#1e1e1e; padding:16px;">
           <h2>Ash Studio — Missing Webview Assets</h2>
           <p>Required files were not found in the extension media folder:</p>

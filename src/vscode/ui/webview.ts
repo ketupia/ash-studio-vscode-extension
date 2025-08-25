@@ -48,7 +48,6 @@ export function getOrCreateAshStudioWebview(
  * @param str The string to escape.
  * @returns The escaped string.
  */
-// escapeHtml removed; escaping is inlined where needed
 export function renderGeneratingDiagram(diagramPath: string): string {
   const escaped = escapeHtml(String(diagramPath));
 
