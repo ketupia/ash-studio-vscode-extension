@@ -14,6 +14,13 @@ export function getOrCreateAshStudioWebview(
   viewType: string = "ashStudio"
 ): vscode.WebviewPanel {
   if (ashStudioPanel) {
+    // Update title in case caller provided a new title for the existing panel
+    try {
+      ashStudioPanel.title = title;
+    } catch (err) {
+      // Setting title should normally succeed; swallow any errors to avoid breaking callers
+      console.debug("[AshStudio] Failed to set panel title:", err);
+    }
     ashStudioPanel.reveal(vscode.ViewColumn.Active);
     return ashStudioPanel;
   }

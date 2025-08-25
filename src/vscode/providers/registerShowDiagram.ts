@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import * as path from "path";
 import {
   getOrCreateAshStudioWebview,
   renderGeneratingDiagram,
@@ -9,6 +10,14 @@ import {
   generateDiagramWithMix,
 } from "../../utils/diagramMixUtils";
 import { DiagramCodeLensEntry } from "../../types/parser";
+
+// Compute a friendly, concise title for the webview using the diagram spec name and the target
+function computeWebviewTitle(entry: DiagramCodeLensEntry): string {
+  const specName = entry.diagramSpec?.name ?? "Diagram";
+  let targetLabel = String(entry.target ?? "");
+  targetLabel = path.basename(targetLabel);
+  return `${specName} — ${targetLabel}`;
+}
 
 /**
  * Register the command that shows a generated diagram in a webview.
@@ -22,8 +31,10 @@ export function registerShowDiagram(context: vscode.ExtensionContext) {
         entry.target,
         entry.diagramSpec
       );
+
+      const computedTitle = computeWebviewTitle(entry);
       const panel = getOrCreateAshStudioWebview(
-        `AshStudio Diagram View`,
+        computedTitle,
         "ashDiagramPreview"
       );
 
