@@ -57,17 +57,14 @@ helping you quickly jump between Ash DSL sections and understand your code struc
 
 ```gitignore
 lib/**/*.mmd
-lib/**/*.svg
-lib/**/*.png
-lib/**/*.pdf
-lib/**/*.md
 ```
 
 ## 🎯 Usage
 
 ### Navigation and Diagram Features
 
-> ⚠️ **Note:** Unusual behavior might occur on malformed source. A full Elixir parser has not been implemented, and testing has been performed on well-formed files.
+> ⚠️ **Note:** Unusual behavior might occur on malformed source. A full Elixir parser has not been
+> implemented, and testing has been performed on well-formed files.
 
 **Sidebar Navigation**
 

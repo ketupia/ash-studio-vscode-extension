@@ -45,7 +45,8 @@
       "explorer": [
         {
           "id": "ashSidebar",
-          "name": "Ash Studio"
+          "name": "Ash Studio",
+          "icon": "ash-studio-logo.png"
         }
       ]
     },
@@ -73,19 +74,16 @@
         "ashStudio.enableCodeLens": {
           "type": "boolean",
           "default": true,
-          "description": "Enable CodeLens for Ash sections (experimental)"
+          "description": "Enable CodeLens to Generate Diagrams"
         },
-        "ashStudio.diagramFormat": {
+        "ashStudio.diagramLifecycle": {
           "type": "string",
-          "default": "plain",
           "enum": [
-            "plain",
-            "md",
-            "svg",
-            "pdf",
-            "png"
+            "auto-delete",
+            "generate-only"
           ],
-          "description": "The output format for generated diagrams. 'plain' (default) prints mermaid text, 'md' prints a markdown code block, 'svg', 'pdf', and 'png' generate image files."
+          "default": "auto-delete",
+          "description": "Controls lifecycle of generated diagram files. `auto-delete` will remove generated .mmd after reading. `generate-only` will generate (if missing or outdated) but leave the file in place for inspection."
         }
       }
     }
@@ -98,10 +96,16 @@
     "type-check": "tsc --noEmit",
     "quality": "npm run clean && npm run type-check && npm run lint && npm run format && npm test",
     "clean": "rm -rf dist",
-    "build": "npm run clean && tsc",
+    "build": "npm run clean && tsc && npm run copy-media && npm run copy-templates && node scripts/verify-media.js",
+    "copy-templates": "mkdir -p dist/src/vscode/ui/templates && cp -R src/vscode/ui/templates/* dist/src/vscode/ui/templates/",
+    "copy-media": "mkdir -p media && cp node_modules/mermaid/dist/mermaid.min.js media/mermaid.min.js && cp node_modules/svg-pan-zoom/dist/svg-pan-zoom.min.js media/svg-pan-zoom.min.js",
     "pre-commit": "rm -f test-*.js crash-*.js *.tmp *.temp && npm run quality",
     "copy-test-example_files": "mkdir -p dist/test/example_files && cp -R test/example_files/* dist/test/example_files/",
     "test": "npm run build && npm run copy-test-example_files && jest --coverage"
+  },
+  "dependencies": {
+    "mermaid": "^10.9.1",
+    "svg-pan-zoom": "^3.6.1"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",

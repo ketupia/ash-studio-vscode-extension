@@ -1,0 +1,188 @@
+<!doctype html>
+<html>
+  <head>
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; img-src {{CSP_SOURCE}} data:; style-src 'unsafe-inline' {{CSP_SOURCE}}; script-src 'unsafe-inline' {{CSP_SOURCE}};"
+    />
+    <!-- Load locally bundled UMD builds only -->
+    <script src="{{MERMAID_SRC}}" defer></script>
+    <script src="{{SVGPANZOOM_SRC}}" defer></script>
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+      }
+      body {
+        background: #222;
+        color: #fff;
+      }
+      #host {
+        position: fixed;
+        inset: 0;
+        padding: 12px;
+        box-sizing: border-box;
+      }
+      .mermaid {
+        background: #fff;
+        color: #222;
+        border-radius: 8px;
+        width: 100%;
+        height: 100%;
+        display: block;
+        overflow: hidden;
+        position: relative;
+        margin: 0;
+        padding: 0;
+      }
+      .mermaid > svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+      .svg-pan-zoom_controls {
+        opacity: 1;
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        z-index: 1000;
+      }
+      .svg-pan-zoom_control,
+      .svg-pan-zoom_reset,
+      .svg-pan-zoom_zoom-in,
+      .svg-pan-zoom_zoom-out {
+        fill: #333 !important;
+      }
+      .svg-pan-zoom_control:hover {
+        fill: #000 !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="host">
+      <div id="mermaidDiv" class="mermaid">{{MERMAID_CODE}}</div>
+    </div>
+
+    <script>
+      (function () {
+        const selector = ".mermaid svg";
+        const MAX_INIT_ATTEMPTS = 40;
+        const RETRY_INTERVAL_MS = 150;
+        const MIN_ZOOM_LEVEL = 0.1;
+        const MAX_ZOOM_LEVEL = 10;
+        let attempts = 0;
+
+        function ensureViewBox(svg) {
+          if (!svg.getAttribute("viewBox")) {
+            try {
+              const bbox = svg.getBBox ? svg.getBBox() : null;
+              if (bbox) {
+                svg.setAttribute(
+                  "viewBox",
+                  [bbox.x, bbox.y, bbox.width, bbox.height].join(" ")
+                );
+              }
+            } catch (err) {
+              console.debug("[AshStudio] getBBox/viewBox fallback issue:", err);
+            }
+          }
+        }
+
+        function renderMermaid() {
+          const el = document.getElementById("mermaidDiv");
+          if (!el) {
+            console.error("[AshStudio] Missing mermaid container");
+            return;
+          }
+          if (!window.mermaid) {
+            console.error("[AshStudio] Mermaid library not available");
+            return;
+          }
+          try {
+            window.mermaid.initialize({ startOnLoad: false });
+          } catch (err) {
+            console.error("[AshStudio] mermaid.initialize error:", err);
+          }
+          try {
+            window.mermaid.parse(el.textContent || "");
+          } catch (err) {
+            console.warn("[AshStudio] mermaid.parse warning:", err);
+          }
+          try {
+            window.mermaid.init(undefined, el);
+          } catch (err) {
+            console.error("[AshStudio] mermaid.init error:", err);
+          }
+        }
+
+        function initPanZoom() {
+          const svg = document.querySelector(selector);
+          if (!svg || !window.svgPanZoom) return false;
+          try {
+            svg.removeAttribute("width");
+            svg.removeAttribute("height");
+            svg.style.maxWidth = "none";
+            svg.style.width = "100%";
+            svg.style.height = "100%";
+            svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+            ensureViewBox(svg);
+            const pz = window.svgPanZoom(svg, {
+              zoomEnabled: true,
+              controlIconsEnabled: true,
+              fit: true,
+              center: true,
+              minZoom: MIN_ZOOM_LEVEL,
+              maxZoom: MAX_ZOOM_LEVEL,
+            });
+            console.info("[AshStudio] svgPanZoom initialized with controls");
+            setTimeout(() => {
+              try {
+                pz.resize();
+                pz.fit();
+                pz.center();
+              } catch (err) {
+                console.debug(
+                  "[AshStudio] svgPanZoom post-init sizing issue:",
+                  err
+                );
+              }
+            }, 0);
+            window.addEventListener("resize", () => {
+              try {
+                pz.resize();
+                pz.fit();
+                pz.center();
+              } catch (err) {
+                console.debug(
+                  "[AshStudio] svgPanZoom resize handling issue:",
+                  err
+                );
+              }
+            });
+            return true;
+          } catch (err) {
+            console.error("[AshStudio] svgPanZoom init error:", err);
+            return false;
+          }
+        }
+
+        (function wait() {
+          if (window.mermaid && window.svgPanZoom) {
+            renderMermaid();
+            setTimeout(() => {
+              if (!initPanZoom() && attempts++ < MAX_INIT_ATTEMPTS)
+                setTimeout(wait, RETRY_INTERVAL_MS);
+            }, 100);
+          } else if (attempts++ < MAX_INIT_ATTEMPTS) {
+            setTimeout(wait, RETRY_INTERVAL_MS);
+          } else {
+            console.error(
+              "[AshStudio] Timed out waiting for mermaid/svg-pan-zoom to load"
+            );
+          }
+        })();
+      })();
+    </script>
+  </body>
+</html>
