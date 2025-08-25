@@ -101,7 +101,7 @@ export function registerShowDiagram(context: vscode.ExtensionContext) {
             const bytes = await vscode.workspace.fs.readFile(templateUri);
             let tpl = Buffer.from(bytes).toString("utf8");
 
-              tpl = tpl.replace(/{{MERMAID_CODE}}/g, escapeHtml(content));
+            tpl = tpl.replace(/{{MERMAID_CODE}}/g, escapeHtml(content));
             tpl = tpl.replace(/{{MERMAID_SRC}}/g, mermaidSrc);
             tpl = tpl.replace(/{{SVGPANZOOM_SRC}}/g, svgPanZoomSrc);
             tpl = tpl.replace(/{{CSP_SOURCE}}/g, panel.webview.cspSource);

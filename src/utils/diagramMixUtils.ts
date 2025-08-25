@@ -93,11 +93,15 @@ function runMixForDiagram(
 
 // Type guard for NodeJS.ErrnoException-like objects
 function isErrnoException(obj: unknown): obj is NodeJS.ErrnoException {
+  if (typeof obj !== "object" || obj === null) return false;
+  const errorObj = obj as { code?: unknown; errno?: unknown; syscall?: unknown };
   return (
-    typeof obj === "object" &&
-    obj !== null &&
-    "code" in obj &&
-    typeof (obj as { code?: unknown }).code === "string"
+    "code" in errorObj &&
+    typeof errorObj.code === "string" &&
+    "errno" in errorObj &&
+    (typeof errorObj.errno === "number" || typeof errorObj.errno === "string") &&
+    "syscall" in errorObj &&
+    typeof errorObj.syscall === "string"
   );
 }
 
