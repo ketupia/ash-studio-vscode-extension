@@ -96,10 +96,16 @@
     "type-check": "tsc --noEmit",
     "quality": "npm run clean && npm run type-check && npm run lint && npm run format && npm test",
     "clean": "rm -rf dist",
-    "build": "npm run clean && tsc",
+    "build": "npm run clean && tsc && npm run copy-media && npm run copy-templates && node scripts/verify-media.js",
+    "copy-templates": "mkdir -p dist/src/vscode/ui/templates && cp -R src/vscode/ui/templates/* dist/src/vscode/ui/templates/",
+    "copy-media": "mkdir -p media && cp node_modules/mermaid/dist/mermaid.min.js media/mermaid.min.js && cp node_modules/svg-pan-zoom/dist/svg-pan-zoom.min.js media/svg-pan-zoom.min.js",
     "pre-commit": "rm -f test-*.js crash-*.js *.tmp *.temp && npm run quality",
     "copy-test-example_files": "mkdir -p dist/test/example_files && cp -R test/example_files/* dist/test/example_files/",
     "test": "npm run build && npm run copy-test-example_files && jest --coverage"
+  },
+  "dependencies": {
+    "mermaid": "^10.9.1",
+    "svg-pan-zoom": "^3.6.1"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
