@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { escapeHtml } from "../../utils/htmlUtils";
 
 let ashStudioPanel: vscode.WebviewPanel | undefined;
 
@@ -49,22 +50,7 @@ export function getOrCreateAshStudioWebview(
  */
 // escapeHtml removed; escaping is inlined where needed
 export function renderGeneratingDiagram(diagramPath: string): string {
-  const escaped = String(diagramPath).replace(/[&<>"']/g, ch => {
-    switch (ch) {
-      case "&":
-        return "&amp;";
-      case "<":
-        return "&lt;";
-      case ">":
-        return "&gt;";
-      case '"':
-        return "&quot;";
-      case "'":
-        return "&#39;";
-      default:
-        return ch;
-    }
-  });
+  const escaped = escapeHtml(String(diagramPath));
 
   return `<html><body><h2>Generating diagram...</h2><p style='color:#888;font-size:0.9em;'>${escaped}</p></body></html>`;
 }

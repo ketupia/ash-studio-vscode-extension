@@ -10,6 +10,7 @@ import {
   generateDiagramWithMix,
 } from "../../utils/diagramMixUtils";
 import { DiagramCodeLensEntry } from "../../types/parser";
+import { escapeHtml } from "../../utils/htmlUtils";
 
 // Compute a friendly, concise title for the webview using the diagram spec name and the target
 function computeWebviewTitle(entry: DiagramCodeLensEntry): string {
@@ -100,16 +101,7 @@ export function registerShowDiagram(context: vscode.ExtensionContext) {
             const bytes = await vscode.workspace.fs.readFile(templateUri);
             let tpl = Buffer.from(bytes).toString("utf8");
 
-            // Simple HTML-escape for mermaid content
-            const escapeHtml = (s: string) =>
-              String(s)
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/\"/g, "&quot;")
-                .replace(/'/g, "&#39;");
-
-            tpl = tpl.replace(/{{MERMAID_CODE}}/g, escapeHtml(content));
+              tpl = tpl.replace(/{{MERMAID_CODE}}/g, escapeHtml(content));
             tpl = tpl.replace(/{{MERMAID_SRC}}/g, mermaidSrc);
             tpl = tpl.replace(/{{SVGPANZOOM_SRC}}/g, svgPanZoomSrc);
             tpl = tpl.replace(/{{CSP_SOURCE}}/g, panel.webview.cspSource);
