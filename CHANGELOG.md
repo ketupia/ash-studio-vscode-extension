@@ -15,10 +15,6 @@
   diagrams could be seen.
 - diagram window title: the diagram window title now reflects the source file and the diagram type
 
-### Packaging
-
-- Embedded libraries: mermaid and svg-pan-zoom are now packaged with the extension for stability.
-
 ## [0.1.1] - 2025-08-10
 
 ### Features
