@@ -7,7 +7,6 @@ import { registerDefinitionProvider } from "./vscode/providers/definitionProvide
 import { ParsedDataProvider } from "./parsedDataProvider";
 import { Logger } from "./utils/logger";
 import { registerShowDiagram } from "./vscode/providers/registerShowDiagram";
-// import { DiagramCodeLensEntry } from "./types/parser"; // Not needed
 import { GotoFileLocationEntry } from "./types/commands";
 
 // Debounce map for text change events to prevent excessive parsing
