@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.1.2] - 2025-08-26
+
+### Features
+
+#### Diagrams auto-deletion [#65](https://github.com/ketupia/ash-studio-vscode-extension/pull/65) and pan-zoom
+
+- **breaking change**: diagramType removed - there was an option to specify what kind of diagram
+  should be generated. (.mmd, .svg, .png, etc.)
+- plain .mmd files: diagrams are now hardcoded to produce plain mermaid files that are read into the
+  html template and then deleted
+- auto-delete setting: controls if generated files are automatically deleted (the default).
+- pan zoom controls: By default the image is fitted to the window. Added Svg Pan Zoom so that large
+  diagrams could be seen.
+- diagram window title: the diagram window title now reflects the source file and the diagram type
+
+### Packaging
+
+- Embedded libraries: mermaid and svg-pan-zoom are now packaged with the extension for stability.
+
 ## [0.1.1] - 2025-08-10
 
 ### Features

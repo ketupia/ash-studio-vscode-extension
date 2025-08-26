@@ -2,7 +2,11 @@ import * as path from "path";
 import * as fs from "fs";
 import { jest } from "@jest/globals";
 
-import { getGeneratedDiagramFilePath } from "../../../src/utils/diagramMixUtils";
+import {
+  getGeneratedDiagramFilePath,
+  readGeneratedDiagramFile,
+  maybeDeleteGeneratedDiagram,
+} from "../../../src/utils/diagramMixUtils";
 import { DiagramSpec } from "../../../src/types/configurationRegistry";
 
 describe("diagramMixUtils helpers", () => {
@@ -40,11 +44,6 @@ describe("diagramMixUtils helpers", () => {
 
   // Lightweight tests for file read/delete helpers will use jest mocks
   describe("file helpers (mocked fs)", () => {
-    let diagModule: typeof import("../../../src/utils/diagramMixUtils");
-    beforeAll(async () => {
-      diagModule = await import("../../../src/utils/diagramMixUtils");
-    });
-
     afterEach(() => {
       jest.restoreAllMocks();
     });
@@ -54,7 +53,7 @@ describe("diagramMixUtils helpers", () => {
         .spyOn(fs.promises, "readFile")
         .mockRejectedValue(new Error("ENOENT"));
       await expect(
-        diagModule.readGeneratedDiagramFile("/no/such/path.mmd")
+        readGeneratedDiagramFile("/no/such/path.mmd")
       ).rejects.toThrow();
     });
 
@@ -62,10 +61,7 @@ describe("diagramMixUtils helpers", () => {
       const unlinkSpy = jest
         .spyOn(fs.promises, "unlink")
         .mockResolvedValue(undefined);
-      await diagModule.maybeDeleteGeneratedDiagram(
-        "/tmp/some.mmd",
-        "auto-delete"
-      );
+      await maybeDeleteGeneratedDiagram("/tmp/some.mmd", "auto-delete");
       expect(unlinkSpy).toHaveBeenCalledWith("/tmp/some.mmd");
     });
 
@@ -73,10 +69,7 @@ describe("diagramMixUtils helpers", () => {
       const unlinkSpy = jest
         .spyOn(fs.promises, "unlink")
         .mockResolvedValue(undefined);
-      await diagModule.maybeDeleteGeneratedDiagram(
-        "/tmp/other.mmd",
-        "generate-only"
-      );
+      await maybeDeleteGeneratedDiagram("/tmp/other.mmd", "generate-only");
       expect(unlinkSpy).not.toHaveBeenCalled();
     });
 
@@ -85,7 +78,7 @@ describe("diagramMixUtils helpers", () => {
         .spyOn(fs.promises, "unlink")
         .mockRejectedValue(new Error("EACCES: permission denied"));
       await expect(
-        diagModule.maybeDeleteGeneratedDiagram("/tmp/fail.mmd", "auto-delete")
+        maybeDeleteGeneratedDiagram("/tmp/fail.mmd", "auto-delete")
       ).rejects.toThrow(/permission denied/);
     });
   });

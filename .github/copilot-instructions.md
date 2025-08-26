@@ -8,6 +8,7 @@ This extension enhances VS Code for Ash Framework (Elixir) development. It provi
 - Custom sidebar with grouped section details
 - CodeLens for diagrams
 - Definition provider
+
 ## Key Architecture
 
 - **Modular Design:**
@@ -16,7 +17,8 @@ This extension enhances VS Code for Ash Framework (Elixir) development. It provi
   - VS Code integration (providers, commands, UI) is in dedicated modules.
 
 - **Types & Interfaces:**
-  - All public APIs, types, and interfaces are centralized in `src/types/ash.ts`.
+  - Types and interfaces live under `src/types/` (for example: `configurationRegistry.ts`,
+    `extensionConfiguration.ts`). Update this note if you add a central types file.
   - Modules export only their public API; helpers/internals remain private.
 
 - **Section Navigation:**
@@ -44,7 +46,7 @@ This extension enhances VS Code for Ash Framework (Elixir) development. It provi
 ## Development Workflow
 
 - **Build & Test:**
-  - Run `npm test` after every change.
+  - Run `npm run build`, then `npx knip`, and `npm test` after changes.
   - All logic modules must have/expand unit tests.
   - Fix all errors/warnings before proceeding.
 
