@@ -6,13 +6,7 @@ import { registerCodeLensProvider } from "./vscode/providers/codeLensProvider";
 import { registerDefinitionProvider } from "./vscode/providers/definitionProvider";
 import { ParsedDataProvider } from "./parsedDataProvider";
 import { Logger } from "./utils/logger";
-import {
-  generateDiagramWebviewContent,
-  getOrCreateAshStudioWebview,
-} from "./vscode/ui/webview";
-import { getTheoreticalDiagramFilePath } from "./utils/diagramUtils";
-import { generateDiagramWithMix } from "./utils/diagramMixUtils";
-import { DiagramCodeLensEntry } from "./types/parser";
+import { registerShowDiagram } from "./vscode/providers/registerShowDiagram";
 import { GotoFileLocationEntry } from "./types/commands";
 
 // Debounce map for text change events to prevent excessive parsing
@@ -109,51 +103,8 @@ export function activate(context: vscode.ExtensionContext) {
     registerDefinitionProvider(context);
 
     // Register diagram commands
-    context.subscriptions.push(
-      vscode.commands.registerCommand(
-        /**
-         * Registers the ash-studio.showDiagram command to display a diagram in a webview panel.
-         * Reuses a single webview panel for all diagrams. Resolves the diagram file path using the
-         * CodeLensEntry's target (resource file) and diagramSpec, then renders the diagram.
-         *
-         * @param filePath - The resource file path (unused, kept for compatibility)
-         * @param entry - The CodeLensEntry containing diagram metadata and resource info
-         */
-        "ash-studio.showDiagram",
-        async (filePath: string, entry: DiagramCodeLensEntry) => {
-          const diagramFilePath = getTheoreticalDiagramFilePath(
-            entry.target,
-            entry.diagramSpec
-          );
-          const panel = getOrCreateAshStudioWebview(
-            `AshStudio Diagram View`,
-            "ashDiagramPreview"
-          );
-
-          // Set initial content (may be placeholder if file doesn't exist yet)
-          panel.webview.html = generateDiagramWebviewContent(
-            diagramFilePath,
-            panel.webview
-          );
-
-          // Run Mix and update the webview when done
-          generateDiagramWithMix(entry.target, entry.diagramSpec)
-            .then(() => {
-              panel.webview.html = generateDiagramWebviewContent(
-                diagramFilePath,
-                panel.webview
-              );
-            })
-            .catch(err => {
-              vscode.window.showErrorMessage(
-                `Failed to generate diagram: ${
-                  err instanceof Error ? err.message : String(err)
-                }`
-              );
-            });
-        }
-      )
-    );
+    // Register diagram show command
+    registerShowDiagram(context);
 
     // Register generic file location navigation command
     context.subscriptions.push(

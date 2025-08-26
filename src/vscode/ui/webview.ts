@@ -1,6 +1,5 @@
 import * as vscode from "vscode";
-import * as path from "path";
-import * as fs from "fs";
+import { escapeHtml } from "../../utils/htmlUtils";
 
 let ashStudioPanel: vscode.WebviewPanel | undefined;
 
@@ -16,6 +15,13 @@ export function getOrCreateAshStudioWebview(
   viewType: string = "ashStudio"
 ): vscode.WebviewPanel {
   if (ashStudioPanel) {
+    // Update title in case caller provided a new title for the existing panel
+    try {
+      ashStudioPanel.title = title;
+    } catch (err) {
+      // Setting title should normally succeed; swallow any errors to avoid breaking callers
+      console.debug("[AshStudio] Failed to set panel title:", err);
+    }
     ashStudioPanel.reveal(vscode.ViewColumn.Active);
     return ashStudioPanel;
   }
@@ -42,74 +48,111 @@ export function getOrCreateAshStudioWebview(
  * @param str The string to escape.
  * @returns The escaped string.
  */
-function escapeHtml(str: string): string {
-  return str.replace(/[&<>"']/g, char => {
-    switch (char) {
-      case "&":
-        return "&amp;";
-      case "<":
-        return "&lt;";
-      case ">":
-        return "&gt;";
-      case '"':
-        return "&quot;";
-      case "'":
-        return "&#39;";
-      default:
-        return char;
-    }
-  });
+export function renderGeneratingDiagram(diagramPath: string): string {
+  const escaped = escapeHtml(String(diagramPath));
+
+  return `<html><body><h2>Generating diagram...</h2><p style='color:#888;font-size:0.9em;'>${escaped}</p></body></html>`;
 }
 
-/**
- * Generate HTML content for the AshStudio webview based on the diagram file type.
- * @param diagramFilePath Absolute path to the diagram file.
- * @param webview The webview instance (for resource URIs).
- * @returns HTML string for the webview.
- */
-export function generateDiagramWebviewContent(
-  diagramFilePath: string,
-  webview: vscode.Webview
+export function renderMermaidDiagram(
+  mermaidCode: string,
+  assets?: { mermaidSrc?: string; svgPanZoomSrc?: string; cspSource?: string }
 ): string {
-  const ext = path.extname(diagramFilePath).toLowerCase();
-  if (!fs.existsSync(diagramFilePath)) {
-    return `<html><body><h2>Generating diagram...</h2><p style='color:#888;font-size:0.9em;'>${escapeHtml(
-      diagramFilePath
-    )}</p></body></html>`;
-  }
-
-  if ([".svg", ".png", ".jpg", ".jpeg", ".gif"].includes(ext)) {
-    const imgSrc = webview.asWebviewUri(vscode.Uri.file(diagramFilePath));
-    return `<!DOCTYPE html><html><body style="margin:0;padding:0;display:flex;justify-content:center;align-items:center;height:100vh;background:#222;">
-      <img src="${imgSrc}" style="max-width:100%;max-height:100vh;box-shadow:0 0 16px #000;" />
-    </body></html>`;
-  }
-
-  if (ext === ".pdf") {
-    const pdfSrc = webview.asWebviewUri(vscode.Uri.file(diagramFilePath));
-    return `<!DOCTYPE html><html><body style="background:#222;color:#fff;text-align:center;padding:2em;">
-      <h2>PDF Diagram</h2>
-      <p>PDF preview is not supported in the webview. <a href="${pdfSrc}" download style="color:#4af;">Download PDF</a></p>
-    </body></html>`;
-  }
-
-  // Mermaid or markdown
-  if (ext === ".mmd" || ext === ".md") {
-    const mermaidCode = fs.readFileSync(diagramFilePath, "utf8");
-    return `<!DOCTYPE html><html><head>
-      <script type="module">
-        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-        mermaid.initialize({ startOnLoad: true });
-      </script>
-      <style>body{background:#222;color:#fff;} .mermaid{background:#fff;color:#222;padding:1em;border-radius:8px;}</style>
+  const mermaidSrc = assets?.mermaidSrc;
+  const svgPanZoomSrc = assets?.svgPanZoomSrc;
+  const cspSource = assets?.cspSource ?? "";
+  const content = `<!DOCTYPE html><html><head>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${cspSource} data:; style-src 'unsafe-inline' ${cspSource}; script-src 'unsafe-inline' ${cspSource};">
+  <!-- Load locally bundled UMD builds only -->
+  ${mermaidSrc ? `<script src="${mermaidSrc}" defer></script>` : ""}
+  ${svgPanZoomSrc ? `<script src="${svgPanZoomSrc}" defer></script>` : ""}
+      <style>
+        html, body { height: 100%; margin: 0; }
+        body { background:#222; color:#fff; }
+        #host { position: fixed; inset: 0; padding: 12px; box-sizing: border-box; }
+        /* The mermaid container acts as the viewport for the SVG */
+        .mermaid { 
+          background:#fff; color:#222; border-radius:8px; 
+          width: 100%; height: 100%; display: block; overflow: hidden; position: relative;
+          /* Remove default margins/padding to let SVG occupy full space */
+          margin: 0; padding: 0;
+        }
+        /* Ensure the generated SVG fills the container */
+        .mermaid > svg { width: 100%; height: 100%; display: block; }
+        /* Make sure svg-pan-zoom control icons are visible and positioned */
+        .svg-pan-zoom_controls { opacity: 1; position: absolute; top: 8px; right: 8px; z-index: 1000; }
+        .svg-pan-zoom_control, .svg-pan-zoom_reset, .svg-pan-zoom_zoom-in, .svg-pan-zoom_zoom-out { fill: #333 !important; }
+        .svg-pan-zoom_control:hover { fill: #000 !important; }
+      </style>
     </head><body>
-      <div class="mermaid">
-        ${mermaidCode}
+      <div id="host">
+        <div id="mermaidDiv" class="mermaid">
+          ${mermaidCode}
+        </div>
       </div>
-    </body></html>`;
-  }
 
-  // Fallback: show as plain text
-  const fileContent = fs.readFileSync(diagramFilePath, "utf8");
-  return `<!DOCTYPE html><html><body style="background:#222;color:#fff;"><pre>${fileContent}</pre></body></html>`;
+      <script>
+        (function(){
+          const selector = '.mermaid svg';
+          const MAX_INIT_ATTEMPTS = 40;
+          const RETRY_INTERVAL_MS = 150;
+          const MIN_ZOOM_LEVEL = 0.1;
+          const MAX_ZOOM_LEVEL = 10;
+          let attempts = 0;
+
+          function ensureViewBox(svg){
+            if(!svg.getAttribute('viewBox')){
+              try {
+                const bbox = svg.getBBox ? svg.getBBox() : null;
+                if(bbox){ svg.setAttribute('viewBox', [bbox.x,bbox.y,bbox.width,bbox.height].join(' ')); }
+              } catch (err) { console.debug('[AshStudio] getBBox/viewBox fallback issue:', err); }
+            }
+          }
+
+          function renderMermaid(){
+            const el = document.getElementById('mermaidDiv');
+            if(!el){ console.error('[AshStudio] Missing mermaid container'); return; }
+            if(!window.mermaid){ console.error('[AshStudio] Mermaid library not available'); return; }
+            try { window.mermaid.initialize({ startOnLoad: false }); } catch (err) { console.error('[AshStudio] mermaid.initialize error:', err); }
+            try { window.mermaid.parse(el.textContent || ''); } catch (err) { console.warn('[AshStudio] mermaid.parse warning:', err); }
+            try { window.mermaid.init(undefined, el); } catch (err) { console.error('[AshStudio] mermaid.init error:', err); }
+          }
+
+      function initPanZoom(){
+            const svg = document.querySelector(selector);
+            if(!svg || !window.svgPanZoom) return false;
+            try {
+              svg.removeAttribute('width'); svg.removeAttribute('height');
+        svg.style.maxWidth='none'; svg.style.width='100%'; svg.style.height='100%';
+        svg.setAttribute('preserveAspectRatio','xMidYMid meet'); ensureViewBox(svg);
+        const pz = window.svgPanZoom(svg,{
+                zoomEnabled: true,
+                controlIconsEnabled: true,
+                fit: true,
+                center: true,
+                minZoom: MIN_ZOOM_LEVEL,
+                maxZoom: MAX_ZOOM_LEVEL
+              });
+              console.info('[AshStudio] svgPanZoom initialized with controls');
+              setTimeout(()=>{ try{pz.resize(); pz.fit(); pz.center();}catch(err){ console.debug('[AshStudio] svgPanZoom post-init sizing issue:', err); } },0);
+              window.addEventListener('resize', ()=>{ try{pz.resize(); pz.fit(); pz.center();}catch(err){ console.debug('[AshStudio] svgPanZoom resize handling issue:', err); } });
+              return true;
+            } catch (err) { console.error('[AshStudio] svgPanZoom init error:', err); return false; }
+          }
+
+          (function wait(){
+            if(window.mermaid && window.svgPanZoom){
+              renderMermaid();
+              setTimeout(()=>{ if(!initPanZoom() && attempts++ < MAX_INIT_ATTEMPTS) setTimeout(wait, RETRY_INTERVAL_MS); }, 100);
+            } else if (attempts++ < MAX_INIT_ATTEMPTS) {
+              setTimeout(wait, RETRY_INTERVAL_MS);
+            } else {
+              console.error('[AshStudio] Timed out waiting for mermaid/svg-pan-zoom to load');
+            }
+          })();
+        })();
+      </script>
+    </body></html>`;
+
+  return content;
 }
