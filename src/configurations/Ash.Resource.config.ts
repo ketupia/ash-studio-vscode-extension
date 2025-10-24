@@ -1,3 +1,4 @@
+import { SymbolKind } from "vscode";
 import {
   ModuleConfiguration,
   namePatterns,
@@ -9,6 +10,7 @@ const Ash_Resource_Config: ModuleConfiguration = {
   dslSections: [
     {
       name: "actions",
+      symbol: SymbolKind.Method,
       childPatterns: [
         {
           keyword: "create",
@@ -39,6 +41,7 @@ const Ash_Resource_Config: ModuleConfiguration = {
     },
     {
       name: "aggregates",
+      symbol: SymbolKind.Variable,
       childPatterns: [
         {
           keyword: "count",
@@ -87,6 +90,7 @@ const Ash_Resource_Config: ModuleConfiguration = {
     },
     {
       name: "attributes",
+      symbol: SymbolKind.Field,
       childPatterns: [
         {
           keyword: "attribute",
@@ -97,6 +101,7 @@ const Ash_Resource_Config: ModuleConfiguration = {
     },
     {
       name: "calculations",
+      symbol: SymbolKind.Property,
       childPatterns: [
         {
           keyword: "calculate",
@@ -115,6 +120,7 @@ const Ash_Resource_Config: ModuleConfiguration = {
     },
     {
       name: "code_interface",
+      symbol: SymbolKind.Method,
       childPatterns: [
         {
           keyword: "define",
@@ -133,6 +139,7 @@ const Ash_Resource_Config: ModuleConfiguration = {
     },
     {
       name: "policies",
+      symbol: SymbolKind.Property,
       childPatterns: [
         {
           keyword: "bypass",
@@ -154,6 +161,7 @@ const Ash_Resource_Config: ModuleConfiguration = {
     },
     {
       name: "relationships",
+      symbol: SymbolKind.Interface,
       childPatterns: [
         {
           keyword: "belongs_to",

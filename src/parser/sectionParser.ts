@@ -68,6 +68,7 @@ export class SectionParser {
                 startingLocation: { line: i + 1, column },
                 endingLocation: { line: 0, column: 0 },
                 children: [],
+                symbol: dslSection.symbol,
               },
             });
             break; // Only one section per line

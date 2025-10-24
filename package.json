@@ -84,6 +84,11 @@
           ],
           "default": "auto-delete",
           "description": "Controls lifecycle of generated diagram files. `auto-delete` will remove generated .mmd after reading. `generate-only` will generate (if missing or outdated) but leave the file in place for inspection."
+        },
+        "ashStudio.showChildrenInOutlineAndSymbols": {
+          "type": "boolean",
+          "default": false,
+          "description": "Adds the children of the dsl sections to the Outline and Symbols views"
         }
       }
     }

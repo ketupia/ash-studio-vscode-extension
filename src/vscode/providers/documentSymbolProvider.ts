@@ -31,7 +31,7 @@ export function registerDocumentSymbolProvider(
         `Found ${parseResult.sections.length} sections: ${parseResult.sections.map(s => s.name).join(", ")}`
       );
 
-      // Return only main DSL sections for breadcrumbs - no nested details
+      // Return main DSL sections with nested children if config flag is set
       const symbols = parseResult.sections.map((section: ParsedSection) => {
         const startPos = new vscode.Position(
           section.startingLocation.line - 1,
@@ -42,13 +42,25 @@ export function registerDocumentSymbolProvider(
           section.endingLocation.line - 1,
           section.endingLocation.column - 1
         ); // Convert to 0-based
-        return new vscode.DocumentSymbol(
+
+        const sectionSymbol = new vscode.DocumentSymbol(
           section.name, // Use the actual section name (e.g., "attributes")
           "",
-          vscode.SymbolKind.Class,
+          section.symbol ?? vscode.SymbolKind.Class,
           new vscode.Range(startPos, endPos),
           new vscode.Range(startPos, startPos)
         );
+
+        const cfg = vscode.workspace.getConfiguration("ashStudio");
+
+        if (cfg.get<boolean>("showChildrenInOutlineAndSymbols", true)) {
+          const children = getChildrenSymbols(section);
+          if (children.length > 0) {
+            sectionSymbol.children = children;
+          }
+        }
+
+        return sectionSymbol;
       });
 
       logger.debug(
@@ -63,4 +75,28 @@ export function registerDocumentSymbolProvider(
   context.subscriptions.push(
     vscode.languages.registerDocumentSymbolProvider(ashSelector, provider)
   );
+}
+
+function getChildrenSymbols(section: ParsedSection) {
+  return section.children.map(child => {
+    const childStartPos = new vscode.Position(
+      child.startingLocation.line - 1,
+      child.startingLocation.column - 1
+    );
+
+    const childEndPos = new vscode.Position(
+      child.startingLocation.line - 1,
+      child.startingLocation.column +
+        (child.name?.length || child.keyword.length) -
+        1
+    );
+
+    return new vscode.DocumentSymbol(
+      child.name || child.keyword,
+      child.keyword,
+      section.symbol ?? vscode.SymbolKind.Field,
+      new vscode.Range(childStartPos, childEndPos),
+      new vscode.Range(childStartPos, childStartPos)
+    );
+  });
 }
