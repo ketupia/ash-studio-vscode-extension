@@ -67,7 +67,6 @@ Goal: Confirm that all AI-related instructions and documentation are up-to-date 
 Goal: Update version numbers to reflect the new release and maintain proper version history.
 
 - [ ] Commit all changes
-- [ ] Run `npm version patch` to update the version number
 - [ ] Run `npm version patch` (or `npm version x.y.z`) to update the version number (creates a
       commit and tag by default)
 - [ ] Commit all changes (the only changes should be package.json and package-lock.json if using
