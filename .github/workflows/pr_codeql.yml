@@ -31,7 +31,6 @@ jobs:
             echo "ref=${{ github.event.pull_request.head.sha }}" >> $GITHUB_OUTPUT
             echo "repo=${{ github.event.pull_request.head.repo.full_name }}" >> $GITHUB_OUTPUT
           fi
-
       - name: Checkout code to analyze (PR head or provided ref)
         uses: actions/checkout@v4
         with:
@@ -51,5 +50,4 @@ jobs:
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
         with:
-          # optional: upload-database: true
           wait-for-processing: true
