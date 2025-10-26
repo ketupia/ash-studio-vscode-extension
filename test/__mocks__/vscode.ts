@@ -27,21 +27,27 @@ export class Position {
 
 export class Location {
   constructor(
-    public uri: any,
+    public uri: unknown,
     public position: Position
   ) {}
 }
 
-export const workspace = {};
+export const workspace = {};  
 
 export const window = {
   showInformationMessage: () => {},
 };
 
-export const ExtensionContext = function () {} as any;
+export interface ExtensionContext {
+  subscriptions?: { dispose(): void }[];
+}
 
-export const DefinitionProvider = class {} as any;
+export const createExtensionContext = (): ExtensionContext => ({
+  subscriptions: [],
+});
 
-export const ProviderResult = null as any;
+export class DefinitionProvider {}
 
-export default {} as any;
+export type ProviderResult<T> = T | undefined | null;
+
+export default {};
