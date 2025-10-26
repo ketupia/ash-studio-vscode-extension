@@ -1,0 +1,37 @@
+name: "PR CodeQL"
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Commit SHA or branch to analyze (use PR head commit SHA to analyze a forked PR)'
+        required: true
+        default: ''
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code to analyze
+        uses: actions/checkout@v4
+        with:
+          # If run via workflow_dispatch, use the provided input; otherwise use the PR head SHA
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.ref || github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: javascript, typescript
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v2
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
