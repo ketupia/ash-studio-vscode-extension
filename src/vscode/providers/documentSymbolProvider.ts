@@ -53,7 +53,7 @@ export function registerDocumentSymbolProvider(
 
         const cfg = vscode.workspace.getConfiguration("ashStudio");
 
-        if (cfg.get<boolean>("showChildrenInOutlineAndSymbols", true)) {
+        if (cfg.get<boolean>("showChildrenInOutlineAndSymbols", false)) {
           const children = getChildrenSymbols(section);
           if (children.length > 0) {
             sectionSymbol.children = children;
