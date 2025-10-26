@@ -17,21 +17,38 @@ permissions:
 jobs:
   analyze:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code to analyze
+      - name: Determine repo and ref to analyze
+        id: vars
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            # Manual run: analyze the repo/sha/branch specified by the user
+            echo "ref=${{ github.event.inputs.ref }}" >> $GITHUB_OUTPUT
+            echo "repo=${{ github.repository }}" >> $GITHUB_OUTPUT
+          else
+            # PR event: analyze the PR head (works for forks)
+            echo "ref=${{ github.event.pull_request.head.sha }}" >> $GITHUB_OUTPUT
+            echo "repo=${{ github.event.pull_request.head.repo.full_name }}" >> $GITHUB_OUTPUT
+          fi
+      - name: Checkout code to analyze (PR head or provided ref)
         uses: actions/checkout@v4
         with:
-          # If run via workflow_dispatch, use the provided input; otherwise use the PR head SHA
-          ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.ref || github.event.pull_request.head.sha }}
+          repository: ${{ steps.vars.outputs.repo }}
+          ref: ${{ steps.vars.outputs.ref }}
           fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
+        uses: github/codeql-action/init@v3
         with:
           languages: javascript, typescript
 
       - name: Autobuild
-        uses: github/codeql-action/autobuild@v2
+        uses: github/codeql-action/autobuild@v3
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
+        uses: github/codeql-action/analyze@v3
+        with:
+          # optional: upload-database: true
+          wait-for-processing: true
