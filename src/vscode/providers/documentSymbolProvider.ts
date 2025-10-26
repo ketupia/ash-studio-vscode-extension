@@ -31,6 +31,12 @@ export function registerDocumentSymbolProvider(
         `Found ${parseResult.sections.length} sections: ${parseResult.sections.map(s => s.name).join(", ")}`
       );
 
+      const cfg = vscode.workspace.getConfiguration("ashStudio");
+      const showChildrenInOutlineAndSymbols = cfg.get<boolean>(
+        "showChildrenInOutlineAndSymbols",
+        false
+      );
+
       // Return main DSL sections with nested children if config flag is set
       const symbols = parseResult.sections.map((section: ParsedSection) => {
         const startPos = new vscode.Position(
@@ -51,9 +57,7 @@ export function registerDocumentSymbolProvider(
           new vscode.Range(startPos, startPos)
         );
 
-        const cfg = vscode.workspace.getConfiguration("ashStudio");
-
-        if (cfg.get<boolean>("showChildrenInOutlineAndSymbols", false)) {
+        if (showChildrenInOutlineAndSymbols) {
           const children = getChildrenSymbols(section);
           if (children.length > 0) {
             sectionSymbol.children = children;
