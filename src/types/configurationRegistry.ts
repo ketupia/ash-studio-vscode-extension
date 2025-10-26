@@ -7,6 +7,8 @@
  * describing how its DSL sections and keywords should be parsed, displayed, and visualized in VS Code.
  */
 
+import { SymbolKind } from "vscode";
+
 /**
  * Interface for the configuration registry class.
  */
@@ -130,6 +132,8 @@ export interface DslSection {
    * Array of child patterns to search for within this root section's content.
    */
   childPatterns?: ChildPattern[];
+
+  symbol?: SymbolKind;
 }
 
 /**

@@ -1,6 +1,7 @@
 // Centralized Ash parser types and interfaces for use across the extension
 // Only export public APIs. Document each interface/type clearly.
 
+import { SymbolKind } from "vscode";
 import { DiagramSpec } from "./configurationRegistry";
 
 /**
@@ -33,6 +34,7 @@ export interface ParsedSection {
   children: ParsedChild[]; // parsed children within this section (renamed from details)
   startingLocation: ParsedLocation; // starting location info for this section
   endingLocation: ParsedLocation; // ending location info for this section
+  symbol?: SymbolKind;
 }
 
 export interface DiagramCodeLensEntry {
