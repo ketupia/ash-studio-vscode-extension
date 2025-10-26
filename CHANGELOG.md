@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.1.3] - 2025-10-26
+
+### Features
+
+- feat: Show child entries in Symbols and Outline views
+  ([#71](https://github.com/ketupia/ash-studio-vscode-extension/pull/71))
+  - Adds the ability to include child DSL entries in the editor Outline and Symbols views. This
+    improves navigation and visibility for nested Ash sections.
+
+- perf: load libraries from CDN and rendering improvements
+  ([#67](https://github.com/ketupia/ash-studio-vscode-extension/pull/67))
+
 ## [0.1.2] - 2025-08-26
 
 ### Features

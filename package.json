@@ -103,6 +103,7 @@
     "clean": "rm -rf dist",
     "build": "npm run clean && tsc && npm run copy-templates",
     "copy-templates": "mkdir -p dist/src/vscode/ui/templates && cp -R src/vscode/ui/templates/* dist/src/vscode/ui/templates/",
+    "verify-media": "node scripts/verify-media.js",
     "pre-commit": "rm -f test-*.js crash-*.js *.tmp *.temp && npm run quality",
     "copy-test-example_files": "mkdir -p dist/test/example_files && cp -R test/example_files/* dist/test/example_files/",
     "test": "npm run build && npm run copy-test-example_files && jest --coverage"
